@@ -1,0 +1,62 @@
+name: ${COMPOSE_NAME?COMPOSE_NAME is required}
+
+services:
+  frontend:
+    container_name: ${FRONTEND_CONTAINER_NAME?FRONTEND_CONTAINER_NAME is required}
+    build: ./frontend
+    environment:
+      API_SERVER: ${API_SERVER?API_SERVER is required}
+      MEDIA_SERVER: ${MEDIA_SERVER?MEDIA_SERVER is required}
+    ports:
+      - ${FRONTEND_PORT?FRONTEND_PORT is required}:80
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  backend:
+    container_name: ${BACKEND_CONTAINER_NAME?BACKEND_CONTAINER_NAME is required}
+    build: ./backend
+    ports:
+      - ${BACKEND_PORT?BACKEND_PORT is required}:8000
+    restart: always
+    volumes:
+      - ./backend:/app
+      - /app/.venv
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/ready/"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    container_name: ${POSTGRES_CONTAINER_NAME?POSTGRES_CONTAINER_NAME is required}
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB?POSTGRES_DB is required}
+    ports:
+      - ${POSTGRES_PORT?POSTGRES_PORT is required}:5432
+    restart: always
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  pg_data:

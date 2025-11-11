@@ -1,0 +1,15 @@
+# IDE
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Environments
+.env
+
+# Log
+*.log
+*.log.*
