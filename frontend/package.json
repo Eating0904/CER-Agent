@@ -12,6 +12,7 @@
   "dependencies": {
     "@ant-design/icons": "5.x",
     "@reduxjs/toolkit": "^2.6.1",
+    "@xyflow/react": "^12.9.2",
     "antd": "^5.28.1",
     "async-mutex": "^0.5.0",
     "js-cookie": "^3.0.5",

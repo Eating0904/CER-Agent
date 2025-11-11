@@ -4,10 +4,13 @@ import { isAuthenticated } from './features/user/authUtils';
 import { useTokenCheckTimer } from './hooks/useTokenCheckTimer';
 import { Template } from './pages/Template';
 import {
+    DemoPage,
     LoginPage,
+    MindMapTemplatePage,
     RegisterPage,
 } from './pages';
 
+import '@xyflow/react/dist/style.css';
 import './App.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -57,6 +60,22 @@ const App = () => {
                     <GuestRoute>
                         <RegisterPage />
                     </GuestRoute>
+                )}
+            />
+            <Route
+                path="/demo"
+                element={(
+                    <ProtectedRoute>
+                        <DemoPage />
+                    </ProtectedRoute>
+                )}
+            />
+            <Route
+                path="/mind-map-template"
+                element={(
+                    <ProtectedRoute>
+                        <MindMapTemplatePage />
+                    </ProtectedRoute>
                 )}
             />
         </Routes>

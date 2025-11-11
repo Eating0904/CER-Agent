@@ -28,7 +28,7 @@ export const Template = ({ children }) => (
         <Content
             style={{
                 padding: '0 24px',
-                height: 'calc(100vh - 64px - 67px)',
+                height: 'calc(100vh - 64px)',
                 backgroundColor: '#fff',
             }}
         >
