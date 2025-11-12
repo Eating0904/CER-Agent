@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'command',
     'apps.health',
     'apps.user',
+    'apps.mindMapTemplate',
 ]
 
 REST_FRAMEWORK = {

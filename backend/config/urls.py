@@ -21,4 +21,5 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     path('api/health/', include('apps.health.urls')),
     path('api/user/', include('apps.user.urls')),
+    path('api/mind-map-template/', include('apps.mindMapTemplate.urls')),
 ]

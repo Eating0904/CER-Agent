@@ -11,6 +11,7 @@ export const Template = ({ children }) => (
             style={{
                 display: 'flex',
                 alignItems: 'center',
+                height: '50px',
             }}
         >
             <Link to="/">
@@ -28,7 +29,7 @@ export const Template = ({ children }) => (
         <Content
             style={{
                 padding: '0 24px',
-                height: 'calc(100vh - 64px)',
+                height: 'calc(100vh - 50px)',
                 backgroundColor: '#fff',
             }}
         >

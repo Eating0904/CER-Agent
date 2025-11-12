@@ -6,7 +6,7 @@ const baseApi = createApi({
     reducerPath: 'baseApi',
     baseQuery: baseQueryWithReauth,
     endpoints: () => ({}),
-    tagTypes: ['Topic'],
+    tagTypes: ['Topic', 'MindMapTemplate'],
 });
 
 export default baseApi;

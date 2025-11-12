@@ -1,0 +1,152 @@
+import { useEffect, useState } from 'react';
+
+import { PlusOutlined } from '@ant-design/icons';
+import {
+    Button,
+    Form,
+    Input,
+    message,
+    Modal,
+} from 'antd';
+
+import {
+    useCreateMindMapTemplateMutation,
+    useUpdateMindMapTemplateMutation,
+} from './mindMapTemplateApi';
+
+const { TextArea } = Input;
+
+export const EditMindMapTemplate = ({
+    open: externalOpen,
+    onCancel: externalOnCancel,
+    initialValues,
+    isEdit = false,
+}) => {
+    const [internalOpen, setInternalOpen] = useState(false);
+    const [form] = Form.useForm();
+    const [createTemplate] = useCreateMindMapTemplateMutation();
+    const [updateTemplate] = useUpdateMindMapTemplateMutation();
+
+    const isExternalControl = externalOpen !== undefined && externalOnCancel !== undefined;
+    const open = isExternalControl ? externalOpen : internalOpen;
+
+    useEffect(() => {
+        if (open && initialValues) {
+            form.setFieldsValue(initialValues);
+        }
+    }, [open, initialValues, form]);
+
+    const showModal = () => {
+        setInternalOpen(true);
+    };
+
+    const handleOk = async () => {
+        try {
+            const values = await form.validateFields();
+            const { name, articleTopic, articleContent } = values;
+
+            const payload = {
+                name,
+                article_topic: articleTopic,
+                article_content: articleContent,
+            };
+
+            if (isEdit && initialValues?.id) {
+                await updateTemplate({ id: initialValues.id, ...payload }).unwrap();
+                message.success('Mind map template updated successfully!');
+            }
+            else {
+                await createTemplate(payload).unwrap();
+                message.success('Mind map template created successfully!');
+            }
+
+            form.resetFields();
+            if (isExternalControl) {
+                externalOnCancel();
+            }
+            else {
+                setInternalOpen(false);
+            }
+        }
+        catch {
+            message.error('Failed to save mind map template. Please try again.');
+        }
+    };
+
+    const handleCancel = () => {
+        form.resetFields();
+        if (isExternalControl) {
+            externalOnCancel();
+        }
+        else {
+            setInternalOpen(false);
+        }
+    };
+
+    return (
+        <>
+            {!isExternalControl && (
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={showModal}
+                    size="medium"
+                    style={{ marginBottom: '10px' }}
+                >
+                    Add New
+                </Button>
+            )}
+
+            <Modal
+                title={isEdit ? 'Edit Mind Map Template' : 'Add Mind Map Template'}
+                open={open}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                okText="Send"
+                cancelText="Cancel"
+                width={800}
+                centered
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                    size="medium"
+                >
+                    <Form.Item
+                        name="name"
+                        label="Mind Map Name"
+                        rules={[
+                            { required: true, message: 'Please enter the mind map name!' },
+                        ]}
+                    >
+                        <Input placeholder="Please enter the mind map name..." />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="articleTopic"
+                        label="Article Topic"
+                        rules={[
+                            { required: true, message: 'Please enter the article topic!' },
+                        ]}
+                    >
+                        <Input placeholder="Please enter the article topic..." />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="articleContent"
+                        label="Article Content"
+                        rules={[
+                            { required: true, message: 'Please enter the article content!' },
+                        ]}
+                    >
+                        <TextArea
+                            placeholder="Please enter the article content..."
+                            rows={10}
+                            style={{ resize: 'none' }}
+                        />
+                    </Form.Item>
+                </Form>
+            </Modal>
+        </>
+    );
+};
