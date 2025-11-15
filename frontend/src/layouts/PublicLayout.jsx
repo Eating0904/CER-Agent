@@ -1,11 +1,11 @@
 import { Layout, Typography } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 
 const { Header, Content } = Layout;
 
 const { Title } = Typography;
 
-export const Template = ({ children }) => (
+export const PublicLayout = () => (
     <Layout style={{ height: '100vh', overflow: 'hidden' }}>
         <Header
             style={{
@@ -36,7 +36,7 @@ export const Template = ({ children }) => (
                 overflowX: 'hidden',
             }}
         >
-            {children}
+            <Outlet />
         </Content>
     </Layout>
 );

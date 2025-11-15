@@ -1,8 +1,13 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import {
+    Navigate,
+    Outlet,
+    Route,
+    Routes,
+} from 'react-router-dom';
 
 import { isAuthenticated } from './features/user/authUtils';
 import { useTokenCheckTimer } from './hooks/useTokenCheckTimer';
-import { Template } from './pages/Template';
+import { MainLayout, PublicLayout } from './layouts';
 import {
     DemoPage,
     LoginPage,
@@ -14,24 +19,24 @@ import {
 import '@xyflow/react/dist/style.css';
 import './App.css';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = () => {
     const auth = isAuthenticated();
 
     if (!auth) {
         return <Navigate to="/login" replace />;
     }
 
-    return children;
+    return <Outlet />;
 };
 
-const GuestRoute = ({ children }) => {
+const GuestRoute = () => {
     const auth = isAuthenticated();
 
     if (auth) {
         return <Navigate to="/" replace />;
     }
 
-    return children;
+    return <Outlet />;
 };
 
 const App = () => {
@@ -39,54 +44,20 @@ const App = () => {
 
     return (
         <Routes>
-            <Route
-                path="/"
-                element={(
-                    <ProtectedRoute>
-                        <Template />
-                    </ProtectedRoute>
-                )}
-            />
-            <Route
-                path="/login"
-                element={(
-                    <GuestRoute>
-                        <LoginPage />
-                    </GuestRoute>
-                )}
-            />
-            <Route
-                path="/register"
-                element={(
-                    <GuestRoute>
-                        <RegisterPage />
-                    </GuestRoute>
-                )}
-            />
-            <Route
-                path="/demo"
-                element={(
-                    <ProtectedRoute>
-                        <DemoPage />
-                    </ProtectedRoute>
-                )}
-            />
-            <Route
-                path="/mind-map-template-management"
-                element={(
-                    <ProtectedRoute>
-                        <MindMapTemplateManagementPage />
-                    </ProtectedRoute>
-                )}
-            />
-            <Route
-                path="/mind-map-template-list"
-                element={(
-                    <ProtectedRoute>
-                        <MindMapTemplateListPage />
-                    </ProtectedRoute>
-                )}
-            />
+            <Route element={<GuestRoute />}>
+                <Route element={<PublicLayout />}>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                </Route>
+            </Route>
+
+            <Route element={<ProtectedRoute />}>
+                <Route element={<MainLayout />}>
+                    <Route path="/demo" element={<DemoPage />} />
+                    <Route path="/mind-map-template-management" element={<MindMapTemplateManagementPage />} />
+                    <Route path="/mind-map-template-list" element={<MindMapTemplateListPage />} />
+                </Route>
+            </Route>
         </Routes>
     );
 };
