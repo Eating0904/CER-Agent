@@ -1,4 +1,5 @@
 export * from './DemoPage';
 export * from './LoginPage';
-export * from './MindMapTemplatePage';
+export * from './MindMapTemplateListPage';
+export * from './MindMapTemplateManagementPage';
 export * from './RegisterPage';

@@ -6,7 +6,8 @@ import { Template } from './pages/Template';
 import {
     DemoPage,
     LoginPage,
-    MindMapTemplatePage,
+    MindMapTemplateListPage,
+    MindMapTemplateManagementPage,
     RegisterPage,
 } from './pages';
 
@@ -71,10 +72,18 @@ const App = () => {
                 )}
             />
             <Route
-                path="/mind-map-template"
+                path="/mind-map-template-management"
                 element={(
                     <ProtectedRoute>
-                        <MindMapTemplatePage />
+                        <MindMapTemplateManagementPage />
+                    </ProtectedRoute>
+                )}
+            />
+            <Route
+                path="/mind-map-template-list"
+                element={(
+                    <ProtectedRoute>
+                        <MindMapTemplateListPage />
                     </ProtectedRoute>
                 )}
             />

@@ -15,11 +15,11 @@ import {
 import { EditMindMapTemplate } from './EditMindMapTemplate';
 import { useDeleteMindMapTemplateMutation, useGetMindMapTemplatesQuery } from './mindMapTemplateApi';
 
-import './MindMapTemplateList.css';
+import './MindMapTemplateManagement.css';
 
 const { Meta } = Card;
 
-export const MindMapTemplateList = () => {
+export const MindMapTemplateManagement = () => {
     const [editingTemplate, setEditingTemplate] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -84,6 +84,7 @@ export const MindMapTemplateList = () => {
 
     return (
         <>
+            <EditMindMapTemplate />
             <Row gutter={[16, 16]} justify="start">
                 {templates.map((template) => (
                     <Col xs={24} sm={12} md={12} lg={6} xl={6} key={template.id} style={{ display: 'flex' }}>
