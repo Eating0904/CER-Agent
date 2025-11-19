@@ -1,4 +1,4 @@
-import { SiderMenu } from '../shared/components/SiderMenu';
+import { SiderMenu } from '../shared/components';
 
 import { BaseLayout } from './BaseLayout';
 

@@ -1,32 +1,13 @@
-import { Layout, Typography } from 'antd';
-import { Link, Outlet } from 'react-router-dom';
+import { Layout } from 'antd';
+import { Outlet } from 'react-router-dom';
 
-const { Header, Content } = Layout;
+import { HeaderComponent } from '../shared/components';
 
-const { Title } = Typography;
+const { Content } = Layout;
 
 export const PublicLayout = () => (
     <Layout style={{ height: '100vh', overflow: 'hidden' }}>
-        <Header
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                height: '50px',
-                flexShrink: 0,
-            }}
-        >
-            <Link to="/">
-                <Title
-                    level={3}
-                    style={{
-                        color: 'white',
-                        margin: 0,
-                    }}
-                >
-                    CER Agent
-                </Title>
-            </Link>
-        </Header>
+        <HeaderComponent />
         <Content
             style={{
                 padding: '0 24px 24px 24px',
