@@ -12,17 +12,16 @@ export const HeaderComponent = () => (
         style={{
             display: 'flex',
             alignItems: 'center',
-            height: '50px',
+            height: '40px',
             flexShrink: 0,
+            padding: '0 16px',
+            backgroundColor: 'white',
         }}
     >
         <Link to="/">
             <Title
-                level={3}
-                style={{
-                    color: 'white',
-                    margin: 0,
-                }}
+                level={4}
+                style={{ margin: 0 }}
             >
                 CER Agent
             </Title>

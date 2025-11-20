@@ -21,7 +21,6 @@ export const BaseLayout = ({ menuComponent: MenuComponent }) => {
 
     return (
         <Layout style={{ height: '100vh', overflow: 'hidden' }}>
-            <HeaderComponent />
             <Layout>
                 <Sider
                     trigger={null}
@@ -54,18 +53,21 @@ export const BaseLayout = ({ menuComponent: MenuComponent }) => {
                             )
                     }
                 </Sider>
-                <Content
-                    style={{
-                        padding: '12px',
-                        height: 'calc(100vh - 42px)',
-                        backgroundColor: '#fff',
-                        overflowY: 'auto',
-                        overflowX: 'hidden',
-                        position: 'relative',
-                    }}
-                >
-                    <Outlet />
-                </Content>
+                <Layout>
+                    <HeaderComponent />
+                    <Content
+                        style={{
+                            padding: '8px',
+                            height: 'calc(100vh - 40px)',
+                            backgroundColor: '#fff',
+                            overflowY: 'auto',
+                            overflowX: 'hidden',
+                            position: 'relative',
+                        }}
+                    >
+                        <Outlet />
+                    </Content>
+                </Layout>
             </Layout>
         </Layout>
     );
