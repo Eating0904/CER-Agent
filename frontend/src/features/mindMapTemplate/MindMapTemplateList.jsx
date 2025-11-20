@@ -25,7 +25,7 @@ export const MindMapTemplateList = () => {
                 template_id: template.id,
             }).unwrap();
 
-            navigate(`/demo?mapId=${result.id}`);
+            navigate(`/map?mapId=${result.id}`);
         }
         catch (err) {
             message.error('建立地圖失敗，請稍後再試');

@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { BaseMap } from '../features/map/BaseMap';
 import { useGetMapQuery } from '../features/map/mapApi';
 
-export const DemoPage = () => {
+export const MapPage = () => {
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
 

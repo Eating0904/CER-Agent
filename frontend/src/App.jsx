@@ -9,8 +9,8 @@ import { isAuthenticated } from './features/user/authUtils';
 import { useTokenCheckTimer } from './hooks/useTokenCheckTimer';
 import { MainLayout, PublicLayout } from './layouts';
 import {
-    DemoPage,
     LoginPage,
+    MapPage,
     MindMapTemplateListPage,
     MindMapTemplateManagementPage,
     RegisterPage,
@@ -53,7 +53,7 @@ const App = () => {
 
             <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
-                    <Route path="/demo" element={<DemoPage />} />
+                    <Route path="/map" element={<MapPage />} />
                     <Route path="/mind-map-template-management" element={<MindMapTemplateManagementPage />} />
                     <Route path="/mind-map-template-list" element={<MindMapTemplateListPage />} />
                 </Route>

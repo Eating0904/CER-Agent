@@ -70,7 +70,7 @@ export const SiderMenu = () => {
                     return (
                         <List.Item
                             key={map.id}
-                            onClick={() => navigate(`/demo?mapId=${map.id}`)}
+                            onClick={() => navigate(`/map?mapId=${map.id}`)}
                             onMouseEnter={() => setHoveredMapId(map.id)}
                             onMouseLeave={() => setHoveredMapId(null)}
                             style={{
