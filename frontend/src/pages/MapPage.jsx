@@ -3,6 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 
 import { BaseMap } from '../features/map/BaseMap';
 import { useGetMapQuery } from '../features/map/mapApi';
+import { MapProvider } from '../features/map/MapProvider';
+import { ToolBlock } from '../features/map/ToolBlock';
+import { useMapNodes } from '../features/map/useMapNodes';
 
 export const MapPage = () => {
     const [searchParams] = useSearchParams();
@@ -11,6 +14,8 @@ export const MapPage = () => {
     const { data: mapData, isLoading, error } = useGetMapQuery(mapId, {
         skip: !mapId,
     });
+
+    const mapContext = useMapNodes(mapData);
 
     const renderContent = () => {
         if (!mapId) {
@@ -43,8 +48,23 @@ export const MapPage = () => {
             );
         }
 
-        return <BaseMap mapData={mapData} />;
+        return (
+            <MapProvider value={mapContext}>
+                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <ToolBlock />
+                    <div style={{ flex: 1, minHeight: 0 }}>
+                        <BaseMap
+                            nodes={mapContext.nodes}
+                            edges={mapContext.edges}
+                            onNodesChange={mapContext.onNodesChange}
+                            onEdgesChange={mapContext.onEdgesChange}
+                            onConnect={mapContext.onConnect}
+                        />
+                    </div>
+                </div>
+            </MapProvider>
+        );
     };
 
-    return <>{renderContent()}</>;
+    return <div style={{ height: '100%', width: '100%' }}>{renderContent()}</div>;
 };

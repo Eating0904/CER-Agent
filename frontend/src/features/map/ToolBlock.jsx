@@ -1,0 +1,73 @@
+import { useEffect, useState } from 'react';
+
+import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
+import { Button, Col, Row } from 'antd';
+
+import { AddNodeButton } from './AddNodeButton';
+
+const TOOLBLOCK_STORAGE_KEY = 'toolblock-collapsed';
+
+export const ToolBlock = () => {
+    const collapsedHeight = 30;
+    const expandedHeight = 125;
+
+    const [isCollapsed, setIsCollapsed] = useState(() => {
+        const saved = localStorage.getItem(TOOLBLOCK_STORAGE_KEY);
+        return saved ? JSON.parse(saved) : false;
+    });
+
+    useEffect(() => {
+        localStorage.setItem(TOOLBLOCK_STORAGE_KEY, JSON.stringify(isCollapsed));
+    }, [isCollapsed]);
+
+    return (
+        <div
+            style={{
+                height: isCollapsed ? `${collapsedHeight}px` : `${expandedHeight}px`,
+                width: '100%',
+                backgroundColor: '#f5f5f5',
+                borderBottom: '1px solid #d9d9d9',
+                transition: 'height 0.1s ease',
+                overflow: 'hidden',
+            }}
+        >
+            <Row style={{ height: '100%' }} wrap={false} gutter={0}>
+                <Col flex="auto">
+                    <div
+                        style={{
+                            height: '100%',
+                            overflowY: isCollapsed ? 'hidden' : 'auto',
+                        }}
+                    >
+                        {!isCollapsed && (
+                            <Row gutter={0}>
+                                <Col span={3}>
+                                    <AddNodeButton />
+                                </Col>
+                                <Col span={21}>
+                                    {/* 中間空白區域 */}
+                                </Col>
+                            </Row>
+                        )}
+                    </div>
+                </Col>
+                <Col
+                    flex="32px"
+                    style={{
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Button
+                        type="text"
+                        icon={isCollapsed ? <CaretDownOutlined /> : <CaretUpOutlined />}
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        size="small"
+                    />
+                </Col>
+            </Row>
+        </div>
+    );
+};

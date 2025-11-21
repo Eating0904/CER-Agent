@@ -41,9 +41,6 @@ class MapViewSet(viewsets.ModelViewSet):
                         'type': 'C',
                         'content': 'Claim content...',
                         'showDots' : ['right', 'bottom'],
-                        'customFont': {
-                            'color': 'gray',
-                        }
                     },
                     'type': 'baseNode',
                 },
@@ -54,9 +51,6 @@ class MapViewSet(viewsets.ModelViewSet):
                         'type': 'E',
                         'content': 'Evidence content...',
                         'showDots' : ['left', 'bottom'],
-                        'customFont': {
-                            'color': 'gray',
-                        }
                     },
                     'type': 'baseNode',
                 },
@@ -67,9 +61,6 @@ class MapViewSet(viewsets.ModelViewSet):
                         'type': 'R',
                         'content': 'Reasoning content...',
                         'showDots' : ['left', 'right'],
-                        'customFont': {
-                            'color': 'gray',
-                        }
                     },
                     'type': 'baseNode',
                 },
