@@ -35,51 +35,41 @@ class MapViewSet(viewsets.ModelViewSet):
 
             initial_nodes = [
                 {
-                    'id': 'topic',
-                    'position': {'x': 80, 'y': 150},
-                    'data': {
-                        'content': template.article_topic,
-                        'showDots': ['bottom', 'left', 'right'],
-                        'customSize': {'width': '200px'},
-                    },
-                    'type': 'baseNode',
-                },
-                {
-                    'id': 'claim',
+                    'id': 'c1',
                     'position': {'x': 0, 'y': 100},
                     'data': {
-                        'content': 'Claim',
-                        'customColor': {
-                            'backgroundColor': '#D9F2D0',
-                            'borderColor': '#00AE4C',
-                            'dotColor': '#00AE4C',
-                        },
+                        'type': 'C',
+                        'content': 'Claim content...',
+                        'showDots' : ['right', 'bottom'],
+                        'customFont': {
+                            'color': 'gray',
+                        }
                     },
                     'type': 'baseNode',
                 },
                 {
-                    'id': 'evidence',
+                    'id': 'e1',
                     'position': {'x': 300, 'y': 100},
                     'data': {
-                        'content': 'Evidence',
-                        'customColor': {
-                            'backgroundColor': '#FFEDCD',
-                            'borderColor': '#EBA62B',
-                            'dotColor': '#EBA62B',
-                        },
+                        'type': 'E',
+                        'content': 'Evidence content...',
+                        'showDots' : ['left', 'bottom'],
+                        'customFont': {
+                            'color': 'gray',
+                        }
                     },
                     'type': 'baseNode',
                 },
                 {
-                    'id': 'reasoning',
+                    'id': 'r1',
                     'position': {'x': 146, 'y': 230},
                     'data': {
-                        'content': 'Reasoning',
-                        'customColor': {
-                            'backgroundColor': '#DBE9F7',
-                            'borderColor': '#0070C0',
-                            'dotColor': '#0070C0',
-                        },
+                        'type': 'R',
+                        'content': 'Reasoning content...',
+                        'showDots' : ['left', 'right'],
+                        'customFont': {
+                            'color': 'gray',
+                        }
                     },
                     'type': 'baseNode',
                 },
@@ -87,25 +77,25 @@ class MapViewSet(viewsets.ModelViewSet):
 
             initial_edges = [
                 {
-                    'id': 'topic-claim',
-                    'source': 'topic',
-                    'target': 'claim',
-                    'sourceHandle': 'left',
-                    'targetHandle': 'bottom',
-                },
-                {
-                    'id': 'topic-evidence',
-                    'source': 'topic',
-                    'target': 'evidence',
+                    'id': 'c1-e1',
+                    'source': 'c1',
+                    'target': 'e1',
                     'sourceHandle': 'right',
-                    'targetHandle': 'bottom',
+                    'targetHandle': 'left',
                 },
                 {
-                    'id': 'topic-reasoning',
-                    'source': 'topic',
-                    'target': 'reasoning',
+                    'id': 'c1-r1',
+                    'source': 'c1',
+                    'target': 'r1',
                     'sourceHandle': 'bottom',
-                    'targetHandle': 'top',
+                    'targetHandle': 'left',
+                },
+                {
+                    'id': 'e1-r1',
+                    'source': 'e1',
+                    'target': 'r1',
+                    'sourceHandle': 'bottom',
+                    'targetHandle': 'right',
                 },
             ]
 

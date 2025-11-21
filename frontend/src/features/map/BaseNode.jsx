@@ -12,31 +12,45 @@ const BASE_NODE_HANDLES_DEFINITION = [
 ];
 
 export const BaseNode = ({ data }) => {
+    const type = data.type || 'C';
     const content = data.content || '';
     const showDots = data.showDots || ['top', 'bottom'];
-    const customColor = data.customColor || {
-        color: 'black',
-        backgroundColor: 'white',
-        borderColor: 'black',
-        dotColor: 'gray',
+    const customColor = {
+        backgroundColor: data.customColor?.backgroundColor || 'white',
+        borderColor: data.customColor?.borderColor || 'gray',
     };
-    const customFont = data.customFont || {
-        fontSize: '10px',
-        fontWeight: 'normal',
-        textAlign: 'center',
+    const customFont = {
+        color: data.customFont?.color || 'black',
+        fontSize: data.customFont?.fontSize || '10px',
+        fontWeight: data.customFont?.fontWeight || 'normal',
+        textAlign: data.customFont?.textAlign || 'center',
     };
-    const customSize = data.customSize || {
-        width: 'auto',
-        height: 'auto',
+    const customSize = {
+        width: data.customSize?.width || 'auto',
+        height: data.customSize?.height || 'auto',
+    };
+
+    const getTypeColor = () => {
+        switch (type) {
+            case 'C':
+                return '#49db88ff';
+            case 'E':
+                return '#f7be5dff';
+            case 'R':
+                return '#7cbeecff';
+            default:
+                return 'white';
+        }
     };
 
     return (
         <div
             style={{
+                position: 'relative',
                 width: customSize.width,
                 height: customSize.height,
-                padding: '5px 10px',
-                color: customColor.color,
+                padding: '5px 8px',
+                color: customFont.color,
                 textAlign: customFont.textAlign,
                 fontSize: customFont.fontSize,
                 fontWeight: customFont.fontWeight,
@@ -46,7 +60,26 @@ export const BaseNode = ({ data }) => {
                 backgroundColor: customColor.backgroundColor,
             }}
         >
-            <div>{content}</div>
+            <div
+                style={{
+                    position: 'absolute',
+                    top: '3px',
+                    left: '3px',
+                    width: '13px',
+                    height: '13px',
+                    borderRadius: '50%',
+                    backgroundColor: getTypeColor(),
+                    color: 'black',
+                    fontSize: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 800,
+                }}
+            >
+                {type}
+            </div>
+            <div style={{ paddingTop: '12px' }}>{content}</div>
             {
                 BASE_NODE_HANDLES_DEFINITION
                     .filter((handleDef) => showDots.includes(handleDef.id))
@@ -58,7 +91,7 @@ export const BaseNode = ({ data }) => {
                             position={handleDef.position}
                             style={{
                                 ...handleDef.style,
-                                background: customColor.dotColor,
+                                background: customColor.borderColor,
                             }}
                         />
                     ))
