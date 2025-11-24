@@ -4,6 +4,7 @@ import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 import { Button, Col, Row } from 'antd';
 
 import { AddNodeButton } from './AddNodeButton';
+import { ExpandableInput } from './ExpandableInput';
 
 const TOOLBLOCK_STORAGE_KEY = 'toolblock-collapsed';
 
@@ -27,7 +28,6 @@ export const ToolBlock = () => {
                 width: '100%',
                 backgroundColor: '#f5f5f5',
                 borderBottom: '1px solid #d9d9d9',
-                transition: 'height 0.1s ease',
                 overflow: 'hidden',
             }}
         >
@@ -36,7 +36,7 @@ export const ToolBlock = () => {
                     <div
                         style={{
                             height: '100%',
-                            overflowY: isCollapsed ? 'hidden' : 'auto',
+                            overflowY: 'hidden',
                         }}
                     >
                         {!isCollapsed && (
@@ -44,8 +44,12 @@ export const ToolBlock = () => {
                                 <Col span={3}>
                                     <AddNodeButton />
                                 </Col>
-                                <Col span={21}>
-                                    {/* 中間空白區域 */}
+                                <Col span={7} style={{ position: 'static', zIndex: 1 }}>
+                                    <ExpandableInput />
+                                </Col>
+                                <Col span={5} />
+                                <Col span={9}>
+                                    {/* 右側空白區域 */}
                                 </Col>
                             </Row>
                         )}

@@ -53,13 +53,7 @@ export const MapPage = () => {
                 <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <ToolBlock />
                     <div style={{ flex: 1, minHeight: 0 }}>
-                        <BaseMap
-                            nodes={mapContext.nodes}
-                            edges={mapContext.edges}
-                            onNodesChange={mapContext.onNodesChange}
-                            onEdgesChange={mapContext.onEdgesChange}
-                            onConnect={mapContext.onConnect}
-                        />
+                        <BaseMap />
                     </div>
                 </div>
             </MapProvider>

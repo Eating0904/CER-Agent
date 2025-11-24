@@ -5,6 +5,7 @@ import { addEdge, applyEdgeChanges, applyNodeChanges } from '@xyflow/react';
 export const useMapNodes = (mapData) => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
+    const [selectedNodeId, setSelectedNodeId] = useState(null);
 
     useEffect(() => {
         if (mapData) {
@@ -61,7 +62,7 @@ export const useMapNodes = (mapData) => {
             const newNode = {
                 id: newId,
                 type: 'baseNode',
-                position: { x: Math.random() * 300, y: Math.random() * 100 },
+                position: { x: 50, y: 80 },
                 data: {
                     type: nodeType,
                     content: `${typeNames[nodeType]} content...`,
@@ -72,6 +73,18 @@ export const useMapNodes = (mapData) => {
         });
     }, []);
 
+    const selectNode = useCallback((nodeId) => {
+        setSelectedNodeId(nodeId);
+    }, []);
+
+    const updateNodeContent = useCallback((nodeId, content) => {
+        setNodes((nds) => nds.map((node) => (node.id === nodeId
+            ? { ...node, data: { ...node.data, content } }
+            : node)));
+    }, []);
+
+    const selectedNode = nodes.find((node) => node.id === selectedNodeId);
+
     return {
         nodes,
         edges,
@@ -79,5 +92,9 @@ export const useMapNodes = (mapData) => {
         onEdgesChange,
         onConnect,
         addNode,
+        selectedNodeId,
+        selectNode,
+        updateNodeContent,
+        selectedNode,
     };
 };

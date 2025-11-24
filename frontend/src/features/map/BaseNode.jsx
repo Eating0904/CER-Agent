@@ -1,5 +1,7 @@
 import { Handle, Position } from '@xyflow/react';
 
+import { useMapContext } from './useMapContext';
+
 const BASE_NODE_HANDLES_DEFINITION = [
     { id: 'top', position: Position.Top },
     { id: 'top-left', position: Position.Top, style: { left: '25%' } },
@@ -11,7 +13,10 @@ const BASE_NODE_HANDLES_DEFINITION = [
     { id: 'right', position: Position.Right },
 ];
 
-export const BaseNode = ({ data }) => {
+export const BaseNode = ({ data, id }) => {
+    const { selectedNodeId } = useMapContext();
+    const isSelected = selectedNodeId === id;
+
     const type = data.type || 'C';
     const content = data.content || '';
     const showDots = data.showDots || ['top', 'bottom'];
@@ -56,8 +61,9 @@ export const BaseNode = ({ data }) => {
                 fontWeight: customFont.fontWeight,
                 border: '1px solid',
                 borderRadius: '5px',
-                borderColor: customColor.borderColor,
+                borderColor: isSelected ? '#1890ff' : customColor.borderColor,
                 backgroundColor: customColor.backgroundColor,
+                boxShadow: isSelected ? '0 0 8px #1A90FF' : 'none',
             }}
         >
             <div
