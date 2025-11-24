@@ -9,8 +9,8 @@ export const useMapNodes = (mapData) => {
 
     useEffect(() => {
         if (mapData) {
-            setNodes(mapData.nodes || []);
-            setEdges(mapData.edges || []);
+            setNodes(JSON.parse(JSON.stringify(mapData.nodes || [])));
+            setEdges(JSON.parse(JSON.stringify(mapData.edges || [])));
         }
     }, [mapData]);
 
