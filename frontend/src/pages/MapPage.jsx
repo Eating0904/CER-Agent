@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { BaseMap } from '../features/map/BaseMap';
 import { useGetMapQuery } from '../features/map/mapApi';
 import { MapProvider } from '../features/map/MapProvider';
+import { SaveButton } from '../features/map/SaveButton';
 import { ToolBlock } from '../features/map/ToolBlock';
 import { useMapNodes } from '../features/map/useMapNodes';
 
@@ -52,8 +53,18 @@ export const MapPage = () => {
             <MapProvider value={mapContext}>
                 <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <ToolBlock />
-                    <div style={{ flex: 1, minHeight: 0 }}>
+                    <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
                         <BaseMap />
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: '16px',
+                                right: '16px',
+                                zIndex: 10,
+                            }}
+                        >
+                            <SaveButton />
+                        </div>
                     </div>
                 </div>
             </MapProvider>
