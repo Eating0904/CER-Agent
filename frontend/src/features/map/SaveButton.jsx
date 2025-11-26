@@ -2,8 +2,8 @@ import { SaveOutlined } from '@ant-design/icons';
 import { Button, message } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
-import { useUpdateMapMutation } from './mapApi';
-import { useMapContext } from './useMapContext';
+import { useMapContext } from './hooks';
+import { useUpdateMapMutation } from './utils';
 
 export const SaveButton = () => {
     const [searchParams] = useSearchParams();
@@ -21,8 +21,7 @@ export const SaveButton = () => {
             message.success('map已成功保存');
         }
         catch (error) {
-            message.error('保存失敗，請稍後再試');
-            console.error('Failed to save map:', error);
+            message.error('保存失敗，請稍後再試', error);
         }
         finally {
             // pass

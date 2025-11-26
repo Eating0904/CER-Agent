@@ -1,6 +1,6 @@
 import { Handle, Position } from '@xyflow/react';
 
-import { useMapContext } from './useMapContext';
+import { useMapContext } from '../../hooks';
 
 const BASE_NODE_HANDLES_DEFINITION = [
     { id: 'top', position: Position.Top },

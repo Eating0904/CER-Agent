@@ -1,4 +1,4 @@
-import { MapContext } from './useMapContext';
+import { MapContext } from './hooks/useMapContext';
 
 export const MapProvider = ({ children, value }) => (
     <MapContext.Provider value={value}>

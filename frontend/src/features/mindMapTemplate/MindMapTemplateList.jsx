@@ -8,7 +8,7 @@ import {
 } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-import { useCreateMapFromTemplateMutation } from '../map/mapApi';
+import { useCreateMapFromTemplateMutation } from '../map/utils';
 
 import { useGetMindMapTemplatesQuery } from './mindMapTemplateApi';
 

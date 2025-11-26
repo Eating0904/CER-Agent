@@ -2,11 +2,11 @@ import { Alert, Spin } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
 import { BaseMap } from '../features/map/BaseMap';
-import { useGetMapQuery } from '../features/map/mapApi';
+import { ToolBlock } from '../features/map/components/toolbar';
+import { useMapNodes } from '../features/map/hooks';
 import { MapProvider } from '../features/map/MapProvider';
 import { SaveButton } from '../features/map/SaveButton';
-import { ToolBlock } from '../features/map/ToolBlock';
-import { useMapNodes } from '../features/map/useMapNodes';
+import { useGetMapQuery } from '../features/map/utils';
 
 export const MapPage = () => {
     const [searchParams] = useSearchParams();

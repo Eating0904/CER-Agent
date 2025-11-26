@@ -5,8 +5,8 @@ import {
     ReactFlow,
 } from '@xyflow/react';
 
-import { BaseNode } from './BaseNode';
-import { useMapContext } from './useMapContext';
+import { BaseNode } from './components/nodes';
+import { useMapContext } from './hooks';
 
 const nodeTypes = {
     baseNode: BaseNode,

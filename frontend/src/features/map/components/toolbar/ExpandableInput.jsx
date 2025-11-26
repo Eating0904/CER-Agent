@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Input } from 'antd';
 
-import { useMapContext } from './useMapContext';
+import { useMapContext } from '../../hooks';
 
 const { TextArea } = Input;
 

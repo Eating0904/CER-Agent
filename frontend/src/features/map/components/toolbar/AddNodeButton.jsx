@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Button } from 'antd';
 
-import { useMapContext } from './useMapContext';
+import { useMapContext } from '../../hooks';
 
 export const AddNodeButton = () => {
     const { addNode } = useMapContext();

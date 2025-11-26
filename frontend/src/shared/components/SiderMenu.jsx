@@ -9,7 +9,7 @@ import {
 } from 'antd';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { useGetMapsQuery } from '../../features/map/mapApi';
+import { useGetMapsQuery } from '../../features/map/utils/mapApi';
 
 export const SiderMenu = () => {
     const navigate = useNavigate();
