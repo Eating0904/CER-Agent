@@ -21,8 +21,8 @@ export const BaseNode = ({ data, id }) => {
     const content = data.content || '';
     const showDots = data.showDots || ['top', 'bottom'];
     const customColor = {
-        backgroundColor: data.customColor?.backgroundColor || 'white',
-        borderColor: data.customColor?.borderColor || 'gray',
+        backgroundColor: data.customColor?.backgroundColor || '#FFFFFF',
+        borderColor: data.customColor?.borderColor || '#808080',
     };
     const customFont = {
         color: data.customFont?.color || 'black',
@@ -44,7 +44,7 @@ export const BaseNode = ({ data, id }) => {
             case 'R':
                 return '#7cbeecff';
             default:
-                return 'white';
+                return '#FFFFFF';
         }
     };
 
@@ -61,7 +61,7 @@ export const BaseNode = ({ data, id }) => {
                 fontWeight: customFont.fontWeight,
                 border: '1px solid',
                 borderRadius: '5px',
-                borderColor: isSelected ? '#1890ff' : customColor.borderColor,
+                borderColor: customColor.borderColor,
                 backgroundColor: customColor.backgroundColor,
                 boxShadow: isSelected ? '0 0 8px #1A90FF' : 'none',
             }}
@@ -85,7 +85,16 @@ export const BaseNode = ({ data, id }) => {
             >
                 {type}
             </div>
-            <div style={{ paddingTop: '12px' }}>{content}</div>
+            <div
+                style={{
+                    paddingTop: '12px',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    overflowWrap: 'break-word',
+                }}
+            >
+                {content}
+            </div>
             {
                 BASE_NODE_HANDLES_DEFINITION
                     .filter((handleDef) => showDots.includes(handleDef.id))

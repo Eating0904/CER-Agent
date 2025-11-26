@@ -30,6 +30,8 @@ export const useMapNodes = (mapData) => {
     );
 
     const addNode = useCallback((nodeType = 'C') => {
+        let newId = '';
+
         setNodes((nds) => {
             const typeNames = {
                 C: 'Claim',
@@ -57,7 +59,7 @@ export const useMapNodes = (mapData) => {
             }, 0);
 
             const newNumber = maxNumber + 1;
-            const newId = `${prefix}${newNumber}`;
+            newId = `${prefix}${newNumber}`;
 
             const newNode = {
                 id: newId,
@@ -71,6 +73,8 @@ export const useMapNodes = (mapData) => {
 
             return [...nds, newNode];
         });
+
+        setSelectedNodeId(newId);
     }, []);
 
     const selectNode = useCallback((nodeId) => {
@@ -80,6 +84,12 @@ export const useMapNodes = (mapData) => {
     const updateNodeContent = useCallback((nodeId, content) => {
         setNodes((nds) => nds.map((node) => (node.id === nodeId
             ? { ...node, data: { ...node.data, content } }
+            : node)));
+    }, []);
+
+    const updateNodeStyle = useCallback((nodeId, styleUpdates) => {
+        setNodes((nds) => nds.map((node) => (node.id === nodeId
+            ? { ...node, data: { ...node.data, ...styleUpdates } }
             : node)));
     }, []);
 
@@ -95,6 +105,7 @@ export const useMapNodes = (mapData) => {
         selectedNodeId,
         selectNode,
         updateNodeContent,
+        updateNodeStyle,
         selectedNode,
     };
 };

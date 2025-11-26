@@ -5,6 +5,7 @@ import { Button, Col, Row } from 'antd';
 
 import { AddNodeButton } from './AddNodeButton';
 import { ExpandableInput } from './ExpandableInput';
+import { NodeStyleEditor } from './NodeStyleEditor';
 
 const TOOLBLOCK_STORAGE_KEY = 'toolblock-collapsed';
 
@@ -47,10 +48,10 @@ export const ToolBlock = () => {
                                 <Col span={7} style={{ position: 'static', zIndex: 1 }}>
                                     <ExpandableInput />
                                 </Col>
-                                <Col span={5} />
-                                <Col span={9}>
-                                    {/* 右側空白區域 */}
+                                <Col span={6}>
+                                    <NodeStyleEditor />
                                 </Col>
+                                <Col span={8} />
                             </Row>
                         )}
                     </div>
