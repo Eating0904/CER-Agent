@@ -26,7 +26,7 @@ export const BaseNode = ({ data, id }) => {
     };
     const customFont = {
         color: data.customFont?.color || 'black',
-        fontSize: data.customFont?.fontSize || '10px',
+        fontSize: data.customFont?.fontSize || '12px',
         fontWeight: data.customFont?.fontWeight || 'normal',
         textAlign: data.customFont?.textAlign || 'center',
     };
@@ -71,12 +71,12 @@ export const BaseNode = ({ data, id }) => {
                     position: 'absolute',
                     top: '3px',
                     left: '3px',
-                    width: '13px',
-                    height: '13px',
+                    width: '20px',
+                    height: '20px',
                     borderRadius: '50%',
                     backgroundColor: getTypeColor(),
                     color: 'black',
-                    fontSize: '6px',
+                    fontSize: '12px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -87,7 +87,7 @@ export const BaseNode = ({ data, id }) => {
             </div>
             <div
                 style={{
-                    paddingTop: '12px',
+                    paddingTop: '20px',
                     whiteSpace: 'pre-wrap',
                     wordBreak: 'break-word',
                     overflowWrap: 'break-word',
@@ -106,6 +106,8 @@ export const BaseNode = ({ data, id }) => {
                             position={handleDef.position}
                             style={{
                                 ...handleDef.style,
+                                width: 10,
+                                height: 10,
                                 background: customColor.borderColor,
                             }}
                         />
