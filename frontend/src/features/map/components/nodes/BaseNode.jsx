@@ -29,6 +29,8 @@ export const BaseNode = ({ data, id }) => {
         fontSize: data.customFont?.fontSize || '10px',
         fontWeight: data.customFont?.fontWeight || 'normal',
         textAlign: data.customFont?.textAlign || 'center',
+        fontStyle: data.customFont?.fontStyle || 'normal',
+        textDecoration: data.customFont?.textDecoration || 'none',
     };
     const customSize = {
         width: data.customSize?.width || 'auto',
@@ -59,6 +61,8 @@ export const BaseNode = ({ data, id }) => {
                 textAlign: customFont.textAlign,
                 fontSize: customFont.fontSize,
                 fontWeight: customFont.fontWeight,
+                fontStyle: customFont.fontStyle,
+                textDecoration: customFont.textDecoration,
                 border: '1px solid',
                 borderRadius: '5px',
                 borderColor: customColor.borderColor,

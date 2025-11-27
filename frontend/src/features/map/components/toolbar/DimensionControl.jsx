@@ -15,21 +15,25 @@ export const DimensionControl = ({
     onChange,
     onAuto,
     disabled,
+    showAutoButton = true,
+    placeholder = 'auto',
 }) => (
     <div style={{ marginBottom: '8px' }}>
         <span style={labelStyle}>
             {label}
-            <Button
-                icon={<RobotOutlined />}
-                onClick={onAuto}
-                size="small"
-                type="text"
-                disabled={disabled}
-            />
+            {showAutoButton && (
+                <Button
+                    icon={<RobotOutlined />}
+                    onClick={onAuto}
+                    size="small"
+                    type="text"
+                    disabled={disabled}
+                />
+            )}
         </span>
         <InputNumber
             value={value}
-            placeholder="auto"
+            placeholder={placeholder}
             disabled={disabled}
             onChange={onChange}
             style={{ width: '100%' }}
