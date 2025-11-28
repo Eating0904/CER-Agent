@@ -1,22 +1,16 @@
 import { useState } from 'react';
 
-import { Input, Popover } from 'antd';
+import { Flex, Input, Popover } from 'antd';
 import { TwitterPicker } from 'react-color';
-
-const labelStyle = {
-    display: 'block',
-    fontSize: '14px',
-    marginBottom: '4px',
-    color: 'rgba(0, 0, 0, 0.88)',
-    textAlign: 'left',
-};
 
 export const ColorControl = ({
     label,
+    icon,
     color,
     onChange,
     onBlur,
     disabled,
+    placeholder,
 }) => {
     const [pickerVisible, setPickerVisible] = useState(false);
 
@@ -25,12 +19,12 @@ export const ColorControl = ({
     };
 
     return (
-        <div>
-            <span style={labelStyle}>{label}</span>
+        <Flex gap="4px">
+            {icon || label}
             <Input
                 value={color}
                 onChange={(e) => onChange(e.target.value)}
-                placeholder={label}
+                placeholder={placeholder}
                 disabled={disabled}
                 onBlur={(e) => onBlur && onBlur(e.target.value)}
                 size="small"
@@ -60,6 +54,6 @@ export const ColorControl = ({
                     </Popover>
                 )}
             />
-        </div>
+        </Flex>
     );
 };

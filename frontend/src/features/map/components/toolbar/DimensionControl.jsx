@@ -1,13 +1,5 @@
 import { RobotOutlined } from '@ant-design/icons';
-import { Button, InputNumber } from 'antd';
-
-const labelStyle = {
-    display: 'block',
-    fontSize: '14px',
-    marginBottom: '4px',
-    color: 'rgba(0, 0, 0, 0.88)',
-    textAlign: 'left',
-};
+import { Button, Flex, InputNumber } from 'antd';
 
 export const DimensionControl = ({
     label,
@@ -16,21 +8,22 @@ export const DimensionControl = ({
     onAuto,
     disabled,
     showAutoButton = true,
-    placeholder = 'auto',
+    placeholder,
 }) => (
-    <div style={{ marginBottom: '8px' }}>
-        <span style={labelStyle}>
-            {label}
-            {showAutoButton && (
-                <Button
-                    icon={<RobotOutlined />}
-                    onClick={onAuto}
-                    size="small"
-                    type="text"
-                    disabled={disabled}
-                />
-            )}
-        </span>
+    <Flex gap="4px" style={{ alignItems: 'center' }}>
+        {label && (
+            <span
+                style={{
+                    width: '14px',
+                    flexShrink: 0,
+                    textAlign: 'right',
+                    display: 'inline-block',
+                    marginRight: '4px',
+                }}
+            >
+                {label}
+            </span>
+        )}
         <InputNumber
             value={value}
             placeholder={placeholder}
@@ -41,5 +34,14 @@ export const DimensionControl = ({
             min={0}
             controls={false}
         />
-    </div>
+        {showAutoButton && (
+            <Button
+                icon={<RobotOutlined />}
+                onClick={onAuto}
+                size="small"
+                type="text"
+                disabled={disabled}
+            />
+        )}
+    </Flex>
 );

@@ -19,14 +19,7 @@ import { useMapContext } from '../../hooks';
 
 import { ColorControl } from './ColorControl';
 import { DimensionControl } from './DimensionControl';
-
-const labelStyle = {
-    display: 'block',
-    fontSize: '14px',
-    marginBottom: '4px',
-    color: 'rgba(0, 0, 0, 0.88)',
-    textAlign: 'left',
-};
+import { fontColorIcon } from './IconSvg';
 
 export const FontStyleEditor = () => {
     const { selectedNode, updateNodeStyle } = useMapContext();
@@ -141,32 +134,31 @@ export const FontStyleEditor = () => {
     };
 
     return (
-        <div style={{ padding: '8px' }}>
-            <Row gutter={[8, 8]}>
-                <Col span={12}>
-                    <ColorControl
-                        label="Font Color"
-                        color={color}
-                        disabled={isDisabled}
-                        onChange={handleColorUpdate}
-                        onBlur={handleColorUpdate}
-                    />
+        <div style={{ padding: '8px 0', height: '90%', alignContent: 'center' }}>
+            <Row gutter={16}>
+                <Col span={14}>
+                    <Flex vertical gap="small">
+                        <DimensionControl
+                            placeholder="Font Size"
+                            value={fontSize}
+                            disabled={isDisabled}
+                            onChange={handleFontSizeUpdate}
+                            showAutoButton={false}
+                        />
+                        <ColorControl
+                            label="Font Color"
+                            placeholder="Font Color"
+                            icon={fontColorIcon}
+                            color={color}
+                            disabled={isDisabled}
+                            onChange={handleColorUpdate}
+                            onBlur={handleColorUpdate}
+                        />
+                    </Flex>
                 </Col>
 
-                <Col span={12}>
-                    <DimensionControl
-                        label="Font Size"
-                        value={fontSize}
-                        disabled={isDisabled}
-                        onChange={handleFontSizeUpdate}
-                        showAutoButton={false}
-                        placeholder="10"
-                    />
-                </Col>
-
-                <Col span={12}>
-                    <div>
-                        <span style={labelStyle}>Text Style</span>
+                <Col span={10}>
+                    <Flex vertical gap="small">
                         <Flex gap="small">
                             <Button
                                 icon={<BoldOutlined />}
@@ -190,12 +182,7 @@ export const FontStyleEditor = () => {
                                 size="small"
                             />
                         </Flex>
-                    </div>
-                </Col>
 
-                <Col span={12}>
-                    <div>
-                        <span style={labelStyle}>Text Align</span>
                         <Flex gap="small">
                             <Button
                                 icon={<AlignLeftOutlined />}
@@ -219,7 +206,7 @@ export const FontStyleEditor = () => {
                                 size="small"
                             />
                         </Flex>
-                    </div>
+                    </Flex>
                 </Col>
             </Row>
         </div>

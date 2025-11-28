@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import { Col, Row } from 'antd';
+import { Col, Flex, Row } from 'antd';
 
 import { useMapContext } from '../../hooks';
 
 import { ColorControl } from './ColorControl';
 import { DimensionControl } from './DimensionControl';
+import { backgroundColorIcon, borderColorIcon } from './IconSvg';
 
 export const NodeStyleEditor = () => {
     const { selectedNode, updateNodeStyle } = useMapContext();
@@ -67,46 +68,48 @@ export const NodeStyleEditor = () => {
     };
 
     return (
-        <div style={{ padding: '8px' }}>
-            <Row gutter={[8, 0]}>
+        <div style={{ padding: '8px 0', height: '90%', alignContent: 'center' }}>
+            <Row gutter={16}>
                 <Col span={12}>
-                    <DimensionControl
-                        label="Width"
-                        value={width}
-                        disabled={isDisabled}
-                        onChange={(val) => handleDimensionUpdate('width', val)}
-                        onAuto={() => handleDimensionUpdate('width', null)}
-                    />
-                </Col>
+                    <Flex vertical gap="small">
+                        <DimensionControl
+                            label="W:"
+                            placeholder="Width"
+                            value={width}
+                            disabled={isDisabled}
+                            onChange={(val) => handleDimensionUpdate('width', val)}
+                            onAuto={() => handleDimensionUpdate('width', null)}
+                        />
+                        <DimensionControl
+                            label="H:"
+                            placeholder="Height"
+                            value={height}
+                            disabled={isDisabled}
+                            onChange={(val) => handleDimensionUpdate('height', val)}
+                            onAuto={() => handleDimensionUpdate('height', null)}
+                        />
 
-                <Col span={12}>
-                    <DimensionControl
-                        label="Height"
-                        value={height}
-                        disabled={isDisabled}
-                        onChange={(val) => handleDimensionUpdate('height', val)}
-                        onAuto={() => handleDimensionUpdate('height', null)}
-                    />
+                    </Flex>
                 </Col>
-
                 <Col span={12}>
-                    <ColorControl
-                        label="Background Color"
-                        color={backgroundColor}
-                        disabled={isDisabled}
-                        onChange={(val) => handleColorUpdate('backgroundColor', val)}
-                        onBlur={(val) => handleColorUpdate('backgroundColor', val, true)}
-                    />
-                </Col>
-
-                <Col span={12}>
-                    <ColorControl
-                        label="Border Color"
-                        color={borderColor}
-                        disabled={isDisabled}
-                        onChange={(val) => handleColorUpdate('borderColor', val)}
-                        onBlur={(val) => handleColorUpdate('borderColor', val, true)}
-                    />
+                    <Flex vertical gap="small">
+                        <ColorControl
+                            icon={backgroundColorIcon}
+                            placeholder="Background Color"
+                            color={backgroundColor}
+                            disabled={isDisabled}
+                            onChange={(val) => handleColorUpdate('backgroundColor', val)}
+                            onBlur={(val) => handleColorUpdate('backgroundColor', val, true)}
+                        />
+                        <ColorControl
+                            icon={borderColorIcon}
+                            placeholder="Border Color"
+                            color={borderColor}
+                            disabled={isDisabled}
+                            onChange={(val) => handleColorUpdate('borderColor', val)}
+                            onBlur={(val) => handleColorUpdate('borderColor', val, true)}
+                        />
+                    </Flex>
                 </Col>
             </Row>
         </div>

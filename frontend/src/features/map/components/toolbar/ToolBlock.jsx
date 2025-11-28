@@ -49,13 +49,15 @@ export const ToolBlock = () => {
                                 <Col span={7} style={{ position: 'static', zIndex: 1 }}>
                                     <ExpandableInput />
                                 </Col>
-                                <Col span={6}>
-                                    <NodeStyleEditor />
-                                </Col>
-                                <Col span={6}>
+                                <Col span={4} style={{ padding: '8px' }}>
+                                    <span style={{ fontWeight: '500', fontSize: '14px' }}>Font Style</span>
                                     <FontStyleEditor />
                                 </Col>
-                                <Col span={2} />
+                                <Col span={5} style={{ padding: '8px' }}>
+                                    <span style={{ fontWeight: '500', fontSize: '14px' }}>Node Style</span>
+                                    <NodeStyleEditor />
+                                </Col>
+                                <Col span={5} />
                             </Row>
                         )}
                     </div>
