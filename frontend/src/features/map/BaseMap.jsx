@@ -5,6 +5,8 @@ import {
     ReactFlow,
 } from '@xyflow/react';
 
+import { NEUTRAL_COLORS } from '../../constants/colors';
+
 import { BaseNode } from './components/nodes';
 import { useMapContext } from './hooks';
 
@@ -23,7 +25,7 @@ export const BaseMap = () => {
     } = useMapContext();
 
     return (
-        <div style={{ height: '100%', width: '100%', backgroundColor: 'white' }}>
+        <div style={{ height: '100%', width: '100%', backgroundColor: NEUTRAL_COLORS.white }}>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}

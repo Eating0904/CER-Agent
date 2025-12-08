@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { Button } from 'antd';
 
+import { NEUTRAL_COLORS, NODE_COLORS } from '../../../../constants/colors';
 import { useMapContext } from '../../hooks';
 
 export const AddNodeButton = () => {
@@ -23,10 +24,12 @@ export const AddNodeButton = () => {
             <Button
                 style={{
                     width: '100%',
-                    color: 'black',
-                    backgroundColor: isClaimHovered ? '#86e4ba' : '#49db88ff',
+                    color: NEUTRAL_COLORS.black,
+                    backgroundColor: isClaimHovered
+                        ? NODE_COLORS.claimHover
+                        : NODE_COLORS.claim,
                     transition: 'background-color 0.2s ease',
-                    borderColor: '#49db88ff',
+                    borderColor: NODE_COLORS.claim,
                 }}
                 onClick={() => addNode('C')}
                 onMouseEnter={() => setIsClaimHovered(true)}
@@ -37,10 +40,12 @@ export const AddNodeButton = () => {
             <Button
                 style={{
                     width: '100%',
-                    color: 'black',
-                    backgroundColor: isEvidenceHovered ? '#f7c775ff' : '#f7be5dff',
+                    color: NEUTRAL_COLORS.black,
+                    backgroundColor: isEvidenceHovered
+                        ? NODE_COLORS.evidenceHover
+                        : NODE_COLORS.evidence,
                     transition: 'background-color 0.2s ease',
-                    borderColor: '#f7be5dff',
+                    borderColor: NODE_COLORS.evidence,
                 }}
                 onClick={() => addNode('E')}
                 onMouseEnter={() => setIsEvidenceHovered(true)}
@@ -51,10 +56,12 @@ export const AddNodeButton = () => {
             <Button
                 style={{
                     width: '100%',
-                    color: 'black',
-                    backgroundColor: isReasoningHovered ? '#a3cfeeff' : '#7cbeecff',
+                    color: NEUTRAL_COLORS.black,
+                    backgroundColor: isReasoningHovered
+                        ? NODE_COLORS.reasoningHover
+                        : NODE_COLORS.reasoning,
                     transition: 'background-color 0.2s ease',
-                    borderColor: '#7cbeecff',
+                    borderColor: NODE_COLORS.reasoning,
                 }}
                 onClick={() => addNode('R')}
                 onMouseEnter={() => setIsReasoningHovered(true)}

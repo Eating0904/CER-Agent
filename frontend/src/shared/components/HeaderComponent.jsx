@@ -4,6 +4,8 @@ import {
 } from 'antd';
 import { Link } from 'react-router-dom';
 
+import { NEUTRAL_COLORS } from '../../constants/colors';
+
 const { Header } = Layout;
 const { Title } = Typography;
 
@@ -15,7 +17,7 @@ export const HeaderComponent = () => (
             height: '40px',
             flexShrink: 0,
             padding: '0 16px',
-            backgroundColor: 'white',
+            backgroundColor: NEUTRAL_COLORS.white,
         }}
     >
         <Link to="/">

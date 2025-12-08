@@ -9,6 +9,7 @@ import {
 } from 'antd';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import { LAYOUT_COLORS, NEUTRAL_COLORS } from '../../constants/colors';
 import { useGetMapsQuery } from '../../features/map/utils/mapApi';
 
 export const SiderMenu = () => {
@@ -59,12 +60,12 @@ export const SiderMenu = () => {
                     const isSelected = currentMapId === String(map.id);
                     const isHovered = hoveredMapId === map.id;
 
-                    let backgroundColor = 'transparent';
+                    let backgroundColor = NEUTRAL_COLORS.transparent;
                     if (isSelected) {
-                        backgroundColor = 'white';
+                        backgroundColor = LAYOUT_COLORS.menuItemSelectedBg;
                     }
                     else if (isHovered) {
-                        backgroundColor = 'rgba(255, 255, 255, 0.18)';
+                        backgroundColor = LAYOUT_COLORS.menuItemHoverBgTransparent;
                     }
 
                     return (
@@ -82,7 +83,9 @@ export const SiderMenu = () => {
                                 alignItems: 'center',
                                 borderRadius: '8px',
                                 margin: '4px 8px',
-                                color: isSelected ? 'black' : 'white',
+                                color: isSelected
+                                    ? LAYOUT_COLORS.menuItemSelectedColor
+                                    : LAYOUT_COLORS.menuItemColor,
                                 backgroundColor,
                                 transition: 'background-color 0.2s ease',
                             }}
@@ -106,7 +109,9 @@ export const SiderMenu = () => {
                                     // 這裡之後可以加入點擊效果
                                 }}
                                 style={{
-                                    color: isSelected ? 'black' : 'white',
+                                    color: isSelected
+                                        ? LAYOUT_COLORS.menuItemSelectedColor
+                                        : LAYOUT_COLORS.menuItemColor,
                                     flexShrink: 0,
                                     opacity: isHovered ? 1 : 0,
                                     visibility: isHovered ? 'visible' : 'hidden',

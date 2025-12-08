@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Flex, Input, Popover } from 'antd';
 import { TwitterPicker } from 'react-color';
 
+import { DEFAULT_COLORS, NEUTRAL_COLORS } from '../../../../constants/colors';
+
 export const ColorControl = ({
     label,
     icon,
@@ -46,8 +48,8 @@ export const ColorControl = ({
                                 width: '20px',
                                 height: '20px',
                                 borderRadius: '2px',
-                                backgroundColor: color || '#ffffff',
-                                border: '1px solid #d9d9d9',
+                                backgroundColor: color || NEUTRAL_COLORS.white,
+                                border: `1px solid ${DEFAULT_COLORS.inputBorder}`,
                                 cursor: disabled ? 'not-allowed' : 'pointer',
                             }}
                         />

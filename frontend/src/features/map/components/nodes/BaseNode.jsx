@@ -1,5 +1,11 @@
 import { Handle, Position } from '@xyflow/react';
 
+import {
+    getNodeColorByType,
+    NEUTRAL_COLORS,
+    NODE_COLORS,
+    SHADOW_COLORS,
+} from '../../../../constants/colors';
 import { useMapContext } from '../../hooks';
 
 const BASE_NODE_HANDLES_DEFINITION = [
@@ -21,11 +27,11 @@ export const BaseNode = ({ data, id }) => {
     const content = data.content || '';
     const showDots = data.showDots || ['top', 'bottom'];
     const customColor = {
-        backgroundColor: data.customColor?.backgroundColor || '#FFFFFF',
-        borderColor: data.customColor?.borderColor || '#808080',
+        backgroundColor: data.customColor?.backgroundColor || NODE_COLORS.default,
+        borderColor: data.customColor?.borderColor || NODE_COLORS.defaultBorder,
     };
     const customFont = {
-        color: data.customFont?.color || 'black',
+        color: data.customFont?.color || NEUTRAL_COLORS.black,
         fontSize: data.customFont?.fontSize || '12px',
         fontWeight: data.customFont?.fontWeight || 'normal',
         textAlign: data.customFont?.textAlign || 'center',
@@ -37,18 +43,7 @@ export const BaseNode = ({ data, id }) => {
         height: data.customSize?.height || 'auto',
     };
 
-    const getTypeColor = () => {
-        switch (type) {
-            case 'C':
-                return '#49db88ff';
-            case 'E':
-                return '#f7be5dff';
-            case 'R':
-                return '#7cbeecff';
-            default:
-                return '#FFFFFF';
-        }
-    };
+    const getTypeColor = () => getNodeColorByType(type);
 
     return (
         <div
@@ -67,7 +62,7 @@ export const BaseNode = ({ data, id }) => {
                 borderRadius: '5px',
                 borderColor: customColor.borderColor,
                 backgroundColor: customColor.backgroundColor,
-                boxShadow: isSelected ? '0 0 8px #1A90FF' : 'none',
+                boxShadow: isSelected ? SHADOW_COLORS.selectedHighlight : 'none',
             }}
         >
             <div
@@ -79,7 +74,7 @@ export const BaseNode = ({ data, id }) => {
                     height: '20px',
                     borderRadius: '50%',
                     backgroundColor: getTypeColor(),
-                    color: 'black',
+                    color: NEUTRAL_COLORS.black,
                     fontSize: '12px',
                     display: 'flex',
                     alignItems: 'center',

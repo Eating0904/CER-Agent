@@ -15,6 +15,7 @@ import {
     Row,
 } from 'antd';
 
+import { DEFAULT_COLORS } from '../../../../constants/colors';
 import { useMapContext } from '../../hooks';
 
 import { ColorControl } from './ColorControl';
@@ -24,7 +25,7 @@ import { fontColorIcon } from './IconSvg';
 export const FontStyleEditor = () => {
     const { selectedNode, updateNodeStyle } = useMapContext();
 
-    const [color, setColor] = useState('#000000');
+    const [color, setColor] = useState(DEFAULT_COLORS.fontColor);
     const [fontSize, setFontSize] = useState(null);
     const [fontWeight, setFontWeight] = useState(false);
     const [fontStyle, setFontStyle] = useState(false);
@@ -44,7 +45,7 @@ export const FontStyleEditor = () => {
         if (selectedNode) {
             const { customFont } = selectedNode.data;
 
-            setColor(customFont?.color || '#000000');
+            setColor(customFont?.color || DEFAULT_COLORS.fontColor);
             setFontSize(parseFontSize(customFont?.fontSize));
             setFontWeight(customFont?.fontWeight === 'bold' || customFont?.fontWeight === 700);
             setFontStyle(customFont?.fontStyle === 'italic');

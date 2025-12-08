@@ -4,6 +4,7 @@ import { MenuOutlined } from '@ant-design/icons';
 import { Button, Layout } from 'antd';
 import { Outlet } from 'react-router-dom';
 
+import { LAYOUT_COLORS } from '../constants/colors';
 import { HeaderComponent } from '../shared/components';
 
 const { Sider, Content } = Layout;
@@ -36,7 +37,7 @@ export const BaseLayout = ({ menuComponent: MenuComponent }) => {
                         onClick={() => setCollapsed(!collapsed)}
                         style={{
                             fontSize: '16px',
-                            color: 'white',
+                            color: LAYOUT_COLORS.siderTriggerColor,
                             margin: '8px 10px',
                         }}
                     />
@@ -59,7 +60,7 @@ export const BaseLayout = ({ menuComponent: MenuComponent }) => {
                         style={{
                             padding: '8px',
                             height: 'calc(100vh - 40px)',
-                            backgroundColor: '#fff',
+                            backgroundColor: LAYOUT_COLORS.contentBg,
                             overflowY: 'auto',
                             overflowX: 'hidden',
                             position: 'relative',

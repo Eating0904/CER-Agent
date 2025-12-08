@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { Col, Flex, Row } from 'antd';
 
+import { DEFAULT_COLORS } from '../../../../constants/colors';
 import { useMapContext } from '../../hooks';
 
 import { ColorControl } from './ColorControl';
@@ -13,8 +14,8 @@ export const NodeStyleEditor = () => {
 
     const [width, setWidth] = useState(null);
     const [height, setHeight] = useState(null);
-    const [backgroundColor, setBackgroundColor] = useState('#ffffff');
-    const [borderColor, setBorderColor] = useState('#808080');
+    const [backgroundColor, setBackgroundColor] = useState(DEFAULT_COLORS.backgroundColor);
+    const [borderColor, setBorderColor] = useState(DEFAULT_COLORS.borderColor);
 
     const parseDimension = (value) => {
         if (value === 'auto') return null;
@@ -31,8 +32,8 @@ export const NodeStyleEditor = () => {
             setWidth(parseDimension(customSize?.width || 'auto'));
             setHeight(parseDimension(customSize?.height || 'auto'));
 
-            setBackgroundColor(customColor?.backgroundColor || '#ffffff');
-            setBorderColor(customColor?.borderColor || '#808080');
+            setBackgroundColor(customColor?.backgroundColor || DEFAULT_COLORS.backgroundColor);
+            setBorderColor(customColor?.borderColor || DEFAULT_COLORS.borderColor);
         }
     }, [selectedNode]);
 

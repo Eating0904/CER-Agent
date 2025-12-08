@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 import { Button, Col, Row } from 'antd';
 
+import { DEFAULT_COLORS, NEUTRAL_COLORS } from '../../../../constants/colors';
+
 import { AddNodeButton } from './AddNodeButton';
 import { ExpandableInput } from './ExpandableInput';
 import { FontStyleEditor } from './FontStyleEditor';
@@ -28,8 +30,8 @@ export const ToolBlock = () => {
             style={{
                 height: isCollapsed ? `${collapsedHeight}px` : `${expandedHeight}px`,
                 width: '100%',
-                backgroundColor: '#f5f5f5',
-                borderBottom: '1px solid #d9d9d9',
+                backgroundColor: NEUTRAL_COLORS.gray100,
+                borderBottom: `1px solid ${DEFAULT_COLORS.inputBorder}`,
                 overflow: 'hidden',
             }}
         >

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Input } from 'antd';
 
+import { NEUTRAL_COLORS, SHADOW_COLORS } from '../../../../constants/colors';
 import { useMapContext } from '../../hooks';
 
 const { TextArea } = Input;
@@ -55,8 +56,8 @@ export const ExpandableInput = () => {
                         : '100%',
                     height: isFocused ? '200px' : '104px',
                     resize: 'none',
-                    backgroundColor: 'white',
-                    boxShadow: isFocused ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none',
+                    backgroundColor: NEUTRAL_COLORS.white,
+                    boxShadow: isFocused ? SHADOW_COLORS.inputFocusShadow : 'none',
                     zIndex: isFocused ? 1000 : 1,
                 }}
             />
