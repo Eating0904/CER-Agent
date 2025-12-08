@@ -1,6 +1,7 @@
 import { Alert, Spin } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
+import { Chat } from '../features/chat/Chat';
 import { BaseMap } from '../features/map/BaseMap';
 import { ToolBlock } from '../features/map/components/toolbar';
 import { useMapNodes } from '../features/map/hooks';
@@ -50,24 +51,27 @@ export const MapPage = () => {
         }
 
         return (
-            <MapProvider value={mapContext}>
-                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                    <ToolBlock />
-                    <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
-                        <BaseMap />
-                        <div
-                            style={{
-                                position: 'absolute',
-                                top: '16px',
-                                right: '16px',
-                                zIndex: 10,
-                            }}
-                        >
-                            <SaveButton />
+            <>
+                <MapProvider value={mapContext}>
+                    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <ToolBlock />
+                        <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+                            <BaseMap />
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: '16px',
+                                    right: '16px',
+                                    zIndex: 10,
+                                }}
+                            >
+                                <SaveButton />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </MapProvider>
+                </MapProvider>
+                <Chat />
+            </>
         );
     };
 

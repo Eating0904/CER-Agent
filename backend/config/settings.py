@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'apps.user',
     'apps.mindMapTemplate',
     'apps.map',
+    'apps.chatbot',
 ]
 
 REST_FRAMEWORK = {
