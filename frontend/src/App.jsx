@@ -33,7 +33,7 @@ const GuestRoute = () => {
     const auth = isAuthenticated();
 
     if (auth) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/mind-map-template-list" replace />;
     }
 
     return <Outlet />;
@@ -53,6 +53,7 @@ const App = () => {
 
             <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
+                    <Route path="/" element={<Navigate to="/mind-map-template-list" replace />} />
                     <Route path="/map" element={<MapPage />} />
                     <Route path="/mind-map-template-management" element={<MindMapTemplateManagementPage />} />
                     <Route path="/mind-map-template-list" element={<MindMapTemplateListPage />} />
