@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Map
-from .serializers import MapSerializer, CreateMapFromTemplateSerializer
+from .serializers import MapSerializer, MapListSerializer, CreateMapFromTemplateSerializer
 from apps.mindMapTemplate.models import MindMapTemplate
 
 
@@ -14,6 +14,12 @@ class MapViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Map.objects.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        """列表使用輕量級序列化器，詳細頁面使用完整序列化器"""
+        if self.action == 'list':
+            return MapListSerializer
+        return MapSerializer
 
     @action(detail=False, methods=['post'])
     def create_from_template(self, request):
