@@ -1,0 +1,38 @@
+/* 訊息氣泡內的文字靠左對齊 */
+.cs-message__content-wrapper {
+    text-align: left !important;
+}
+
+.cs-message__html-content,
+.cs-message__content {
+    text-align: left !important;
+}
+
+/* MessageInput 輸入框的文字靠左對齊 */
+.cs-message-input__content-editor {
+    text-align: left !important;
+}
+
+.cs-message-input__content-editor-wrapper,
+.cs-message-input__content-editor-container {
+    text-align: left !important;
+}
+
+/* Avatar 中的 icon 樣式 */
+.cs-avatar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #8600FF !important;
+    color: white !important;
+}
+
+/* ConversationHeader 內容置左對齊 */
+.cs-conversation-header__content {
+    text-align: left !important;
+}
+
+.cs-conversation-header__user-name {
+    text-align: left !important;
+}
+

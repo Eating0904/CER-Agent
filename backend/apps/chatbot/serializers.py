@@ -1,8 +1,10 @@
 from rest_framework import serializers
+from .models import ChatMessage
 
 
 class ChatMessageSerializer(serializers.Serializer):
     message = serializers.CharField(required=True)
+    map_id = serializers.IntegerField(required=True)
     chat_history = serializers.ListField(
         child=serializers.DictField(),
         required=False,
@@ -10,7 +12,7 @@ class ChatMessageSerializer(serializers.Serializer):
     )
 
 
-class ChatResponseSerializer(serializers.Serializer):
-    success = serializers.BooleanField()
-    message = serializers.CharField(required=False)
-    error = serializers.CharField(required=False)
+class ChatHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatMessage
+        fields = ['id', 'map_id', 'role', 'content', 'created_at']

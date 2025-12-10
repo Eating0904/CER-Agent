@@ -70,7 +70,7 @@ export const MapPage = () => {
                         </div>
                     </div>
                 </MapProvider>
-                <Chat />
+                <Chat mapId={mapId} />
             </>
         );
     };
