@@ -64,16 +64,23 @@ def chat(request):
                 status=status.HTTP_404_NOT_FOUND
             )
         
-        # 準備 Map 資料
+        # 準備 Map 資料（透過 template 取得文章資料）
         map_data = {
-            'article_topic': map_instance.article_topic,
-            'article_content': map_instance.article_content,
+            'article_topic': map_instance.template.article_topic if map_instance.template else '',
+            'article_content': map_instance.template.article_content if map_instance.template else '',
             'nodes': map_instance.nodes,
             'edges': map_instance.edges
         }
         
         # 生成 CER 評分 prompt
         scoring_prompt = generate_scoring_prompt(map_data)
+        
+        # 輸出完整 prompt 供後台確認
+        print("=" * 80)
+        print("完整的評分 Prompt:")
+        print("=" * 80)
+        print(scoring_prompt)
+        print("=" * 80)
         
         # 準備對話內容（暫時不包含歷史對話，每次都是新的評分請求）
         contents = [

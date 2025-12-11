@@ -100,8 +100,6 @@ class MapViewSet(viewsets.ModelViewSet):
                 name=name,
                 user=request.user,
                 template=template,
-                article_topic=template.article_topic,
-                article_content=template.article_content,
                 nodes=initial_nodes,
                 edges=initial_edges
             )
