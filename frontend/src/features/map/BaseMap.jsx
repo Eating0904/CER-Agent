@@ -38,6 +38,7 @@ export const BaseMap = () => {
                 onEdgeClick={() => selectNode(null)}
                 onPaneClick={() => selectNode(null)}
                 connectionMode={ConnectionMode.Loose}
+                proOptions={{ hideAttribution: true }}
             >
                 <Background />
                 <Controls />

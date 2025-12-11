@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import { RobotOutlined } from '@ant-design/icons';
+import { MinusOutlined, RobotOutlined } from '@ant-design/icons';
 import {
     Avatar,
     ChatContainer,
@@ -11,6 +11,8 @@ import {
     MessageList,
     TypingIndicator,
 } from '@chatscope/chat-ui-kit-react';
+import { Button } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 
 import {
     useGetChatHistoryQuery,
@@ -20,7 +22,10 @@ import {
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import './Chat.css';
 
-export const Chat = ({ mapId }) => {
+export const Chat = ({ isChatOpen, setIsChatOpen }) => {
+    // 從 URL 讀取 mapId
+    const [searchParams] = useSearchParams();
+    const mapId = searchParams.get('mapId');
     // 1. 取得資料 (RTK Query)
     const { data: historyData } = useGetChatHistoryQuery(mapId, {
         skip: !mapId,
@@ -63,12 +68,43 @@ export const Chat = ({ mapId }) => {
         }
     };
 
+    // 關閉聊天室
+    const handleClose = () => {
+        setIsChatOpen(false);
+    };
+
+    // 如果聊天室關閉，不顯示任何內容
+    if (!isChatOpen) {
+        return null;
+    }
+
     return (
-        <div style={{ position: 'relative', height: '500px', overflow: 'hidden' }}>
+        <div
+            style={{
+                position: 'fixed',
+                bottom: '24px',
+                right: '24px',
+                width: '400px',
+                height: '500px',
+                zIndex: 1000,
+                borderRadius: '8px',
+                overflow: 'hidden',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                border: '1px solid #d9d9d9',
+            }}
+        >
             <MainContainer>
                 <ChatContainer>
                     <ConversationHeader>
                         <ConversationHeader.Content userName="Assistant" />
+                        <ConversationHeader.Actions>
+                            <Button
+                                type="text"
+                                icon={<MinusOutlined />}
+                                onClick={handleClose}
+                                style={{ color: '#666' }}
+                            />
+                        </ConversationHeader.Actions>
                     </ConversationHeader>
 
                     <MessageList
