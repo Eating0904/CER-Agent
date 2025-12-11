@@ -72,7 +72,7 @@ export const MindMapTemplateList = () => {
                     >
                         <Meta
                             title={<div className="card-title">{template.name}</div>}
-                            description={<div className="card-description">{template.article_topic}</div>}
+                            description={<div className="card-description">{template.issue_topic}</div>}
                         />
                     </Card>
                 </Col>

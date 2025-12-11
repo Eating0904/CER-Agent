@@ -125,7 +125,7 @@ def generate_scoring_prompt(map_data: Dict) -> str:
     
     Args:
         map_data: 包含以下鍵值的字典
-            - article_topic: 文章主題
+            - issue_topic: 議題主題
             - article_content: 文章內容
             - nodes: 學生撰寫的節點資料 (list)
             - edges: 學生撰寫的連線資料 (list)
@@ -144,7 +144,7 @@ def generate_scoring_prompt(map_data: Dict) -> str:
     formatted_edges = format_edges_for_prompt(map_data['edges'])
     
     # 替換範本中的佔位符號
-    prompt = template.replace('{ARTICLE_TOPIC}', map_data['article_topic'])
+    prompt = template.replace('{ARTICLE_TOPIC}', map_data['issue_topic'])
     prompt = prompt.replace('{ARTICLE_CONTENT}', map_data['article_content'])
     prompt = prompt.replace('{STUDENT_NODES}', formatted_nodes)
     prompt = prompt.replace('{STUDENT_EDGES}', formatted_edges)

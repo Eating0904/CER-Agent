@@ -66,7 +66,7 @@ def chat(request):
         
         # 準備 Map 資料（透過 template 取得文章資料）
         map_data = {
-            'article_topic': map_instance.template.article_topic if map_instance.template else '',
+            'issue_topic': map_instance.template.issue_topic if map_instance.template else '',
             'article_content': map_instance.template.article_content if map_instance.template else '',
             'nodes': map_instance.nodes,
             'edges': map_instance.edges

@@ -2,7 +2,7 @@ from django.db import models
 
 class MindMapTemplate(models.Model):
     name = models.CharField(max_length=200)
-    article_topic = models.TextField()
+    issue_topic = models.TextField()
     article_content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
