@@ -7,6 +7,8 @@ from google.genai import types
 
 from .models import ChatMessage
 from .serializers import ChatMessageSerializer, ChatHistorySerializer
+from .prompt_manager import generate_scoring_prompt
+from apps.map.models import Map
 
 
 # 初始化 Gemini
@@ -40,47 +42,60 @@ def chat(request):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
-        # 存儲用戶訊息
+        # 存儲用戶訊息（保留此功能，但暫時不使用於 AI 對話）
+        # 註：目前使用者訊息會被儲存到資料庫，但不會傳給 AI
+        # 未來如需恢復使用者訊息功能，只需調整下方的 prompt 生成邏輯即可
         user_msg = ChatMessage.objects.create(
             map_id=map_id,
             role='user',
             content=message
         )
         
-        # 獲取對話歷史（依 map_id 篩選）
-        chat_history = ChatMessage.objects.filter(map_id=map_id).order_by('created_at')
-
-        # 轉換聊天歷史格式
-        contents = []
-        for msg in chat_history:
-            contents.append(
-                types.Content(
-                    role='user' if msg.role == 'user' else 'model',
-                    parts=[types.Part.from_text(text=msg.content)]
-                )
+        # ============================================
+        # CER 評分模式：使用評分 prompt 取代使用者訊息
+        # ============================================
+        
+        # 取得 Map 資料
+        try:
+            map_instance = Map.objects.get(id=map_id)
+        except Map.DoesNotExist:
+            return Response(
+                {'success': False, 'error': f'Map with id {map_id} not found'},
+                status=status.HTTP_404_NOT_FOUND
             )
         
-        # 加入當前使用者訊息
-        contents.append(
+        # 準備 Map 資料
+        map_data = {
+            'article_topic': map_instance.article_topic,
+            'article_content': map_instance.article_content,
+            'nodes': map_instance.nodes,
+            'edges': map_instance.edges
+        }
+        
+        # 生成 CER 評分 prompt
+        scoring_prompt = generate_scoring_prompt(map_data)
+        
+        # 準備對話內容（暫時不包含歷史對話，每次都是新的評分請求）
+        contents = [
             types.Content(
                 role='user',
-                parts=[types.Part.from_text(text=message)]
+                parts=[types.Part.from_text(text=scoring_prompt)]
+            )
+        ]
+
+        # 設定生成配置，啟用進階思考
+        generate_content_config = types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(
+                thinking_level='HIGH'
             )
         )
 
-        # 設定生成配置，啟用進階思考
-        # generate_content_config = types.GenerateContentConfig(
-        #     thinking_config=types.ThinkingConfig(
-        #         thinking_level='HIGH'
-        #     )
-        # )
-
         # 生成回應
         response = gemini_client.models.generate_content(
-            # model='gemini-3-pro-preview',
-            model='gemini-2.0-flash-exp',
+            model='gemini-3-pro-preview',
+            # model='gemini-2.0-flash-exp',
             contents=contents,
-            # config=generate_content_config
+            config=generate_content_config
         )
         
         # 存儲助手回應
