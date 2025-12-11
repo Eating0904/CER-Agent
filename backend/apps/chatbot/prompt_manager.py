@@ -43,7 +43,7 @@ def format_nodes_for_prompt(nodes: List[Dict]) -> str:
         str: 格式化後的節點資料字串
     
     Example:
-        輸入: [{"id": "c1", "content": "某主張", "position": {...}, "type": "..."}]
+        輸入: [{"id": "c1", "data": {"content": "某主張", "position": {...}, "type": "..."}}]
         輸出:
         ```
         #Node
@@ -56,10 +56,11 @@ def format_nodes_for_prompt(nodes: List[Dict]) -> str:
         ```
     """
     # 只保留 id 和 content 欄位
+    # 同時移除換行符號 \n，將多行內容合併為單行
     filtered_nodes = [
         {
             "id": node.get("id", ""),
-            "content": node.get("content", "")
+            "content": node.get("data", {}).get("content", "").replace("\n", " ")
         }
         for node in nodes
     ]
