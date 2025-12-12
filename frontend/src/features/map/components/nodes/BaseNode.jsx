@@ -82,7 +82,7 @@ export const BaseNode = ({ data, id }) => {
                     fontWeight: 800,
                 }}
             >
-                {type}
+                {id}
             </div>
             <div
                 style={{
