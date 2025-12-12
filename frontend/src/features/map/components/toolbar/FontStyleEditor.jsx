@@ -135,10 +135,10 @@ export const FontStyleEditor = () => {
     };
 
     return (
-        <div style={{ padding: '8px 0', height: '90%', alignContent: 'center' }}>
+        <div style={{ height: 'calc(100% - 19px)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Row gutter={16}>
                 <Col span={14}>
-                    <Flex vertical gap="small">
+                    <Flex vertical gap="middle">
                         <DimensionControl
                             placeholder="Font Size"
                             value={fontSize}
@@ -159,7 +159,7 @@ export const FontStyleEditor = () => {
                 </Col>
 
                 <Col span={10}>
-                    <Flex vertical gap="small">
+                    <Flex vertical gap="middle">
                         <Flex gap="small">
                             <Button
                                 icon={<BoldOutlined />}

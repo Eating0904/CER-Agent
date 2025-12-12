@@ -69,10 +69,10 @@ export const NodeStyleEditor = () => {
     };
 
     return (
-        <div style={{ padding: '8px 0', height: '90%', alignContent: 'center' }}>
+        <div style={{ height: 'calc(100% - 19px)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Row gutter={16}>
                 <Col span={12}>
-                    <Flex vertical gap="small">
+                    <Flex vertical gap="middle">
                         <DimensionControl
                             label="W:"
                             placeholder="Width"
@@ -93,7 +93,7 @@ export const NodeStyleEditor = () => {
                     </Flex>
                 </Col>
                 <Col span={12}>
-                    <Flex vertical gap="small">
+                    <Flex vertical gap="middle">
                         <ColorControl
                             icon={backgroundColorIcon}
                             placeholder="Background Color"

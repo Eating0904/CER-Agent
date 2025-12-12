@@ -109,12 +109,12 @@ export const HandleEditor = () => {
     };
 
     return (
-        <div style={{ padding: '8px 0', height: 'calc(100% - 19px - 8px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ height: 'calc(100% - 19px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div
                 style={{
                     position: 'relative',
-                    width: '140px',
-                    height: '90px',
+                    width: '100%',
+                    height: '100%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',

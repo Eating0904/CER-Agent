@@ -39,38 +39,33 @@ export const ToolBlock = () => {
         >
             <Row style={{ height: '100%' }} wrap={false} gutter={0}>
                 <Col flex="auto">
-                    <div
-                        style={{
-                            height: '100%',
-                            overflowY: 'hidden',
-                        }}
-                    >
-                        {!isCollapsed && (
-                            <Row gutter={0}>
-                                <Col span={3}>
-                                    <AddNodeButton />
-                                </Col>
-                                <Col span={7} style={{ position: 'static', zIndex: 1 }}>
-                                    <ExpandableInput />
-                                </Col>
-                                <Col span={4} style={{ padding: '8px' }}>
-                                    <span style={{ fontWeight: '500', fontSize: '14px' }}>Font Style</span>
-                                    <FontStyleEditor />
-                                </Col>
-                                <Col span={5} style={{ padding: '8px' }}>
-                                    <span style={{ fontWeight: '500', fontSize: '14px' }}>Node Style</span>
-                                    <NodeStyleEditor />
-                                </Col>
-                                <Col span={4} style={{ padding: '8px' }}>
-                                    <span style={{ fontWeight: '500', fontSize: '14px' }}>Handle</span>
-                                    <HandleEditor />
-                                </Col>
-                                <Col span={1} style={{ padding: '8px' }}>
-                                    <DeleteButton />
-                                </Col>
-                            </Row>
-                        )}
-                    </div>
+                    {!isCollapsed && (
+                        <Row gutter={0} style={{ height: '100%', overflowY: 'hidden' }}>
+                            <Col span={3} style={{ height: '100%' }}>
+                                <AddNodeButton />
+                            </Col>
+                            <Col span={7} style={{ position: 'static', zIndex: 1, height: '100%' }}>
+                                <ExpandableInput />
+                            </Col>
+                            <Col span={1} />
+                            <Col span={4} style={{ padding: '8px', height: '100%' }}>
+                                <span style={{ fontWeight: '500', fontSize: '14px' }}>Font Style</span>
+                                <FontStyleEditor />
+                            </Col>
+                            <Col span={4} style={{ padding: '8px', height: '100%' }}>
+                                <span style={{ fontWeight: '500', fontSize: '14px' }}>Node Style</span>
+                                <NodeStyleEditor />
+                            </Col>
+                            <Col span={3} style={{ padding: '8px', height: '100%' }}>
+                                <span style={{ fontWeight: '500', fontSize: '14px' }}>Handle</span>
+                                <HandleEditor />
+                            </Col>
+                            <Col span={1} />
+                            <Col span={1} style={{ padding: '8px', height: '100%' }}>
+                                <DeleteButton />
+                            </Col>
+                        </Row>
+                    )}
                 </Col>
                 <Col
                     flex="32px"

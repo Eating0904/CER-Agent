@@ -19,6 +19,7 @@ export const AddNodeButton = () => {
                 flexDirection: 'column',
                 gap: '4px',
                 alignItems: 'flex-start',
+                height: '100%',
             }}
         >
             <Button
@@ -35,7 +36,7 @@ export const AddNodeButton = () => {
                 onMouseEnter={() => setIsClaimHovered(true)}
                 onMouseLeave={() => setIsClaimHovered(false)}
             >
-                + Add Claim
+                + Claim
             </Button>
             <Button
                 style={{
@@ -51,7 +52,7 @@ export const AddNodeButton = () => {
                 onMouseEnter={() => setIsEvidenceHovered(true)}
                 onMouseLeave={() => setIsEvidenceHovered(false)}
             >
-                + Add Evidence
+                + Evidence
             </Button>
             <Button
                 style={{
@@ -67,7 +68,7 @@ export const AddNodeButton = () => {
                 onMouseEnter={() => setIsReasoningHovered(true)}
                 onMouseLeave={() => setIsReasoningHovered(false)}
             >
-                + Add Reasoning
+                + Reasoning
             </Button>
         </div>
     );

@@ -37,6 +37,7 @@ export const ExpandableInput = () => {
             style={{
                 position: 'relative',
                 padding: '8px',
+                height: '100%',
             }}
         >
             <TextArea
@@ -54,7 +55,7 @@ export const ExpandableInput = () => {
                     width: isFocused && containerRef.current
                         ? `${containerRef.current.getBoundingClientRect().width - 16}px`
                         : '100%',
-                    height: isFocused ? '200px' : '104px',
+                    height: isFocused ? '200px' : '100%',
                     resize: 'none',
                     backgroundColor: NEUTRAL_COLORS.white,
                     boxShadow: isFocused ? SHADOW_COLORS.inputFocusShadow : 'none',
