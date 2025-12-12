@@ -6,6 +6,7 @@ import { Button, Col, Row } from 'antd';
 import { DEFAULT_COLORS, NEUTRAL_COLORS } from '../../../../constants/colors';
 
 import { AddNodeButton } from './AddNodeButton';
+import { DeleteButton } from './DeleteButton';
 import { ExpandableInput } from './ExpandableInput';
 import { FontStyleEditor } from './FontStyleEditor';
 import { NodeStyleEditor } from './NodeStyleEditor';
@@ -59,7 +60,9 @@ export const ToolBlock = () => {
                                     <span style={{ fontWeight: '500', fontSize: '14px' }}>Node Style</span>
                                     <NodeStyleEditor />
                                 </Col>
-                                <Col span={5} />
+                                <Col span={1} style={{ padding: '8px' }}>
+                                    <DeleteButton />
+                                </Col>
                             </Row>
                         )}
                     </div>

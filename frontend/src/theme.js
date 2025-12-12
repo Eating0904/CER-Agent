@@ -45,6 +45,8 @@ export const theme = {
         },
         Modal: {
             colorPrimary: BRAND_COLORS.primary,
+            colorPrimaryHover: BRAND_COLORS.primaryHover,
+            colorPrimaryActive: BRAND_COLORS.primaryActive,
         },
         Tabs: {
             colorPrimary: BRAND_COLORS.primary,

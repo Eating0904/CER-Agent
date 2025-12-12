@@ -6,6 +6,7 @@ export const useMapNodes = (mapData) => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [selectedNodeId, setSelectedNodeId] = useState(null);
+    const [selectedEdgeId, setSelectedEdgeId] = useState(null);
 
     useEffect(() => {
         if (mapData) {
@@ -79,6 +80,12 @@ export const useMapNodes = (mapData) => {
 
     const selectNode = useCallback((nodeId) => {
         setSelectedNodeId(nodeId);
+        setSelectedEdgeId(null);
+    }, []);
+
+    const selectEdge = useCallback((edgeId) => {
+        setSelectedEdgeId(edgeId);
+        setSelectedNodeId(null);
     }, []);
 
     const updateNodeContent = useCallback((nodeId, content) => {
@@ -93,19 +100,37 @@ export const useMapNodes = (mapData) => {
             : node)));
     }, []);
 
+    const deleteNode = useCallback((nodeId) => {
+        setNodes((nds) => nds.filter((node) => node.id !== nodeId));
+        setEdges((eds) => eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
+        setSelectedNodeId(null);
+    }, []);
+
+    const deleteEdge = useCallback((edgeId) => {
+        setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
+        setSelectedEdgeId(null);
+    }, []);
+
     const selectedNode = nodes.find((node) => node.id === selectedNodeId);
+    const selectedEdge = edges.find((edge) => edge.id === selectedEdgeId);
 
     return {
         nodes,
         edges,
+        setEdges,
         onNodesChange,
         onEdgesChange,
         onConnect,
         addNode,
         selectedNodeId,
         selectNode,
+        selectedEdgeId,
+        selectEdge,
         updateNodeContent,
         updateNodeStyle,
         selectedNode,
+        selectedEdge,
+        deleteNode,
+        deleteEdge,
     };
 };

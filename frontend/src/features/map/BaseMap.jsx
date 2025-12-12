@@ -22,6 +22,7 @@ export const BaseMap = () => {
         onEdgesChange,
         onConnect,
         selectNode,
+        selectEdge,
     } = useMapContext();
 
     return (
@@ -35,8 +36,11 @@ export const BaseMap = () => {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 onNodeClick={(e, n) => selectNode(n.id)}
-                onEdgeClick={() => selectNode(null)}
-                onPaneClick={() => selectNode(null)}
+                onEdgeClick={(e, edge) => selectEdge(edge.id)}
+                onPaneClick={() => {
+                    selectNode(null);
+                    selectEdge(null);
+                }}
                 connectionMode={ConnectionMode.Loose}
                 proOptions={{ hideAttribution: true }}
             >
