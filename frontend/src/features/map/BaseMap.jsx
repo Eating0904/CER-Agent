@@ -1,8 +1,11 @@
+import { useEffect } from 'react';
+
 import {
     Background,
     ConnectionMode,
     Controls,
     ReactFlow,
+    useUpdateNodeInternals,
 } from '@xyflow/react';
 
 import { NEUTRAL_COLORS } from '../../constants/colors';
@@ -12,6 +15,18 @@ import { useMapContext } from './hooks';
 
 const nodeTypes = {
     baseNode: BaseNode,
+};
+
+const UpdateNodeInternals = ({ nodes }) => {
+    const updateNodeInternals = useUpdateNodeInternals();
+
+    useEffect(() => {
+        nodes.forEach((node) => {
+            updateNodeInternals(node.id);
+        });
+    }, [nodes, updateNodeInternals]);
+
+    return null;
 };
 
 export const BaseMap = () => {
@@ -46,6 +61,7 @@ export const BaseMap = () => {
             >
                 <Background />
                 <Controls />
+                <UpdateNodeInternals nodes={nodes} />
             </ReactFlow>
         </div>
     );
