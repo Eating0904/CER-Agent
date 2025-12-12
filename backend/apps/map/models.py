@@ -9,8 +9,6 @@ class Map(models.Model):
     template = models.ForeignKey(MindMapTemplate, on_delete=models.SET_NULL, null=True, blank=True, related_name='maps')
     nodes = models.JSONField(default=list)
     edges = models.JSONField(default=list)
-    article_topic = models.TextField(blank=True)
-    article_content = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

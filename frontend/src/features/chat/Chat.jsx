@@ -1,84 +1,146 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useState } from 'react';
 
-import ChatBot from 'react-chatbotify';
+import { MinusOutlined, RobotOutlined } from '@ant-design/icons';
+import {
+    Avatar,
+    ChatContainer,
+    ConversationHeader,
+    MainContainer,
+    Message,
+    MessageInput,
+    MessageList,
+    TypingIndicator,
+} from '@chatscope/chat-ui-kit-react';
+import { Button } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 
-import { useSendChatMessageMutation } from './chatApi';
+import {
+    useGetChatHistoryQuery,
+    useSendChatMessageMutation,
+} from './chatApi';
 
-export const Chat = () => {
-    const chatHistoryRef = useRef([]);
+import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
+import './Chat.css';
+
+export const Chat = ({ isChatOpen, setIsChatOpen }) => {
+    // 從 URL 讀取 mapId
+    const [searchParams] = useSearchParams();
+    const mapId = searchParams.get('mapId');
+    // 1. 取得資料 (RTK Query)
+    const { data: historyData } = useGetChatHistoryQuery(mapId, {
+        skip: !mapId,
+        refetchOnMountOrArgChange: true,
+    });
+
     const [sendChatMessage] = useSendChatMessageMutation();
+    const [isSending, setIsSending] = useState(false);
 
-    const flow = useMemo(() => ({
-        start: {
-            message: '你好！我是你的 AI 助手，有什麼我可以幫忙的嗎？',
-            path: 'loop',
-        },
-        loop: {
-            message: async (params) => {
-                const userMessage = params.userInput;
+    // 2. 資料轉換 (Data Transformation)
+    // 把後端的格式轉成 UI Kit 看得懂的格式
+    // useMemo 確保只有資料變動時才重新計算，優化效能
+    const messages = useMemo(() => {
+        if (!historyData?.messages) return [];
 
-                try {
-                    const result = await sendChatMessage({
-                        message: userMessage,
-                        chatHistory: chatHistoryRef.current,
-                    }).unwrap();
+        return historyData.messages.map((msg) => ({
+            id: msg.id, // 保留 id 作為 React key
+            message: msg.content,
+            direction: msg.role === 'user' ? 'outgoing' : 'incoming',
+            sender: msg.role === 'user' ? 'Me' : 'AI',
+            position: 'single',
+        }));
+    }, [historyData]);
 
-                    chatHistoryRef.current = [
-                        ...chatHistoryRef.current,
-                        { role: 'user', content: userMessage },
-                        { role: 'model', content: result.message },
-                    ];
-                    return result.message;
-                }
-                catch (error) {
-                    return `抱歉，發生錯誤：${error.data?.error || error.message || 'Failed to fetch'}`;
-                }
-            },
-            path: 'loop',
-        },
-    }), [sendChatMessage]);
-
-    const settings = {
-        general: {
-            embedded: false,
-            showHeader: true,
-            showFooter: false,
-        },
-        header: {
-            title: 'Assistant',
-            showAvatar: true,
-            // avatar: undefined,
-        },
-        chatHistory: {
-            storageKey: 'chat_history',
-        },
-        botBubble: {
-            simulateStream: true,
-            streamSpeed: 30,
-        },
-        emoji: {
-            disabled: true,
-        },
-        notification: {
-            disabled: true,
-        },
-        fileAttachment: {
-            disabled: true,
-        },
-        chatButton: {
-            icon: undefined,
-        },
-        tooltip: {
-            mode: 'NEVER',
-        },
+    // 3. 處理發送訊息
+    const handleSend = async (text) => {
+        if (!text.trim()) return;
+        try {
+            setIsSending(true);
+            await sendChatMessage({
+                message: text,
+                mapId,
+            }).unwrap();
+        }
+        catch (error) {
+            console.error('發送失敗:', error);
+        }
+        finally {
+            setIsSending(false);
+        }
     };
 
-    const styles = {
-        chatButtonStyle: {
-            width: '40px',
-            height: '40px',
-        },
+    // 關閉聊天室
+    const handleClose = () => {
+        setIsChatOpen(false);
     };
 
-    return <ChatBot flow={flow} settings={settings} styles={styles} />;
+    // 如果聊天室關閉，不顯示任何內容
+    if (!isChatOpen) {
+        return null;
+    }
+
+    return (
+        <div
+            style={{
+                position: 'fixed',
+                bottom: '24px',
+                right: '24px',
+                width: '400px',
+                height: '500px',
+                zIndex: 1000,
+                borderRadius: '8px',
+                overflow: 'hidden',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                border: '1px solid #d9d9d9',
+            }}
+        >
+            <MainContainer>
+                <ChatContainer>
+                    <ConversationHeader>
+                        <ConversationHeader.Content userName="Assistant" />
+                        <ConversationHeader.Actions>
+                            <Button
+                                type="text"
+                                icon={<MinusOutlined />}
+                                onClick={handleClose}
+                                style={{ color: '#666' }}
+                            />
+                        </ConversationHeader.Actions>
+                    </ConversationHeader>
+
+                    <MessageList
+                        typingIndicator={
+                            isSending
+                                ? <TypingIndicator content="Assistant is thinking..." />
+                                : null
+                        }
+                    >
+                        {messages.map((msg) => (
+                            <Message
+                                key={msg.id}
+                                model={{
+                                    message: msg.message,
+                                    sentTime: 'just now',
+                                    sender: msg.sender,
+                                    direction: msg.direction,
+                                    position: 'single',
+                                }}
+                            >
+                                {msg.direction === 'incoming' && (
+                                    <Avatar>
+                                        <RobotOutlined style={{ fontSize: '14px' }} />
+                                    </Avatar>
+                                )}
+                            </Message>
+                        ))}
+                    </MessageList>
+
+                    <MessageInput
+                        placeholder="Input message..."
+                        onSend={handleSend}
+                        attachButton={false}
+                    />
+                </ChatContainer>
+            </MainContainer>
+        </div>
+    );
 };

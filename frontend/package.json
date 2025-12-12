@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "5.x",
+    "@chatscope/chat-ui-kit-react": "^2.1.1",
+    "@chatscope/chat-ui-kit-styles": "^1.4.0",
     "@google/generative-ai": "^0.24.1",
     "@reduxjs/toolkit": "^2.6.1",
     "@xyflow/react": "^12.9.2",
@@ -19,7 +21,6 @@
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
-    "react-chatbotify": "^2.5.0",
     "react-color": "^2.19.3",
     "react-dom": "^18.3.1",
     "react-redux": "^9.2.0",

@@ -14,7 +14,7 @@ class MapSerializer(serializers.ModelSerializer):
     """完整序列化器，用於詳細頁面"""
     class Meta:
         model = Map
-        fields = ['id', 'name', 'user', 'template', 'nodes', 'edges', 'article_topic', 'article_content', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'user', 'template', 'nodes', 'edges', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 

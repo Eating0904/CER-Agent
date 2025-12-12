@@ -43,11 +43,11 @@ export const EditMindMapTemplate = ({
     const handleOk = async () => {
         try {
             const values = await form.validateFields();
-            const { name, articleTopic, articleContent } = values;
+            const { name, issueTopic, articleContent } = values;
 
             const payload = {
                 name,
-                article_topic: articleTopic,
+                issue_topic: issueTopic,
                 article_content: articleContent,
             };
 
@@ -123,13 +123,13 @@ export const EditMindMapTemplate = ({
                     </Form.Item>
 
                     <Form.Item
-                        name="articleTopic"
-                        label="Article Topic"
+                        name="issueTopic"
+                        label="Issue Topic"
                         rules={[
-                            { required: true, message: 'Please enter the article topic!' },
+                            { required: true, message: 'Please enter the issue topic!' },
                         ]}
                     >
-                        <Input placeholder="Please enter the article topic..." />
+                        <Input placeholder="Please enter the issue topic..." />
                     </Form.Item>
 
                     <Form.Item

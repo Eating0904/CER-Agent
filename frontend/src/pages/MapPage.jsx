@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react';
+
 import { Alert, Spin } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
 import { Chat } from '../features/chat/Chat';
+import { FloatingChatButton } from '../features/chat/FloatingChatButton';
 import { BaseMap } from '../features/map/BaseMap';
 import { ToolBlock } from '../features/map/components/toolbar';
 import { useMapNodes } from '../features/map/hooks';
@@ -12,6 +15,15 @@ import { useGetMapQuery } from '../features/map/utils';
 export const MapPage = () => {
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
+
+    const [isChatOpen, setIsChatOpen] = useState(() => {
+        const saved = localStorage.getItem('chatIsOpen');
+        return saved === 'true';
+    });
+
+    useEffect(() => {
+        localStorage.setItem('chatIsOpen', isChatOpen);
+    }, [isChatOpen]);
 
     const { data: mapData, isLoading, error } = useGetMapQuery(mapId, {
         skip: !mapId,
@@ -70,7 +82,11 @@ export const MapPage = () => {
                         </div>
                     </div>
                 </MapProvider>
-                <Chat />
+                <Chat isChatOpen={isChatOpen} setIsChatOpen={setIsChatOpen} />
+                <FloatingChatButton
+                    isChatOpen={isChatOpen}
+                    onClick={() => setIsChatOpen(true)}
+                />
             </>
         );
     };
