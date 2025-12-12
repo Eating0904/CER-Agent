@@ -9,6 +9,7 @@ import { AddNodeButton } from './AddNodeButton';
 import { DeleteButton } from './DeleteButton';
 import { ExpandableInput } from './ExpandableInput';
 import { FontStyleEditor } from './FontStyleEditor';
+import { HandleEditor } from './HandleEditor';
 import { NodeStyleEditor } from './NodeStyleEditor';
 
 const TOOLBLOCK_STORAGE_KEY = 'toolblock-collapsed';
@@ -59,6 +60,10 @@ export const ToolBlock = () => {
                                 <Col span={5} style={{ padding: '8px' }}>
                                     <span style={{ fontWeight: '500', fontSize: '14px' }}>Node Style</span>
                                     <NodeStyleEditor />
+                                </Col>
+                                <Col span={4} style={{ padding: '8px' }}>
+                                    <span style={{ fontWeight: '500', fontSize: '14px' }}>Handle</span>
+                                    <HandleEditor />
                                 </Col>
                                 <Col span={1} style={{ padding: '8px' }}>
                                     <DeleteButton />

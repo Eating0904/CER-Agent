@@ -10,11 +10,11 @@ import { useMapContext } from '../../hooks';
 
 const BASE_NODE_HANDLES_DEFINITION = [
     { id: 'top', position: Position.Top },
-    { id: 'top-left', position: Position.Top, style: { left: '25%' } },
-    { id: 'top-right', position: Position.Top, style: { left: '75%' } },
+    { id: 'topLeft', position: Position.Top, style: { left: '25%' } },
+    { id: 'topRight', position: Position.Top, style: { left: '75%' } },
     { id: 'bottom', position: Position.Bottom },
-    { id: 'bottom-left', position: Position.Bottom, style: { left: '25%' } },
-    { id: 'bottom-right', position: Position.Bottom, style: { left: '75%' } },
+    { id: 'bottomLeft', position: Position.Bottom, style: { left: '25%' } },
+    { id: 'bottomRight', position: Position.Bottom, style: { left: '75%' } },
     { id: 'left', position: Position.Left },
     { id: 'right', position: Position.Right },
 ];
