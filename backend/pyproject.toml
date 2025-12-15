@@ -18,7 +18,8 @@ dependencies = [
     "uvicorn>=0.34.0,<0.35",
     "pytest>=8.4.1",
     "pytest-django>=4.11.1",
-    "google-generativeai>=0.8.0,<0.9",
+    "google-genai>=1.0.0,<2",
+    "langgraph>=0.2.0,<0.3",
 ]
 
 [dependency-groups]

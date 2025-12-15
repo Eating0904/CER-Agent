@@ -3,12 +3,15 @@ from django.db import models
 class ChatMessage(models.Model):
     ROLE_CHOICES = [
         ('user', 'User'),
-        ('assistant', 'Assistant'),
+        ('classifier', 'Intent Classifier'),
+        ('operator_support', 'Operator Support'),
+        ('cer_cognitive_support', 'CER Cognitive Support'),
     ]
     
     map_id = models.IntegerField(default=0)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=30, choices=ROLE_CHOICES)
     content = models.TextField()
+    metadata = models.JSONField(blank=True, null=True)  # 儲存分類推理等額外資訊
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
