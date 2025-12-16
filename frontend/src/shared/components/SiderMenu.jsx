@@ -1,9 +1,10 @@
 import { useState } from 'react';
 
-import { EllipsisOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { EditOutlined, EllipsisOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {
     Alert,
     Button,
+    Dropdown,
     List,
     Spin,
 } from 'antd';
@@ -12,11 +13,14 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LAYOUT_COLORS, NEUTRAL_COLORS } from '../../constants/colors';
 import { useGetMapsQuery } from '../../features/map/utils/mapApi';
 
+import { RenameMapModal } from './RenameMapModal';
+
 export const SiderMenu = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const currentMapId = searchParams.get('mapId');
     const [hoveredMapId, setHoveredMapId] = useState(null);
+    const [renameModalState, setRenameModalState] = useState({ open: false, map: null });
 
     const { data: maps = [], isLoading, error } = useGetMapsQuery();
 
@@ -39,6 +43,17 @@ export const SiderMenu = () => {
             />
         );
     }
+
+    const getMenuItems = (map) => [
+        {
+            key: 'rename',
+            icon: <EditOutlined />,
+            label: 'Rename',
+            onClick: () => {
+                setRenameModalState({ open: true, map });
+            },
+        },
+    ];
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -100,26 +115,35 @@ export const SiderMenu = () => {
                             >
                                 {map.name}
                             </div>
-                            <Button
-                                type="text"
-                                icon={<EllipsisOutlined style={{ transform: 'rotate(90deg)', fontSize: '16px' }} />}
-                                shape="circle"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    // 這裡之後可以加入點擊效果
-                                }}
-                                style={{
-                                    color: isSelected
-                                        ? LAYOUT_COLORS.menuItemSelectedColor
-                                        : LAYOUT_COLORS.menuItemColor,
-                                    flexShrink: 0,
-                                    opacity: isHovered ? 1 : 0,
-                                    visibility: isHovered ? 'visible' : 'hidden',
-                                }}
-                            />
+                            <Dropdown
+                                menu={{ items: getMenuItems(map) }}
+                                trigger={['click']}
+                                placement="bottomLeft"
+                            >
+                                <Button
+                                    type="text"
+                                    icon={<EllipsisOutlined style={{ transform: 'rotate(90deg)', fontSize: '16px' }} />}
+                                    shape="circle"
+                                    style={{
+                                        color: isSelected
+                                            ? LAYOUT_COLORS.menuItemSelectedColor
+                                            : LAYOUT_COLORS.menuItemColor,
+                                        flexShrink: 0,
+                                        opacity: isHovered ? 1 : 0,
+                                        visibility: isHovered ? 'visible' : 'hidden',
+                                    }}
+                                />
+                            </Dropdown>
                         </List.Item>
                     );
                 }}
+            />
+            <RenameMapModal
+                open={renameModalState.open}
+                mapId={renameModalState.map?.id}
+                currentName={renameModalState.map?.name}
+                onClose={() => setRenameModalState({ open: false, map: null })}
+                onSuccess={() => setRenameModalState({ open: false, map: null })}
             />
         </div>
     );
