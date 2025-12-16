@@ -9,14 +9,9 @@ from .models import ChatMessage
 from .serializers import ChatMessageSerializer, ChatHistorySerializer
 from .scoring import generate_scoring_prompt  # 保留供未來使用
 from .langgraph import get_langgraph_service
+from .utils.gemini_client import get_gemini_client
 from apps.map.models import Map
 
-
-# 初始化 Gemini
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-gemini_client = None
-if GEMINI_API_KEY:
-    gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 
 
 @api_view(['POST'])
@@ -37,10 +32,12 @@ def chat(request):
         message = serializer.validated_data['message']
         map_id = serializer.validated_data['map_id']
         
-        # 檢查 Gemini Client
-        if not gemini_client:
+        # 使用 utils.gemini_client 獲取 Gemini Client
+        try:
+            gemini_client = get_gemini_client()
+        except ValueError as e:
             return Response(
-                {'success': False, 'error': 'Gemini API key is not configured'},
+                {'success': False, 'error': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
