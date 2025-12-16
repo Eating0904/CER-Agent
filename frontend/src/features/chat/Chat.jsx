@@ -68,6 +68,13 @@ export const Chat = ({ isChatOpen, setIsChatOpen }) => {
         }
     };
 
+    // 只允許純文字
+    const handlePaste = (event) => {
+        event.preventDefault();
+        const text = event.clipboardData.getData('text/plain');
+        document.execCommand('insertText', false, text);
+    };
+
     // 關閉聊天室
     const handleClose = () => {
         setIsChatOpen(false);
@@ -137,6 +144,7 @@ export const Chat = ({ isChatOpen, setIsChatOpen }) => {
                     <MessageInput
                         placeholder="Input message..."
                         onSend={handleSend}
+                        onPaste={handlePaste}
                         attachButton={false}
                     />
                 </ChatContainer>
