@@ -1,6 +1,4 @@
-import os
 import json
-import re
 from pathlib import Path
 from google import genai
 from google.genai import types
@@ -9,23 +7,17 @@ from google.genai import types
 class IntentClassifier:
     """意圖分類器,使用主 LLM 判斷學生的意圖"""
     
-    def __init__(self, api_key: str):
-        """
-        初始化分類器
+    def __init__(self):
+        from ..utils.gemini_client import get_gemini_client, DEFAULT_MODEL_NAME
+        self.client = get_gemini_client()
+        self.model_name = DEFAULT_MODEL_NAME
         
-        Args:
-            api_key: Google Gemini API Key
-        """
-        self.client = genai.Client(api_key=api_key)
-        self.model_name = "gemini-2.5-pro"
-        
-        # 讀取分類 prompt
         prompt_path = Path(__file__).parent / "prompts" / "classifier_prompt.md"
         with open(prompt_path, 'r', encoding='utf-8') as f:
             self.system_prompt = f.read()
     
     def _extract_json(self, text: str) -> str:
-        """從文本中提取 JSON，使用更健壯的方法"""
+        """從文本中提取 JSON"""
         import re
         
         # 方法 1: 嘗試使用正則表達式匹配 JSON 物件
@@ -58,24 +50,31 @@ class IntentClassifier:
     def classify(
         self, 
         user_input: str,
+        conversation_history: list = None,
         last_agent_name: str = "None",
         last_agent_message: str = ""
     ) -> dict:
         """
         分類學生輸入
-        
-        Args:
-            user_input: 學生的輸入
-            last_agent_name: 上一個活躍的 agent 名稱
-            last_agent_message: 上一個 agent 的訊息
-            
+ 
         Returns:
-            dict: 包含 reasoning 和 next_action 的字典
+        {
+            reasoning: str
+            next_action: str
+            context_summary: str
+        }
         """
+        if conversation_history:
+            from ..utils.conversation_formatters import format_history_for_display
+            history_text = format_history_for_display(conversation_history)
+        else:
+            history_text = "無對話歷史"
+        
         prompt = self.system_prompt.format(
             last_agent_name=last_agent_name,
             last_agent_message=last_agent_message,
-            user_input=user_input
+            user_input=user_input,
+            conversation_history=history_text
         )
         
         try:
@@ -96,27 +95,26 @@ class IntentClassifier:
                 raise ValueError("分類結果缺少 next_action 欄位")
             
             if "context_summary" not in result:
-                # 如果沒有 context_summary，提供預設值
                 result["context_summary"] = "無法生成上下文摘要"
             
             # 驗證分類結果是否合法
-            valid_actions = ["OPERATOR_SUPPORT", "CER_COGNITIVE_SUPPORT", "CONTINUE_CONVERSATION"]
+            valid_actions = ["operator_support", "cer_cognitive_support", "continue_conversation"]
             if result["next_action"] not in valid_actions:
                 raise ValueError(f"無效的分類結果: {result['next_action']}")
             
             return result
             
         except json.JSONDecodeError as e:
-            # 預設回傳 OPERATOR_SUPPORT
+            # 預設回傳 operator_support
             return {
                 "reasoning": "JSON 解析失敗，預設為介面支援",
-                "next_action": "OPERATOR_SUPPORT",
+                "next_action": "operator_support",
                 "context_summary": "無法生成上下文摘要（JSON 解析失敗）"
             }
         except Exception as e:
-            # 預設回傳 OPERATOR_SUPPORT
+            # 預設回傳 operator_support
             return {
                 "reasoning": f"發生錯誤: {str(e)}",
-                "next_action": "OPERATOR_SUPPORT",
+                "next_action": "operator_support",
                 "context_summary": "無法生成上下文摘要（發生錯誤）"
             }

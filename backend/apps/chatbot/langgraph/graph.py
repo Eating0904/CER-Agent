@@ -16,21 +16,17 @@ class ConversationState(TypedDict):
 
 
 class ConversationGraph:    
-    def __init__(self, api_key: str):
-        """
-        初始化對話流程圖
-        
-        Args:
-            api_key: Google Gemini API Key
-        """
-        self.classifier = IntentClassifier(api_key)
-        self.sub_llm_manager = SubLLMManager(api_key)
+    def __init__(self):
+        """初始化對話流程圖"""
+        self.classifier = IntentClassifier()
+        self.sub_llm_manager = SubLLMManager()
         self.graph = self._build_graph()
     
     def _classify_intent(self, state: ConversationState) -> ConversationState:
         """步驟 1: 分類學生意圖"""
         classification = self.classifier.classify(
             user_input=state["user_input"],
+            conversation_history=state.get("conversation_history", []),
             last_agent_name=state.get("last_active_agent", "None"),
             last_agent_message=state.get("last_agent_message", "")
         )
@@ -42,9 +38,9 @@ class ConversationGraph:
         """步驟 2: 決定路由目標"""
         intent = state["classification"]["next_action"]
         
-        if intent == "CONTINUE_CONVERSATION":
+        if intent == "continue_conversation":
             # 延續對話:路由回上一個活躍的 agent
-            routed_agent = state.get("last_active_agent", "CER_COGNITIVE_SUPPORT")
+            routed_agent = state.get("last_active_agent", "cer_cognitive_support")
         else:
             # 新問題:路由到對應的 agent
             routed_agent = intent

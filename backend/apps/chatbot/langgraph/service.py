@@ -1,33 +1,19 @@
-import os
 from typing import Dict
 from .graph import ConversationGraph
 from ..models import ChatMessage
+from ..utils.conversation_formatters import format_history_for_api
 
 
 class LangGraphService:
     
     def __init__(self):
-        api_key = os.getenv('GEMINI_API_KEY')
-        if not api_key:
-            raise ValueError("GEMINI_API_KEY 環境變數未設定")
-        
-        self.conversation_graph = ConversationGraph(api_key)
+        self.conversation_graph = ConversationGraph()
     
     def process_user_message(self, user_input: str, map_id: int) -> Dict:
-        """
-        處理使用者訊息
-        
-        Args:
-            user_input: 使用者輸入的訊息
-            map_id: 地圖 ID
-            
-        Returns:
-            dict: 包含回應訊息和相關資訊的字典
-        """
         try:
             # 1. 讀取該 map 的對話歷史
             history_messages = ChatMessage.objects.filter(map_id=map_id).order_by('created_at')
-            conversation_history = self._format_conversation_history(history_messages)
+            conversation_history = format_history_for_api(history_messages)
             
             # 2. 取得 last_active_agent
             last_active_agent, last_agent_message = self._get_last_active_agent(map_id)
@@ -53,23 +39,15 @@ class LangGraphService:
                 role='classifier',
                 content=f"分類結果: {result['classification']['next_action']}",
                 metadata={
+                    'context_summary': result['classification'].get('context_summary', ''),
                     'reasoning': result['classification'].get('reasoning', ''),
                     'intent': result['classification']['next_action'],
-                    'context_summary': result['classification'].get('context_summary', ''),
                     'routed_to': result['routed_agent']
                 }
             )
             
-            # 6. 儲存 AI 回應 (根據 routed_agent 決定 role)
-            agent_role_mapping = {
-                'OPERATOR_SUPPORT': 'operator_support',
-                'CER_COGNITIVE_SUPPORT': 'cer_cognitive_support'
-            }
-            
-            response_role = agent_role_mapping.get(
-                result['routed_agent'],
-                'undefined'
-            )
+            # 6. 儲存 AI 回應
+            response_role = result['routed_agent']
             
             ChatMessage.objects.create(
                 map_id=map_id,
@@ -155,28 +133,6 @@ class LangGraphService:
             'user_actionable': False
         }
     
-    def _format_conversation_history(self, messages) -> list:
-        """
-        格式化對話歷史為 LangGraph 所需的格式
-        
-        Args:
-            messages: QuerySet of ChatMessage
-            
-        Returns:
-            list: 格式化的對話歷史
-        """
-        formatted = []
-        for msg in messages:
-            # 只包含 user 和 agent 的訊息，排除 classifier
-            if msg.role not in ['classifier']:
-                # 將 agent role 統一為 assistant
-                role = 'user' if msg.role == 'user' else 'assistant'
-                formatted.append({
-                    'role': role,
-                    'content': msg.content
-                })
-        return formatted
-    
     def _get_last_active_agent(self, map_id: int) -> tuple:
         """
         取得最後一個活躍的 agent
@@ -195,12 +151,7 @@ class LangGraphService:
         ).order_by('-created_at').first()
         
         if last_message:
-            # 將 role 轉換為對應的 agent 類型
-            role_to_agent_mapping = {
-                'operator_support': 'OPERATOR_SUPPORT',
-                'cer_cognitive_support': 'CER_COGNITIVE_SUPPORT'
-            }
-            agent_type = role_to_agent_mapping.get(last_message.role, None)
+            agent_type = last_message.role  # 直接使用，已經是小寫
             return agent_type, last_message.content
         
         return None, ""
