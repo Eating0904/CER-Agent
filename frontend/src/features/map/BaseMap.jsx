@@ -60,7 +60,7 @@ export const BaseMap = () => {
                 proOptions={{ hideAttribution: true }}
             >
                 <Background />
-                <Controls />
+                <Controls showInteractive={false} />
                 <UpdateNodeInternals nodes={nodes} />
             </ReactFlow>
         </div>
