@@ -58,6 +58,7 @@ export const BaseMap = () => {
                 }}
                 connectionMode={ConnectionMode.Loose}
                 proOptions={{ hideAttribution: true }}
+                deleteKeyCode={null}
             >
                 <Background />
                 <Controls showInteractive={false} />
