@@ -23,8 +23,6 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background-color: #8600FF !important;
-    color: white !important;
 }
 
 /* ConversationHeader 內容置左對齊 */
@@ -36,3 +34,127 @@
     text-align: left !important;
 }
 
+/* Header 深紫色主題 */
+.cs-conversation-header {
+    background-color: #5B00AE !important;
+}
+
+/* 特別針對 user-name 的白色背景 */
+.cs-conversation-header__content .cs-conversation-header__user-name {
+    background-color: transparent !important;
+}
+
+.cs-conversation-header__user-name,
+.cs-conversation-header__content {
+    color: white !important;
+}
+
+/* Header 關閉按鈕改為白色 */
+.cs-conversation-header button,
+.cs-conversation-header .ant-btn {
+    color: white !important;
+    background-color: transparent !important;
+}
+
+.cs-conversation-header button:hover,
+.cs-conversation-header .ant-btn:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* AI 訊息背景色 */
+.cs-message--incoming .cs-message__content {
+    background-color: #ffffff !important;
+    border: #5B00AE 1px solid !important;
+    border-radius: 8px !important;
+}
+
+/* 使用者訊息背景色 */
+.cs-message--outgoing .cs-message__content {
+    background-color: #e5d6f8 !important;
+    border: #5B00AE 1px solid !important;
+    border-radius: 8px !important;
+}
+
+/* 聊天視窗背景色 */
+.cs-message-list,
+.cs-chat-container {
+    background-color: #d1d0d0 !important;
+    border-radius: 12px !important;
+}
+
+/* 滾動條軌道 */
+.ps__rail-y {
+    background-color: transparent !important;
+    width: 8px !important;
+}
+
+/* 滾動條軌道 hover 時顯示背景 */
+.ps__rail-y:hover {
+    background-color: #d1d0d0 !important;
+}
+
+/* 滾動條滑塊 */
+.ps__thumb-y {
+    background-color: #cdb9e9 !important;
+}
+
+/* 滾動條滑塊 hover */
+.ps__thumb-y:hover {
+    background-color: #B890EF !important;
+}
+
+/* 發送按鈕顏色改為紫色 */
+.cs-button--send {
+    color: #5B00AE !important;
+}
+
+/* 訊息輸入框背景色 */
+.cs-message-input {
+    background-color: #f3ecfc!important;
+}
+
+.cs-message-input__content-editor-wrapper {
+    background-color: #f3ecfc !important;
+    border-radius: 8px !important;
+    margin-left: 0px !important;
+}
+.cs-message-input__content-editor {
+    background-color: #f3ecfc !important;
+}
+
+/* 輸入框 placeholder 顏色 */
+.cs-message-input__content-editor::placeholder,
+.cs-message-input__content-editor-container::placeholder {
+    color: #9b7bb8 !important;
+    opacity: 0.7 !important;
+}
+
+/* 不同角色訊息之間增加間距 */
+.cs-message--incoming + .cs-message--outgoing,
+.cs-message--outgoing + .cs-message--incoming {
+    margin-top: 16px !important;
+}
+
+/* 第一則訊息也要有上方間距 */
+.cs-message:first-child {
+    margin-top: 16px !important;
+}
+
+/* Typing Indicator 顏色統一為紫色主題 */
+.cs-typing-indicator__dot {
+    background-color: #5B00AE !important;
+}
+
+.cs-typing-indicator__text {
+    color: #5B00AE !important;
+}
+
+/* Typing Indicator 背景色改為灰色 */
+.cs-typing-indicator {
+    background-color: transparent !important;
+}
+
+.cs-typing-indicator__wrapper {
+    background-color: transparent !important;
+}

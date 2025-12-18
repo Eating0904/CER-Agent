@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import { MinusOutlined, RobotOutlined } from '@ant-design/icons';
+import { MinusOutlined } from '@ant-design/icons';
 import {
     Avatar,
     ChatContainer,
@@ -13,6 +13,8 @@ import {
 } from '@chatscope/chat-ui-kit-react';
 import { Button } from 'antd';
 import { useSearchParams } from 'react-router-dom';
+
+import robotImage from '../../assets/images/robot.png';
 
 import {
     useGetChatHistoryQuery,
@@ -46,7 +48,6 @@ export const Chat = ({ isChatOpen, setIsChatOpen }) => {
             message: msg.content,
             direction: msg.role === 'user' ? 'outgoing' : 'incoming',
             sender: msg.role === 'user' ? 'Me' : 'AI',
-            position: 'single',
         }));
     }, [historyData]);
 
@@ -89,18 +90,22 @@ export const Chat = ({ isChatOpen, setIsChatOpen }) => {
         <div
             style={{
                 position: 'fixed',
-                bottom: '24px',
+                bottom: '12px',
                 right: '24px',
                 width: '400px',
-                height: '500px',
+                height: '600px',
                 zIndex: 1000,
-                borderRadius: '8px',
+                borderRadius: '12px',
                 overflow: 'hidden',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                border: '1px solid #d9d9d9',
             }}
         >
-            <MainContainer>
+            <MainContainer
+                style={{
+                    borderRadius: '12px',
+                    border: '2px solid #5B00AE',
+                }}
+            >
                 <ChatContainer>
                     <ConversationHeader>
                         <ConversationHeader.Content userName="Assistant" />
@@ -129,13 +134,11 @@ export const Chat = ({ isChatOpen, setIsChatOpen }) => {
                                     sentTime: 'just now',
                                     sender: msg.sender,
                                     direction: msg.direction,
-                                    position: 'single',
                                 }}
+                                avatarPosition="tl"
                             >
                                 {msg.direction === 'incoming' && (
-                                    <Avatar>
-                                        <RobotOutlined style={{ fontSize: '14px' }} />
-                                    </Avatar>
+                                    <Avatar src={robotImage} name="AI" />
                                 )}
                             </Message>
                         ))}
