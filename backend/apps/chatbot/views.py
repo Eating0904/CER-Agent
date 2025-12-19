@@ -2,14 +2,11 @@ import os
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from google import genai
-from google.genai import types
 
 from .models import ChatMessage
 from .serializers import ChatMessageSerializer, ChatHistorySerializer
 from .scoring import generate_scoring_prompt  # 保留供未來使用
 from .langgraph import get_langgraph_service
-from .utils.gemini_client import get_gemini_client
 from apps.map.models import Map
 
 
@@ -31,15 +28,6 @@ def chat(request):
     try:
         message = serializer.validated_data['message']
         map_id = serializer.validated_data['map_id']
-        
-        # 使用 utils.gemini_client 獲取 Gemini Client
-        try:
-            gemini_client = get_gemini_client()
-        except ValueError as e:
-            return Response(
-                {'success': False, 'error': str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
         
         # ============================================
         # LangGraph 分類模式（預設）

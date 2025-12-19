@@ -1,129 +1,156 @@
-from typing import TypedDict, Literal
-from langgraph.graph import StateGraph, END
+"""
+LangGraph 對話流程
+採用全路由架構 + PostgreSQL 持久化：Classifier → Expert Agents
+"""
+
+import json
+import operator
+from typing import Annotated, Any, Dict, List, Literal, TypedDict
+
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from langchain_core.runnables import RunnableConfig
+from langgraph.checkpoint.postgres import PostgresSaver
+from langgraph.graph import END, START, StateGraph
+from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
+
 from .classifier import IntentClassifier
 from .agents import SubLLMManager
 
 
-class ConversationState(TypedDict):
-    """對話狀態"""
-    user_input: str  # 學生當前輸入
-    conversation_history: list  # 對話歷史
-    last_active_agent: str  # 上一個活躍的 agent
-    last_agent_message: str  # 上一個 agent 的訊息
-    classification: dict  # 分類結果
-    final_response: str  # 最終回應
-    routed_agent: str  # 實際路由到的 agent
+# 定義狀態結構
+class AgentState(TypedDict):
+    messages: Annotated[List[BaseMessage], operator.add]
+    classification: Dict[str, Any]
 
 
-class ConversationGraph:    
-    def __init__(self):
-        """初始化對話流程圖"""
+def create_checkpointer(db_url: str) -> PostgresSaver:
+    """建立 PostgreSQL checkpointer"""
+    conn_pool = ConnectionPool(
+        conninfo=db_url,
+        max_size=20,
+        kwargs={
+            'autocommit': True,
+            'prepare_threshold': 0,
+            'row_factory': dict_row,
+        },
+    )
+    checkpointer = PostgresSaver(conn_pool)
+    checkpointer.setup()
+
+    return checkpointer
+
+
+class ConversationGraph:
+    """對話處理流程圖 - 全路由架構 + 持久化記憶"""
+
+    def __init__(self, db_url: str):
+        """
+        初始化對話流程圖
+
+        Args:
+            db_url: PostgreSQL 連線字串
+        """
+        self.db_url = db_url
+        self.checkpointer = create_checkpointer(db_url)
         self.classifier = IntentClassifier()
         self.sub_llm_manager = SubLLMManager()
         self.graph = self._build_graph()
-    
-    def _classify_intent(self, state: ConversationState) -> ConversationState:
-        """步驟 1: 分類學生意圖"""
-        classification = self.classifier.classify(
-            user_input=state["user_input"],
-            conversation_history=state.get("conversation_history", []),
-            last_agent_name=state.get("last_active_agent", "None"),
-            last_agent_message=state.get("last_agent_message", "")
-        )
-        
-        state["classification"] = classification
-        return state
-    
-    def _route_to_agent(self, state: ConversationState) -> ConversationState:
-        """步驟 2: 決定路由目標"""
-        intent = state["classification"]["next_action"]
-        
-        if intent == "continue_conversation":
-            # 延續對話:路由回上一個活躍的 agent
-            routed_agent = state.get("last_active_agent", "cer_cognitive_support")
+
+    def _classifier_node(self, state: AgentState, config: RunnableConfig) -> dict:
+        """Node: 意圖分類"""
+        callbacks = config.get('callbacks', [])
+        classification = self.classifier.classify(state['messages'], callbacks)
+
+        return {'classification': classification}
+
+    def _operator_support_node(self, state: AgentState, config: RunnableConfig) -> dict:
+        """Node: 介面支援 Agent"""
+        agent = self.sub_llm_manager.get_agent('operator_support')
+        callbacks = config.get('callbacks', [])
+        response = agent.process(state['messages'], {}, callbacks)
+
+        return {'messages': [AIMessage(content=response)]}
+
+    def _cer_cognitive_support_node(self, state: AgentState, config: RunnableConfig) -> dict:
+        """Node: 認知支援 Agent"""
+        agent = self.sub_llm_manager.get_agent('cer_cognitive_support')
+        callbacks = config.get('callbacks', [])
+        response = agent.process(state['messages'], {}, callbacks)
+
+        return {'messages': [AIMessage(content=response)]}
+
+    def _route_decision(self, state: AgentState) -> Literal['operator_support', 'cer_cognitive_support']:
+        """條件邊：根據分類結果決定路由"""
+        classification = state.get('classification', {})
+        intent = classification.get('next_action', 'operator_support')
+
+        # 處理 continue_conversation 的情況
+        if intent == 'continue_conversation':
+            # 從對話歷史找出上一個 agent
+            # 這裡簡化處理，預設回到 cer_cognitive_support
+            return 'cer_cognitive_support'
+        elif intent == 'operator_support':
+            return 'operator_support'
+        elif intent == 'cer_cognitive_support':
+            return 'cer_cognitive_support'
         else:
-            # 新問題:路由到對應的 agent
-            routed_agent = intent
-        
-        state["routed_agent"] = routed_agent
-        return state
-    
-    def _process_request(self, state: ConversationState) -> ConversationState:
-        """步驟 3: 處理學生請求"""
-        agent = self.sub_llm_manager.get_agent(state["routed_agent"])
-        
-        # 傳遞上下文摘要和對話歷史
-        response = agent.process(
-            user_input=state["user_input"],
-            conversation_history=state.get("conversation_history", []),
-            context_summary=state["classification"].get("context_summary", "")
+            # 預設路由
+            return 'operator_support'
+
+    def _build_graph(self):
+        workflow = StateGraph(AgentState)
+
+        # 加入節點
+        workflow.add_node('classifier', self._classifier_node)
+        workflow.add_node('operator_support', self._operator_support_node)
+        workflow.add_node('cer_cognitive_support', self._cer_cognitive_support_node)
+
+        # 設定流程
+        workflow.add_edge(START, 'classifier')
+        workflow.add_conditional_edges(
+            'classifier',
+            self._route_decision,
+            {
+                'operator_support': 'operator_support',
+                'cer_cognitive_support': 'cer_cognitive_support'
+            },
         )
-        
-        state["final_response"] = response
-        
-        # 更新活躍 agent 和最後訊息
-        state["last_active_agent"] = state["routed_agent"]
-        state["last_agent_message"] = response
-        
-        # 更新對話歷史
-        if "conversation_history" not in state:
-            state["conversation_history"] = []
-        
-        state["conversation_history"].append({
-            "role": "user",
-            "content": state["user_input"]
-        })
-        state["conversation_history"].append({
-            "role": "assistant",
-            "content": response,
-            "agent": state["routed_agent"]
-        })
-        
-        return state
-    
-    def _build_graph(self) -> StateGraph:
-        workflow = StateGraph(ConversationState)
-        
-        workflow.add_node("classify", self._classify_intent)
-        workflow.add_node("route", self._route_to_agent)
-        workflow.add_node("process", self._process_request)
-        
-        workflow.set_entry_point("classify")
-        workflow.add_edge("classify", "route")
-        workflow.add_edge("route", "process")
-        workflow.add_edge("process", END)
-        
-        return workflow.compile()
-    
+        workflow.add_edge('operator_support', END)
+        workflow.add_edge('cer_cognitive_support', END)
+
+        return workflow.compile(checkpointer=self.checkpointer)
+
     def process_message(
         self,
         user_input: str,
-        conversation_history: list = None,
-        last_active_agent: str = None,
-        last_agent_message: str = ""
+        mind_map_data: Dict[str, Any],
+        thread_id: str,
+        callbacks: List[Any] = None,
     ) -> dict:
         """
-        處理學生訊息
-        
+        處理使用者訊息
+
         Args:
-            user_input: 學生輸入
-            conversation_history: 對話歷史
-            last_active_agent: 上一個活躍的 agent
-            last_agent_message: 上一個 agent 的訊息
-            
+            user_input: 使用者輸入
+            mind_map_data: 心智圖資料 (nodes 和 edges)
+            thread_id: 對話執行緒 ID (對應 map_id)
+            callbacks: LangChain callbacks
+
         Returns:
             dict: 包含處理結果的狀態
         """
-        initial_state = {
-            "user_input": user_input,
-            "conversation_history": conversation_history or [],
-            "last_active_agent": last_active_agent or "None",
-            "last_agent_message": last_agent_message or "",
-            "classification": {},
-            "final_response": "",
-            "routed_agent": ""
+        config = {'configurable': {'thread_id': thread_id}, 'callbacks': callbacks}
+
+        inputs = {
+            'messages': [
+                HumanMessage(
+                    content=json.dumps(
+                        {'query': user_input, 'context': mind_map_data}, ensure_ascii=False
+                    )
+                )
+            ],
+            'classification': {},
         }
-        
-        final_state = self.graph.invoke(initial_state)
-        
-        return final_state
+
+        return self.graph.invoke(inputs, config=config)

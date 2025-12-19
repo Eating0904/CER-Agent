@@ -1,61 +1,95 @@
+"""
+專家 LLM 處理器 (Expert Agents)
+根據分類結果，使用對應的專家處理使用者請求
+"""
+
 from pathlib import Path
-from google import genai
-from google.genai import types
-from ..utils.conversation_formatters import format_history_for_display
+from typing import Any, Dict, List
+
+from langchain_core.messages import BaseMessage, SystemMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 class SubLLMAgent:
-    """處理特定類型的學生請求"""
-    
+    """專家 LLM 代理 - 處理特定類型的請求"""
+
     def __init__(self, agent_type: str):
-        from ..utils.gemini_client import get_gemini_client, DEFAULT_MODEL_NAME
-        self.client = get_gemini_client()
-        self.model_name = DEFAULT_MODEL_NAME
+        """
+        初始化專家 LLM 代理
+
+        Args:
+            agent_type: 代理類型 ("operator_support" 或 "cer_cognitive_support")
+        """
+        # 使用 LangChain 的 ChatGoogleGenerativeAI
+        # API key 會自動從環境變數 GOOGLE_API_KEY 讀取
+        self.llm = ChatGoogleGenerativeAI(
+            model='gemini-2.5-pro',
+            temperature=0.7,  # 適度的創造性
+        )
+
         self.agent_type = agent_type
-        
-        prompt_filename = f"{agent_type}_prompt.md"
-        prompt_path = Path(__file__).parent / "prompts" / prompt_filename
-        
+
+        # 讀取對應的 prompt
+        prompt_filename = f'{agent_type}_prompt.md'
+        prompt_path = Path(__file__).parent / 'prompts' / prompt_filename
+
         with open(prompt_path, 'r', encoding='utf-8') as f:
             self.system_prompt = f.read()
-    
-    def process(self, user_input: str, conversation_history: list = None, context_summary: str = "") -> str:
-        if conversation_history is None:
-            conversation_history = []
-        
-        history_text = format_history_for_display(conversation_history)
-        
-        prompt = self.system_prompt.format(
-            context_summary=context_summary if context_summary else "這是學生的第一個問題，沒有之前的對話歷史。",
-            user_input=user_input,
-            conversation_history=history_text
-        )
-        
+
+    def process(
+        self, messages: List[BaseMessage], user_map: Dict[str, Any], callbacks: List[Any] = None
+    ) -> str:
+        """
+        處理使用者請求
+
+        Args:
+            messages: 完整對話歷史
+                     每則 HumanMessage 的 content 是 JSON 字串：{"query": "使用者問題", "context": {...心智圖資料...}}
+            user_map: 使用者地圖資訊（保留用於未來可能的用途）
+            callbacks: LangChain callbacks for tracing
+
+        Returns:
+            str: Expert 的回應
+        """
+        # 使用 List Injection，LLM 會自動讀取 JSON 中的 query 和 context
+        final_messages = [SystemMessage(content=self.system_prompt)] + messages
+
         try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    temperature=0.5,
-                )
+            # 呼叫 LLM（直接傳遞 List[BaseMessage]）
+            response = self.llm.invoke(
+                final_messages,
+                config={'callbacks': callbacks, 'run_name': f'{self.agent_type}_Agent'},
             )
-            
-            return response.text
-            
+            return response.content
+
         except Exception as e:
-            return f"抱歉,我遇到了一些技術問題。錯誤訊息: {str(e)}"
+            print(f'❌ {self.agent_type} Agent 錯誤: {e}')
+            return f'抱歉，我遇到了一些技術問題。錯誤訊息: {str(e)}'
 
 
 class SubLLMManager:
-    
+    """管理多個專家 LLM 代理"""
+
     def __init__(self):
+        """
+        初始化專家 LLM 管理器
+        """
         self.agents = {
-            "operator_support": SubLLMAgent("operator_support"),
-            "cer_cognitive_support": SubLLMAgent("cer_cognitive_support")
+            'operator_support': SubLLMAgent('operator_support'),
+            'cer_cognitive_support': SubLLMAgent('cer_cognitive_support'),
         }
-    
+
     def get_agent(self, agent_type: str) -> SubLLMAgent:
+        """
+        取得指定類型的代理
+
+        Args:
+            agent_type: 代理類型 ("operator_support" 或 "cer_cognitive_support")
+
+        Returns:
+            SubLLMAgent: 對應的代理
+        """
         if agent_type not in self.agents:
-            raise ValueError(f"未知的代理類型: {agent_type}")
-        
+            raise ValueError(f'未知的代理類型: {agent_type}')
+
         return self.agents[agent_type]

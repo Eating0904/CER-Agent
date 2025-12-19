@@ -1,65 +1,49 @@
+import os
 from typing import Dict
 from .graph import ConversationGraph
-from ..models import ChatMessage
-from ..utils.conversation_formatters import format_history_for_api
 
 
 class LangGraphService:
     
     def __init__(self):
-        self.conversation_graph = ConversationGraph()
+        # 取得 DATABASE_URL
+        db_url = os.getenv('DATABASE_URL')
+        if not db_url:
+            raise ValueError(
+                "DATABASE_URL 環境變數未設定。\n"
+                "請在 .env 檔案中設定 DATABASE_URL\n"
+                "範例: DATABASE_URL=postgresql://postgres:password@localhost:5432/langgraph"
+            )
+        
+        self.conversation_graph = ConversationGraph(db_url)
     
     def process_user_message(self, user_input: str, map_id: int) -> Dict:
         try:
-            # 1. 讀取該 map 的對話歷史
-            history_messages = ChatMessage.objects.filter(map_id=map_id).order_by('created_at')
-            conversation_history = format_history_for_api(history_messages)
+            # 1. 準備假的心智圖資料 (之後會替換成真實資料)
+            mind_map_data = {
+                "nodes": [],
+                "edges": []
+            }
             
-            # 2. 取得 last_active_agent
-            last_active_agent, last_agent_message = self._get_last_active_agent(map_id)
-            
-            # 3. 調用 LangGraph 處理訊息
+            # 2. 調用 graph (使用 map_id 作為 thread_id)
             result = self.conversation_graph.process_message(
                 user_input=user_input,
-                conversation_history=conversation_history,
-                last_active_agent=last_active_agent,
-                last_agent_message=last_agent_message
+                mind_map_data=mind_map_data,
+                thread_id=str(map_id)
             )
             
-            # 4. 儲存使用者訊息
-            ChatMessage.objects.create(
-                map_id=map_id,
-                role='user',
-                content=user_input
-            )
+            # 3. 從 state['messages'] 取得最後回應
+            if result.get('messages'):
+                last_message = result['messages'][-1]
+                response_content = last_message.content
+            else:
+                response_content = "系統無法產生回應"
             
-            # 5. 儲存分類資訊 (classifier)
-            ChatMessage.objects.create(
-                map_id=map_id,
-                role='classifier',
-                content=f"分類結果: {result['classification']['next_action']}",
-                metadata={
-                    'context_summary': result['classification'].get('context_summary', ''),
-                    'reasoning': result['classification'].get('reasoning', ''),
-                    'intent': result['classification']['next_action'],
-                    'routed_to': result['routed_agent']
-                }
-            )
-            
-            # 6. 儲存 AI 回應
-            response_role = result['routed_agent']
-            
-            ChatMessage.objects.create(
-                map_id=map_id,
-                role=response_role,
-                content=result['final_response']
-            )
-            
+            # 4. 回傳結果
             return {
                 'success': True,
-                'message': result['final_response'],
-                'classification': result['classification'],
-                'routed_agent': result['routed_agent']
+                'message': response_content,
+                'classification': result.get('classification', {}),
             }
             
         except Exception as e:
@@ -88,7 +72,7 @@ class LangGraphService:
         error_message = str(exception)
         
         # API Key 相關錯誤（使用者可能可以解決）
-        if 'API key' in error_message or 'GEMINI_API_KEY' in error_message:
+        if 'API key' in error_message or 'GOOGLE_API_KEY' in error_message:
             return {
                 'error_type': 'API_KEY_ERROR',
                 'user_message': '系統配置有誤，請聯繫管理員',
@@ -132,29 +116,6 @@ class LangGraphService:
             'user_message': '系統發生錯誤，請稍後再試或聯繫管理員',
             'user_actionable': False
         }
-    
-    def _get_last_active_agent(self, map_id: int) -> tuple:
-        """
-        取得最後一個活躍的 agent
-        
-        Args:
-            map_id: 地圖 ID
-            
-        Returns:
-            tuple: (last_active_agent, last_agent_message)
-        """
-        # 查詢最後一則 agent 訊息（排除 user 和 classifier）
-        last_message = ChatMessage.objects.filter(
-            map_id=map_id
-        ).exclude(
-            role__in=['user', 'classifier']
-        ).order_by('-created_at').first()
-        
-        if last_message:
-            agent_type = last_message.role  # 直接使用，已經是小寫
-            return agent_type, last_message.content
-        
-        return None, ""
 
 
 _langgraph_service = None
