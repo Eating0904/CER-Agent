@@ -3,8 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .langgraph import get_langgraph_service
-from .models import ChatMessage
-from .serializers import ChatHistorySerializer, ChatMessageSerializer
+from .serializers import ChatMessageSerializer
 
 
 @api_view(['POST'])
@@ -146,10 +145,3 @@ def get_chat_history(request, map_id):
         )
 
 
-@api_view(['DELETE'])
-def clear_chat_history(request):
-    """
-    清除所有對話紀錄
-    """
-    ChatMessage.objects.all().delete()
-    return Response({'success': True, 'message': 'Chat history cleared'})
