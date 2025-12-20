@@ -4,34 +4,33 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name="ChatMessage",
+            name='ChatMessage',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
                     ),
                 ),
-                ("map_id", models.IntegerField(default=0)),
+                ('map_id', models.IntegerField(default=0)),
                 (
-                    "role",
+                    'role',
                     models.CharField(
-                        choices=[("user", "User"), ("assistant", "Assistant")], max_length=10
+                        choices=[('user', 'User'), ('assistant', 'Assistant')], max_length=10
                     ),
                 ),
-                ("content", models.TextField()),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ('content', models.TextField()),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                "db_table": "chat_message",
-                "ordering": ["created_at"],
+                'db_table': 'chat_message',
+                'ordering': ['created_at'],
             },
         ),
     ]

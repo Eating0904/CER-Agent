@@ -6,17 +6,13 @@ Chatbot 共用工具模組
 - conversation_formatters: 對話歷史的格式化工具
 """
 
-from .gemini_client import get_gemini_api_key, create_gemini_client
-from .conversation_formatters import (
-    format_history_for_api,
-    format_history_for_display
-)
+from .conversation_formatters import format_history_for_api, format_history_for_display
+from .gemini_client import create_gemini_client, get_gemini_api_key
 
 __all__ = [
     # Gemini Client
     'get_gemini_api_key',
     'create_gemini_client',
-    
     # Conversation Formatters
     'format_history_for_api',
     'format_history_for_display',

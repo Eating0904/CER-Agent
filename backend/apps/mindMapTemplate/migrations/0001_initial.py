@@ -4,30 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name="MindMapTemplate",
+            name='MindMapTemplate',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
                     ),
                 ),
-                ("name", models.CharField(max_length=200)),
-                ("article_topic", models.TextField()),
-                ("article_content", models.TextField()),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                ("updated_at", models.DateTimeField(auto_now=True)),
+                ('name', models.CharField(max_length=200)),
+                ('article_topic', models.TextField()),
+                ('article_content', models.TextField()),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
             ],
             options={
-                "db_table": "mind_map_template",
-                "ordering": ["-created_at"],
+                'db_table': 'mind_map_template',
+                'ordering': ['-created_at'],
             },
         ),
     ]

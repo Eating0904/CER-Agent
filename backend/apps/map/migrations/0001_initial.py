@@ -6,53 +6,52 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ("mindMapTemplate", "0001_initial"),
+        ('mindMapTemplate', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="Map",
+            name='Map',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
                     ),
                 ),
-                ("name", models.CharField(max_length=200)),
-                ("nodes", models.JSONField(default=list)),
-                ("edges", models.JSONField(default=list)),
-                ("article_topic", models.TextField(blank=True)),
-                ("article_content", models.TextField(blank=True)),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                ("updated_at", models.DateTimeField(auto_now=True)),
+                ('name', models.CharField(max_length=200)),
+                ('nodes', models.JSONField(default=list)),
+                ('edges', models.JSONField(default=list)),
+                ('article_topic', models.TextField(blank=True)),
+                ('article_content', models.TextField(blank=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
                 (
-                    "template",
+                    'template',
                     models.ForeignKey(
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="maps",
-                        to="mindMapTemplate.mindmaptemplate",
+                        related_name='maps',
+                        to='mindMapTemplate.mindmaptemplate',
                     ),
                 ),
                 (
-                    "user",
+                    'user',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="maps",
+                        related_name='maps',
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
             options={
-                "db_table": "map",
-                "ordering": ["-created_at"],
+                'db_table': 'map',
+                'ordering': ['-created_at'],
             },
         ),
     ]

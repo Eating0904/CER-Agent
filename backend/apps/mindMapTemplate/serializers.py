@@ -1,5 +1,7 @@
 from rest_framework import serializers
+
 from .models import MindMapTemplate
+
 
 class MindMapTemplateSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class MindMapTemplate(models.Model):
     name = models.CharField(max_length=200)
     issue_topic = models.TextField()

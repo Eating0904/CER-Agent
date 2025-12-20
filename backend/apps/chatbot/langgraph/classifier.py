@@ -5,9 +5,11 @@
 
 import json
 from typing import Any, List
-from .prompts import CLASSIFIER_PROMPT
+
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
+
+from .prompts import CLASSIFIER_PROMPT
 
 
 class IntentClassifier:
@@ -74,7 +76,6 @@ class IntentClassifier:
             # 驗證回應格式
             if 'next_action' not in result:
                 raise ValueError('分類結果缺少 next_action 欄位')
-
 
             # 驗證分類結果是否合法
             valid_actions = ['operator_support', 'cer_cognitive_support']

@@ -1,10 +1,12 @@
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Map
-from .serializers import MapSerializer, MapListSerializer, CreateMapFromTemplateSerializer
+from rest_framework.response import Response
+
 from apps.mindMapTemplate.models import MindMapTemplate
+
+from .models import Map
+from .serializers import CreateMapFromTemplateSerializer, MapListSerializer, MapSerializer
 
 
 class MapViewSet(viewsets.ModelViewSet):
@@ -31,13 +33,10 @@ class MapViewSet(viewsets.ModelViewSet):
             try:
                 template = MindMapTemplate.objects.get(id=template_id)
             except MindMapTemplate.DoesNotExist:
-                return Response(
-                    {'error': 'Template not found'},
-                    status=status.HTTP_404_NOT_FOUND
-                )
+                return Response({'error': 'Template not found'}, status=status.HTTP_404_NOT_FOUND)
 
             if not name:
-                name = f"{template.name}"
+                name = f'{template.name}'
 
             initial_nodes = [
                 {
@@ -46,7 +45,7 @@ class MapViewSet(viewsets.ModelViewSet):
                     'data': {
                         'type': 'C',
                         'content': 'Claim content...',
-                        'showDots' : ['right', 'bottom'],
+                        'showDots': ['right', 'bottom'],
                     },
                     'type': 'baseNode',
                 },
@@ -56,7 +55,7 @@ class MapViewSet(viewsets.ModelViewSet):
                     'data': {
                         'type': 'E',
                         'content': 'Evidence content...',
-                        'showDots' : ['left', 'bottom'],
+                        'showDots': ['left', 'bottom'],
                     },
                     'type': 'baseNode',
                 },
@@ -66,7 +65,7 @@ class MapViewSet(viewsets.ModelViewSet):
                     'data': {
                         'type': 'R',
                         'content': 'Reasoning content...',
-                        'showDots' : ['left', 'right'],
+                        'showDots': ['left', 'right'],
                     },
                     'type': 'baseNode',
                 },
@@ -101,7 +100,7 @@ class MapViewSet(viewsets.ModelViewSet):
                 user=request.user,
                 template=template,
                 nodes=initial_nodes,
-                edges=initial_edges
+                edges=initial_edges,
             )
 
             map_serializer = MapSerializer(map_instance)

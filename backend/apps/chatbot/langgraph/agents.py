@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from .prompts import OPERATOR_SUPPORT_PROMPT, CER_COGNITIVE_SUPPORT_PROMPT
+from .prompts import CER_COGNITIVE_SUPPORT_PROMPT, OPERATOR_SUPPORT_PROMPT
 
 
 class SubLLMAgent:

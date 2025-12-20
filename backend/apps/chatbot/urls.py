@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import chat, get_chat_history, clear_chat_history
+
+from .views import chat, clear_chat_history, get_chat_history
 
 urlpatterns = [
     path('chat/', chat, name='chat'),

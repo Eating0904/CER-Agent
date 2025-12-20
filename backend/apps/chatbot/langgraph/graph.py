@@ -14,8 +14,8 @@ from langgraph.graph import END, START, StateGraph
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
-from .classifier import IntentClassifier
 from .agents import SubLLMManager
+from .classifier import IntentClassifier
 from .message_filter import filter_messages
 
 
@@ -83,7 +83,9 @@ class ConversationGraph:
 
         return {'messages': [AIMessage(content=response)]}
 
-    def _route_decision(self, state: AgentState) -> Literal['operator_support', 'cer_cognitive_support']:
+    def _route_decision(
+        self, state: AgentState
+    ) -> Literal['operator_support', 'cer_cognitive_support']:
         """條件邊：根據分類結果決定路由"""
         classification = state.get('classification', {})
         intent = classification.get('next_action', 'operator_support')
@@ -109,7 +111,7 @@ class ConversationGraph:
             self._route_decision,
             {
                 'operator_support': 'operator_support',
-                'cer_cognitive_support': 'cer_cognitive_support'
+                'cer_cognitive_support': 'cer_cognitive_support',
             },
         )
         workflow.add_edge('operator_support', END)
@@ -142,11 +144,8 @@ class ConversationGraph:
             'messages': [
                 HumanMessage(
                     content=json.dumps(
-                        {
-                            'query': user_input, 
-                            'context': {'map_data': mind_map_data}
-                        }, 
-                        ensure_ascii=False
+                        {'query': user_input, 'context': {'map_data': mind_map_data}},
+                        ensure_ascii=False,
                     )
                 )
             ],

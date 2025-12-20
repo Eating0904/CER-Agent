@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class MindmaptemplateConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.mindMapTemplate"
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.mindMapTemplate'

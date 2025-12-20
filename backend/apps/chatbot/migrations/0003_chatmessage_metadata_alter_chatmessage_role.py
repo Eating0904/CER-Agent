@@ -4,26 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ("chatbot", "0002_add_map_id"),
+        ('chatbot', '0002_add_map_id'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="chatmessage",
-            name="metadata",
+            model_name='chatmessage',
+            name='metadata',
             field=models.JSONField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name="chatmessage",
-            name="role",
+            model_name='chatmessage',
+            name='role',
             field=models.CharField(
                 choices=[
-                    ("user", "User"),
-                    ("classifier", "Intent Classifier"),
-                    ("operator_support", "Operator Support"),
-                    ("cer_cognitive_support", "CER Cognitive Support"),
+                    ('user', 'User'),
+                    ('classifier', 'Intent Classifier'),
+                    ('operator_support', 'Operator Support'),
+                    ('cer_cognitive_support', 'CER Cognitive Support'),
                 ],
                 max_length=30,
             ),
