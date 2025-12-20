@@ -85,17 +85,10 @@ class ConversationGraph:
         classification = state.get('classification', {})
         intent = classification.get('next_action', 'operator_support')
 
-        # 處理 continue_conversation 的情況
-        if intent == 'continue_conversation':
-            # 從對話歷史找出上一個 agent
-            # 這裡簡化處理，預設回到 cer_cognitive_support
-            return 'cer_cognitive_support'
-        elif intent == 'operator_support':
-            return 'operator_support'
-        elif intent == 'cer_cognitive_support':
-            return 'cer_cognitive_support'
+        # 直接回傳分類結果,預設為 operator_support
+        if intent in ['operator_support', 'cer_cognitive_support']:
+            return intent
         else:
-            # 預設路由
             return 'operator_support'
 
     def _build_graph(self):

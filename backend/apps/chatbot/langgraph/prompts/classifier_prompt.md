@@ -11,13 +11,13 @@
 
 # Context Awareness
 判斷時,請務必參考對話歷史中的上下文:
-- 如果學生的輸入是對先前問題的直接回應或延續,請歸類為 `continue_conversation`。
-- 如果學生提出關於介面操作的問題,請歸類為 `operator_support`。
-- 如果學生提出關於 CER 寫作或 SDGs 內容的疑問,請歸類為 `cer_cognitive_support`。
+- 如果學生的輸入是對先前問題的直接回應或延續,請分析對話歷史和學生回應的內容,判斷學生是在回應哪個助手(介面操作助手或認知寫作教練)的問題,並將 next_action 設為該助手對應的類別。注意:學生可能在回應前面好幾則的訊息,不一定是最後一則。
+- 如果學生提出全新的問題(關於介面操作),請歸類為 `operator_support`。
+- 如果學生提出全新的問題(關於 CER 寫作或 SDGs 內容),請歸類為 `cer_cognitive_support`。
 
 # Classification Categories (分類標準)
 
-請根據以下定義，從三個類別中選擇一個最合適的:
+請根據以下定義,選擇最合適的類別:
 
 ### 1. operator_support (系統操作支援)
 - **觸發情境**: 學生詢問關於軟體介面、工具功能、節點操作、連線方式、存檔或系統錯誤。
@@ -27,15 +27,10 @@
 - **觸發情境**: 學生詢問關於 SDGs 議題、CER 架構定義、論點發想、證據引用或寫作邏輯的問題。這代表學生在「知識」或「思考」上卡住了，需要老師角色的協助。
 - **關鍵字範例**: "什麼是 CER?"， "這篇文章的重點是什麼?"， "我找不到證據"， "這個論點好嗎?"， "SDG 13 是什麼?"
 
-### 3. continue_conversation (延續當前對話)
-- **觸發情境**: 學生的輸入並非新的提問，而是對上一個子 LLM 問題的回覆、確認、補充或拒絕。這是對話流的一部分。
-- **特徵**: 通常句子較短，或依賴上下文才能理解。
-- **範例**: "好的"， "我明白了"， "因為文章第二段有說..."， "不是"， "這也是原因之一"。
-
 # Output Format
 請**嚴格**以 JSON 格式輸出，不要包含任何 Markdown 標記或額外文字:
 
 {{
   "reasoning": "簡短說明判斷依據，例如:學生詢問如何刪除節點，屬於操作問題。"，
-  "next_action": "operator_support" | "cer_cognitive_support" | "continue_conversation"
+  "next_action": "operator_support" | "cer_cognitive_support"
 }}

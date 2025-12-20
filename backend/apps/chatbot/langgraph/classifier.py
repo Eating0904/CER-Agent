@@ -58,7 +58,7 @@ class IntentClassifier:
 
         Returns:
             dict: 包含 reasoning 和 next_action 的字典
-                  next_action 為 "operator_support", "cer_cognitive_support" 或 "continue_conversation"
+                  next_action 為 "operator_support" 或 "cer_cognitive_support"
         """
         # 使用 List Injection，LLM 會自動讀取 JSON 中的 query
         final_messages = [SystemMessage(content=self.system_prompt)] + messages
@@ -80,7 +80,7 @@ class IntentClassifier:
 
 
             # 驗證分類結果是否合法
-            valid_actions = ['operator_support', 'cer_cognitive_support', 'continue_conversation']
+            valid_actions = ['operator_support', 'cer_cognitive_support']
             if result['next_action'] not in valid_actions:
                 raise ValueError(f'無效的分類結果: {result["next_action"]}')
 
