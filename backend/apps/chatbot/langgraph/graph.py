@@ -16,6 +16,7 @@ from psycopg_pool import ConnectionPool
 
 from .classifier import IntentClassifier
 from .agents import SubLLMManager
+from .message_filter import filter_messages
 
 
 # 定義狀態結構
@@ -60,7 +61,8 @@ class ConversationGraph:
     def _classifier_node(self, state: AgentState, config: RunnableConfig) -> dict:
         """Node: 意圖分類"""
         callbacks = config.get('callbacks', [])
-        classification = self.classifier.classify(state['messages'], callbacks)
+        filtered_messages = filter_messages(state['messages'], context_fields_to_keep=[])
+        classification = self.classifier.classify(filtered_messages, callbacks)
 
         return {'classification': classification}
 
@@ -68,7 +70,8 @@ class ConversationGraph:
         """Node: 介面支援 Agent"""
         agent = self.sub_llm_manager.get_agent('operator_support')
         callbacks = config.get('callbacks', [])
-        response = agent.process(state['messages'], {}, callbacks)
+        filtered_messages = filter_messages(state['messages'], context_fields_to_keep=[])
+        response = agent.process(filtered_messages, {}, callbacks)
 
         return {'messages': [AIMessage(content=response)]}
 
@@ -139,7 +142,11 @@ class ConversationGraph:
             'messages': [
                 HumanMessage(
                     content=json.dumps(
-                        {'query': user_input, 'context': mind_map_data}, ensure_ascii=False
+                        {
+                            'query': user_input, 
+                            'context': {'map_data': mind_map_data}
+                        }, 
+                        ensure_ascii=False
                     )
                 )
             ],
