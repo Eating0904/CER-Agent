@@ -20,6 +20,8 @@ dependencies = [
     "pytest-django>=4.11.1",
     "google-genai>=1.0.0,<2",
     "langgraph>=0.2.0,<0.3",
+    "langgraph-checkpoint-postgres>=3.0.2",
+    "langchain-google-genai>=2.1.12",
 ]
 
 [dependency-groups]
