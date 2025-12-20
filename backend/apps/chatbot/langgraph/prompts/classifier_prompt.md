@@ -37,12 +37,5 @@
 
 {{
   "reasoning": "簡短說明判斷依據，例如:學生詢問如何刪除節點，屬於操作問題。"，
-  "next_action": "operator_support" | "cer_cognitive_support" | "continue_conversation"，
-  "context_summary": "描述學生的當前狀況,包括: 1) 學生之前討論了什麼主題 2) 現在這個問題與之前對話的關係。如果是第一次對話,說明「這是學生的第一個問題」。"
+  "next_action": "operator_support" | "cer_cognitive_support" | "continue_conversation"
 }}
-
-# context_summary 範例
-- 好的範例: "學生之前詢問如何刪除節點,已獲得解答(使用 Delete 鍵)。中途詢問了 CER 定義。現在問「如何復原」,根據對話順序判斷,應該是想復原之前的刪除操作。"
-- 好的範例: "這是學生的第一個問題,沒有之前的對話歷史。"
-- 不好的範例: "學生問了一些問題。" ← 太模糊,沒有具體資訊
-

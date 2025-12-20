@@ -78,9 +78,6 @@ class IntentClassifier:
             if 'next_action' not in result:
                 raise ValueError('分類結果缺少 next_action 欄位')
 
-            # 加入預設的 context_summary
-            if 'context_summary' not in result:
-                result['context_summary'] = ''
 
             # 驗證分類結果是否合法
             valid_actions = ['operator_support', 'cer_cognitive_support', 'continue_conversation']
@@ -97,7 +94,6 @@ class IntentClassifier:
             return {
                 'reasoning': 'JSON 解析失敗，預設為介面支援',
                 'next_action': 'operator_support',
-                'context_summary': '',
             }
         except Exception as e:
             print(f'\n❌ 分類器錯誤: {e}')
@@ -107,5 +103,4 @@ class IntentClassifier:
             return {
                 'reasoning': f'發生錯誤: {str(e)}',
                 'next_action': 'operator_support',
-                'context_summary': '',
             }
