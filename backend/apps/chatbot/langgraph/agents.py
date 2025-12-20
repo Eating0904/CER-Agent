@@ -3,11 +3,12 @@
 根據分類結果，使用對應的專家處理使用者請求
 """
 
-from pathlib import Path
 from typing import Any, Dict, List
 
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
+
+from .prompts import OPERATOR_SUPPORT_PROMPT, CER_COGNITIVE_SUPPORT_PROMPT
 
 
 class SubLLMAgent:
@@ -29,12 +30,12 @@ class SubLLMAgent:
 
         self.agent_type = agent_type
 
-        # 讀取對應的 prompt
-        prompt_filename = f'{agent_type}_prompt.md'
-        prompt_path = Path(__file__).parent / 'prompts' / prompt_filename
-
-        with open(prompt_path, 'r', encoding='utf-8') as f:
-            self.system_prompt = f.read()
+        # 使用預定義的 prompt
+        prompt_map = {
+            'operator_support': OPERATOR_SUPPORT_PROMPT,
+            'cer_cognitive_support': CER_COGNITIVE_SUPPORT_PROMPT,
+        }
+        self.system_prompt = prompt_map[agent_type]
 
     def process(
         self, messages: List[BaseMessage], user_map: Dict[str, Any], callbacks: List[Any] = None

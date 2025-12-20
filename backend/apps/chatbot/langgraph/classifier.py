@@ -4,9 +4,8 @@
 """
 
 import json
-from pathlib import Path
 from typing import Any, List
-
+from .prompts import CLASSIFIER_PROMPT
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -25,10 +24,8 @@ class IntentClassifier:
             temperature=0.1,  # 降低隨機性，使分類更穩定
         )
 
-        # 讀取分類 prompt
-        prompt_path = Path(__file__).parent / 'prompts' / 'classifier_prompt.md'
-        with open(prompt_path, 'r', encoding='utf-8') as f:
-            self.system_prompt = f.read()
+        # 使用預定義的 prompt
+        self.system_prompt = CLASSIFIER_PROMPT
 
     def _extract_json(self, text: str) -> str:
         """從文本中提取 JSON"""

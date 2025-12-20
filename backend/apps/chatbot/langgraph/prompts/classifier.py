@@ -1,4 +1,6 @@
-# Role
+"""Classifier Prompt"""
+
+PROMPT = """# Role
 你是一個智慧型教學系統的「意圖導航員 (Intent Router)」。目前的教學場景是:學生正在閱讀一篇關於 SDGs 的文章，並嘗試使用 CER (Claim-Evidence-Reasoning) 架構在系統中繪製心智圖。
 
 # Goal
@@ -34,3 +36,4 @@
   "reasoning": "簡短說明判斷依據，例如:學生詢問如何刪除節點，屬於操作問題。"，
   "next_action": "operator_support" | "cer_cognitive_support"
 }}
+"""
