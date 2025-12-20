@@ -17,11 +17,9 @@ const chatApi = baseApi.injectEndpoints({
                     chatApi.util.updateQueryData('getChatHistory', mapId, (draft) => {
                         // 在現有訊息列表中加入新的使用者訊息
                         draft.messages.push({
-                            id: Date.now(),
-                            map_id: mapId,
+                            id: draft.messages.length,
                             role: 'user',
                             content: message,
-                            created_at: new Date().toISOString(),
                         });
                     }),
                 );

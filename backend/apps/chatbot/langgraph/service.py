@@ -1,3 +1,4 @@
+import json
 import os
 from typing import Dict
 
@@ -47,6 +48,60 @@ class LangGraphService:
             return {
                 'success': False,
                 'message': error_info['user_message'],
+                'error': {
+                    'type': error_info['error_type'],
+                    'detail': str(e),
+                    'user_actionable': error_info['user_actionable'],
+                },
+            }
+
+    def get_conversation_history(self, map_id: int) -> Dict:
+        """
+        從 LangGraph checkpointer 讀取對話歷史
+
+        Args:
+            map_id: 地圖 ID（作為 thread_id）
+
+        Returns:
+            dict: 包含成功狀態和訊息陣列的字典
+        """
+        try:
+            thread_id = str(map_id)
+            config = {'configurable': {'thread_id': thread_id}}
+
+            state_snapshot = self.conversation_graph.graph.get_state(config)
+
+            if not state_snapshot or not state_snapshot.values:
+                return {'success': True, 'messages': []}
+
+            state_messages = state_snapshot.values.get('messages', [])
+
+            messages = []
+            for idx, msg in enumerate(state_messages):
+                # msg 已經是反序列化後的 BaseMessage 物件
+                if hasattr(msg, 'type'):
+                    role = 'user' if msg.type == 'human' else 'assistant'
+
+                    message_data = {'id': idx, 'role': role, 'content': msg.content}
+
+                    if isinstance(msg.content, str) and role == 'user':
+                        try:
+                            parsed_content = json.loads(msg.content)
+                            if isinstance(parsed_content, dict) and 'query' in parsed_content:
+                                message_data['content'] = parsed_content['query']
+                        except (json.JSONDecodeError, ValueError):
+                            pass
+
+                    messages.append(message_data)
+
+            return {'success': True, 'messages': messages}
+
+        except Exception as e:
+            error_info = self._classify_error(e)
+
+            return {
+                'success': False,
+                'messages': [],
                 'error': {
                     'type': error_info['error_type'],
                     'detail': str(e),

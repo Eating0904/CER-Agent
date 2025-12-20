@@ -121,11 +121,29 @@ def chat(request):
 @api_view(['GET'])
 def get_chat_history(request, map_id):
     """
-    獲取指定心智圖的對話紀錄
+    獲取指定心智圖的對話紀錄（從 LangGraph checkpointer）
     """
-    messages = ChatMessage.objects.filter(map_id=map_id)
-    serializer = ChatHistorySerializer(messages, many=True)
-    return Response({'success': True, 'messages': serializer.data})
+    try:
+        langgraph_service = get_langgraph_service()
+        result = langgraph_service.get_conversation_history(map_id)
+
+        if not result['success']:
+            return Response(
+                {
+                    'success': False,
+                    'messages': [],
+                    'error': result.get('error', {}),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        return Response({'success': True, 'messages': result['messages']})
+
+    except Exception as e:
+        return Response(
+            {'success': False, 'messages': [], 'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 @api_view(['DELETE'])
