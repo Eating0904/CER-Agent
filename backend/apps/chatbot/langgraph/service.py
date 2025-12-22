@@ -1,41 +1,81 @@
 import json
-import os
 from typing import Dict
+
+from langfuse import Langfuse, propagate_attributes
+from langfuse.langchain import CallbackHandler
+
+from apps.map.models import Map
+from config.settings import DATABASE_URL
 
 from .graph import ConversationGraph
 
 
 class LangGraphService:
     def __init__(self):
-        # 取得 DATABASE_URL
-        db_url = os.getenv('DATABASE_URL')
-        if not db_url:
-            raise ValueError(
-                'DATABASE_URL 環境變數未設定。\n'
-                '請在 .env 檔案中設定 DATABASE_URL\n'
-                '範例: DATABASE_URL=postgresql://postgres:password@localhost:5432/langgraph'
-            )
-
-        self.conversation_graph = ConversationGraph(db_url)
+        self.conversation_graph = ConversationGraph(DATABASE_URL)
+        self.langfuse = Langfuse()
 
     def process_user_message(self, user_input: str, map_id: int) -> Dict:
         try:
-            # 1. 準備假的心智圖資料 (之後會替換成真實資料)
+            # 1. 從資料庫取得 Map 並獲取 user_id
+            try:
+                map_instance = Map.objects.get(id=map_id)
+                user_id = str(map_instance.user.id)
+            except Map.DoesNotExist:
+                raise ValueError(f'Map with id {map_id} does not exist')
+
+            # 2. 準備假的心智圖資料 (之後會替換成真實資料)
             mind_map_data = {'nodes': [], 'edges': []}
 
-            # 2. 調用 graph (使用 map_id 作為 thread_id)
-            result = self.conversation_graph.process_message(
-                user_input=user_input, mind_map_data=mind_map_data, thread_id=str(map_id)
-            )
+            # 3. 設定 thread_id 和 session_id
+            thread_id = str(map_id)
+            session_id = thread_id
 
-            # 3. 從 state['messages'] 取得最後回應
-            if result.get('messages'):
-                last_message = result['messages'][-1]
-                response_content = last_message.content
-            else:
-                response_content = '系統無法產生回應'
+            # 4. 使用 Langfuse Context Manager 建立 Trace/Span 並設定 Session ID 和 User ID
+            with self.langfuse.start_as_current_observation(
+                name='user_interaction',
+                as_type='span',
+            ) as trace_span:
+                # 設定 Trace 層級屬性 (Session ID 和 User ID) 並向下傳遞
+                with propagate_attributes(session_id=session_id, user_id=user_id):
+                    # 更新 Trace Input
+                    trace_span.update_trace(
+                        input={
+                            'user_id': user_id,
+                            'map_id': map_id,
+                            'user_input': user_input,
+                        }
+                    )
 
-            # 4. 回傳結果
+                    # 初始化 CallbackHandler (會自動繼承當前 Context)
+                    langfuse_handler = CallbackHandler()
+
+                    # 5. 調用 graph (使用 map_id 作為 thread_id)
+                    result = self.conversation_graph.process_message(
+                        user_input=user_input,
+                        mind_map_data=mind_map_data,
+                        thread_id=thread_id,
+                        callbacks=[langfuse_handler],
+                    )
+
+                    print('LangGraph Result:', result)
+
+                    # 6. 從 state['messages'] 取得最後回應
+                    if result.get('messages'):
+                        last_message = result['messages'][-1]
+                        response_content = last_message.content
+                    else:
+                        response_content = '系統無法產生回應'
+
+                    # 更新 Trace Output
+                    trace_span.update_trace(
+                        output={
+                            'classification': result.get('classification', {}),
+                            'response': response_content,
+                        }
+                    )
+
+            # 7. 回傳結果
             return {
                 'success': True,
                 'message': response_content,
