@@ -4,13 +4,12 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ("chatbot", "0003_chatmessage_metadata_alter_chatmessage_role"),
+        ('chatbot', '0003_chatmessage_metadata_alter_chatmessage_role'),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name="ChatMessage",
+            name='ChatMessage',
         ),
     ]

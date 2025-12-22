@@ -143,5 +143,3 @@ def get_chat_history(request, map_id):
             {'success': False, 'messages': [], 'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-
-
