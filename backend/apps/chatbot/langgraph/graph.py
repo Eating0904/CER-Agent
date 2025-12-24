@@ -16,7 +16,6 @@ from psycopg_pool import ConnectionPool
 
 from .agents import SubLLMManager
 from .classifier import IntentClassifier
-from .message_filter import filter_messages
 
 
 # 定義狀態結構
@@ -61,8 +60,7 @@ class ConversationGraph:
     def _classifier_node(self, state: AgentState, config: RunnableConfig) -> dict:
         """Node: 意圖分類"""
         callbacks = config.get('callbacks', [])
-        filtered_messages = filter_messages(state['messages'], context_fields_to_keep=[])
-        classification = self.classifier.classify(filtered_messages, callbacks)
+        classification = self.classifier.classify(state['messages'], callbacks)
 
         return {'classification': classification}
 
@@ -70,8 +68,7 @@ class ConversationGraph:
         """Node: 介面支援 Agent"""
         agent = self.sub_llm_manager.get_agent('operator_support')
         callbacks = config.get('callbacks', [])
-        filtered_messages = filter_messages(state['messages'], context_fields_to_keep=[])
-        response = agent.process(filtered_messages, {}, callbacks)
+        response = agent.process(state['messages'], callbacks)
 
         return {'messages': [AIMessage(content=response)]}
 
@@ -79,7 +76,10 @@ class ConversationGraph:
         """Node: 認知支援 Agent"""
         agent = self.sub_llm_manager.get_agent('cer_cognitive_support')
         callbacks = config.get('callbacks', [])
-        response = agent.process(state['messages'], {}, callbacks)
+
+        article_content = getattr(self, 'article_content', '')
+
+        response = agent.process(state['messages'], callbacks, article_content=article_content)
 
         return {'messages': [AIMessage(content=response)]}
 
@@ -123,6 +123,7 @@ class ConversationGraph:
         self,
         user_input: str,
         mind_map_data: Dict[str, Any],
+        article_content: str,
         thread_id: str,
         callbacks: List[Any] = None,
     ) -> dict:
@@ -132,19 +133,22 @@ class ConversationGraph:
         Args:
             user_input: 使用者輸入
             mind_map_data: 心智圖資料 (nodes 和 edges)
+            article_content: 文章內容（從 template 取得）
             thread_id: 對話執行緒 ID (對應 map_id)
             callbacks: LangChain callbacks
 
         Returns:
             dict: 包含處理結果的狀態
         """
+        self.article_content = article_content
+
         config = {'configurable': {'thread_id': thread_id}, 'callbacks': callbacks}
 
         inputs = {
             'messages': [
                 HumanMessage(
                     content=json.dumps(
-                        {'query': user_input, 'context': {'map_data': mind_map_data}},
+                        {'query': user_input, 'context': {'mind_map_data': mind_map_data}},
                         ensure_ascii=False,
                     )
                 )

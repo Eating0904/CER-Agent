@@ -8,6 +8,7 @@ from apps.map.models import Map
 from config.settings import DATABASE_URL
 
 from .graph import ConversationGraph
+from .map_data_utils import simplify_map_data
 
 
 class LangGraphService:
@@ -17,21 +18,28 @@ class LangGraphService:
 
     def process_user_message(self, user_input: str, map_id: int) -> Dict:
         try:
-            # 1. 從資料庫取得 Map 並獲取 user_id
+            # 1. 從 Map 取得相關資料
             try:
-                map_instance = Map.objects.get(id=map_id)
+                map_instance = Map.objects.select_related('user', 'template').get(id=map_id)
                 user_id = str(map_instance.user.id)
             except Map.DoesNotExist:
                 raise ValueError(f'Map with id {map_id} does not exist')
 
-            # 2. 準備假的心智圖資料 (之後會替換成真實資料)
-            mind_map_data = {'nodes': [], 'edges': []}
+            mind_map_data = {'nodes': map_instance.nodes, 'edges': map_instance.edges}
 
-            # 3. 設定 thread_id 和 session_id
+            # 2. 簡化心智圖資料
+            simplified_map_data = simplify_map_data(mind_map_data)
+
+            # 3. 取得文章內容
+            article_content = ''
+            if map_instance.template:
+                article_content = map_instance.template.article_content
+
+            # 4. 設定 thread_id 和 session_id
             thread_id = str(map_id)
             session_id = thread_id
 
-            # 4. 使用 Langfuse Context Manager 建立 Trace/Span 並設定 Session ID 和 User ID
+            # 5. 使用 Langfuse Context Manager 建立 Trace/Span 並設定 Session ID 和 User ID
             with self.langfuse.start_as_current_observation(
                 name='user_interaction',
                 as_type='span',
@@ -50,17 +58,18 @@ class LangGraphService:
                     # 初始化 CallbackHandler (會自動繼承當前 Context)
                     langfuse_handler = CallbackHandler()
 
-                    # 5. 調用 graph (使用 map_id 作為 thread_id)
+                    # 6. 調用 graph (使用 map_id 作為 thread_id)
                     result = self.conversation_graph.process_message(
                         user_input=user_input,
-                        mind_map_data=mind_map_data,
+                        mind_map_data=simplified_map_data,
+                        article_content=article_content,
                         thread_id=thread_id,
                         callbacks=[langfuse_handler],
                     )
 
                     print('LangGraph Result:', result)
 
-                    # 6. 從 state['messages'] 取得最後回應
+                    # 7. 從 state['messages'] 取得最後回應
                     if result.get('messages'):
                         last_message = result['messages'][-1]
                         response_content = last_message.content
@@ -75,7 +84,7 @@ class LangGraphService:
                         }
                     )
 
-            # 7. 回傳結果
+            # 8. 回傳結果
             return {
                 'success': True,
                 'message': response_content,

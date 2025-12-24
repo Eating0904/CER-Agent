@@ -9,6 +9,7 @@ from typing import Any, List
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from .message_filter import filter_messages
 from .prompts import CLASSIFIER_PROMPT
 
 
@@ -59,8 +60,10 @@ class IntentClassifier:
             dict: 包含 reasoning 和 next_action 的字典
                   next_action 為 "operator_support" 或 "cer_cognitive_support"
         """
+        filtered_messages = filter_messages(messages, context_fields_to_keep=[])
+
         # 使用 List Injection，LLM 會自動讀取 JSON 中的 query
-        final_messages = [SystemMessage(content=self.system_prompt)] + messages
+        final_messages = [SystemMessage(content=self.system_prompt)] + filtered_messages
 
         try:
             # 呼叫 LLM（直接傳遞 List[BaseMessage]）

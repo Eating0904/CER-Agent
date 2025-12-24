@@ -3,11 +3,12 @@
 根據分類結果，使用對應的專家處理使用者請求
 """
 
-from typing import Any, Dict, List
+from typing import Any, List
 
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from .message_filter import filter_messages
 from .prompts import CER_COGNITIVE_SUPPORT_PROMPT, OPERATOR_SUPPORT_PROMPT
 
 
@@ -38,7 +39,7 @@ class SubLLMAgent:
         self.system_prompt = prompt_map[agent_type]
 
     def process(
-        self, messages: List[BaseMessage], user_map: Dict[str, Any], callbacks: List[Any] = None
+        self, messages: List[BaseMessage], callbacks: List[Any] = None, article_content: str = ''
     ) -> str:
         """
         處理使用者請求
@@ -46,14 +47,24 @@ class SubLLMAgent:
         Args:
             messages: 完整對話歷史
                      每則 HumanMessage 的 content 是 JSON 字串：{"query": "使用者問題", "context": {...心智圖資料...}}
-            user_map: 使用者地圖資訊（保留用於未來可能的用途）
             callbacks: LangChain callbacks for tracing
+            article_content: 文章內容（用於 cer_cognitive_support agent）
 
         Returns:
             str: Expert 的回應
         """
-        # 使用 List Injection，LLM 會自動讀取 JSON 中的 query 和 context
-        final_messages = [SystemMessage(content=self.system_prompt)] + messages
+
+        if self.agent_type == 'operator_support':
+            system_message_content = self.system_prompt
+            filtered_messages = filter_messages(messages, context_fields_to_keep=[])
+        elif self.agent_type == 'cer_cognitive_support':
+            system_message_content = self.system_prompt.format(article_content=article_content)
+            filtered_messages = messages
+        else:
+            system_message_content = self.system_prompt
+            filtered_messages = messages
+
+        final_messages = [SystemMessage(content=system_message_content)] + filtered_messages
 
         try:
             # 呼叫 LLM（直接傳遞 List[BaseMessage]）
