@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { addEdge, applyEdgeChanges, applyNodeChanges } from '@xyflow/react';
 
+import { mapEventEmitter, NODE_ADDED } from '../events';
+
 export const useMapNodes = (mapData) => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
@@ -74,6 +76,8 @@ export const useMapNodes = (mapData) => {
 
             return [...nds, newNode];
         });
+
+        mapEventEmitter.emit(NODE_ADDED, { nodeType, nodeId: newId });
 
         setSelectedNodeId(newId);
     }, []);

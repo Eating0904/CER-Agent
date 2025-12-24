@@ -7,6 +7,7 @@ import { Chat } from '../features/chat/Chat';
 import { FloatingChatButton } from '../features/chat/FloatingChatButton';
 import { BaseMap } from '../features/map/BaseMap';
 import { ToolBlock } from '../features/map/components/toolbar';
+import { useMapEventNotifier } from '../features/map/events';
 import { useMapNodes } from '../features/map/hooks';
 import { MapProvider } from '../features/map/MapProvider';
 import { SaveButton } from '../features/map/SaveButton';
@@ -15,6 +16,8 @@ import { useGetMapQuery } from '../features/map/utils';
 export const MapPage = () => {
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
+
+    useMapEventNotifier();
 
     const [isChatOpen, setIsChatOpen] = useState(() => {
         const saved = localStorage.getItem('chatIsOpen');
