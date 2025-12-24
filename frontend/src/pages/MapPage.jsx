@@ -23,7 +23,17 @@ export const MapPage = () => {
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
 
-    useMapEventNotifier();
+    const [alerts, setAlerts] = useState([]);
+
+    const addAlert = (message) => {
+        const newAlert = {
+            id: Date.now(),
+            message,
+        };
+        setAlerts((prev) => [newAlert, ...prev]);
+    };
+
+    useMapEventNotifier(addAlert);
 
     const [isChatOpen, setIsChatOpen] = useState(() => {
         const saved = localStorage.getItem('chatIsOpen');
@@ -78,7 +88,7 @@ export const MapPage = () => {
                         <ToolBlock />
                         <Row style={{ flex: 1, minHeight: 0 }}>
                             <Col span={3} style={{ height: '100%', overflowY: 'auto' }}>
-                                <OperateAlertList />
+                                <OperateAlertList alerts={alerts} />
                             </Col>
                             <Col span={21} style={{ height: '100%', position: 'relative' }}>
                                 <BaseMap />
