@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { Alert, Spin } from 'antd';
+import {
+    Alert,
+    Col,
+    Row,
+    Spin,
+} from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
 import { Chat } from '../features/chat/Chat';
@@ -12,6 +17,7 @@ import { useMapNodes } from '../features/map/hooks';
 import { MapProvider } from '../features/map/MapProvider';
 import { SaveButton } from '../features/map/SaveButton';
 import { useGetMapQuery } from '../features/map/utils';
+import { OperateAlertList } from '../features/OperateAlertList/OperateAlertList';
 
 export const MapPage = () => {
     const [searchParams] = useSearchParams();
@@ -70,19 +76,24 @@ export const MapPage = () => {
                 <MapProvider value={mapContext}>
                     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                         <ToolBlock />
-                        <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
-                            <BaseMap />
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    top: '16px',
-                                    right: '16px',
-                                    zIndex: 10,
-                                }}
-                            >
-                                <SaveButton />
-                            </div>
-                        </div>
+                        <Row style={{ flex: 1, minHeight: 0 }}>
+                            <Col span={3} style={{ height: '100%', overflowY: 'auto' }}>
+                                <OperateAlertList />
+                            </Col>
+                            <Col span={21} style={{ height: '100%', position: 'relative' }}>
+                                <BaseMap />
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        top: '16px',
+                                        right: '16px',
+                                        zIndex: 10,
+                                    }}
+                                >
+                                    <SaveButton />
+                                </div>
+                            </Col>
+                        </Row>
                     </div>
                 </MapProvider>
                 <Chat isChatOpen={isChatOpen} setIsChatOpen={setIsChatOpen} />

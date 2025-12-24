@@ -1,0 +1,9 @@
+.ant-alert-message {
+    font-size: 14px !important;
+    margin-bottom: 0px !important;
+    font-weight: 500 !important;
+}
+.ant-alert-action {
+    display: flex !important;
+    align-items: center !important;
+}
