@@ -2,11 +2,14 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from apps.map.permissions import require_map_owner
+
 from .langgraph import get_langgraph_service
 from .serializers import ChatMessageSerializer
 
 
 @api_view(['POST'])
+@require_map_owner
 def chat(request):
     """
     處理聊天訊息並返回 Gemini 的回應
@@ -29,7 +32,9 @@ def chat(request):
 
         # 使用 LangGraph 服務處理訊息
         langgraph_service = get_langgraph_service()
-        result = langgraph_service.process_user_message(user_input=message, map_id=map_id)
+        result = langgraph_service.process_user_message(
+            user_input=message, map_id=map_id, user_id=str(request.user.id)
+        )
 
         # 檢查處理結果
         if not result['success']:
@@ -118,6 +123,7 @@ def chat(request):
 
 
 @api_view(['GET'])
+@require_map_owner
 def get_chat_history(request, map_id):
     """
     獲取指定心智圖的對話紀錄（從 LangGraph checkpointer）

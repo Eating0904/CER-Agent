@@ -16,12 +16,11 @@ class LangGraphService:
         self.conversation_graph = ConversationGraph(DATABASE_URL)
         self.langfuse = Langfuse()
 
-    def process_user_message(self, user_input: str, map_id: int) -> Dict:
+    def process_user_message(self, user_input: str, map_id: int, user_id: str) -> Dict:
         try:
             # 1. 從 Map 取得相關資料
             try:
-                map_instance = Map.objects.select_related('user', 'template').get(id=map_id)
-                user_id = str(map_instance.user.id)
+                map_instance = Map.objects.select_related('template').get(id=map_id)
             except Map.DoesNotExist:
                 raise ValueError(f'Map with id {map_id} does not exist')
 
