@@ -22,6 +22,7 @@ from .classifier import IntentClassifier
 class AgentState(TypedDict):
     messages: Annotated[List[BaseMessage], operator.add]
     classification: Dict[str, Any]
+    article_content: str
 
 
 def create_checkpointer(db_url: str) -> PostgresSaver:
@@ -77,7 +78,7 @@ class ConversationGraph:
         agent = self.sub_llm_manager.get_agent('cer_cognitive_support')
         callbacks = config.get('callbacks', [])
 
-        article_content = getattr(self, 'article_content', '')
+        article_content = state.get('article_content', '')
 
         response = agent.process(state['messages'], callbacks, article_content=article_content)
 
@@ -140,8 +141,6 @@ class ConversationGraph:
         Returns:
             dict: 包含處理結果的狀態
         """
-        self.article_content = article_content
-
         config = {'configurable': {'thread_id': thread_id}, 'callbacks': callbacks}
 
         inputs = {
@@ -154,6 +153,7 @@ class ConversationGraph:
                 )
             ],
             'classification': {},
+            'article_content': article_content,
         }
 
         return self.graph.invoke(inputs, config=config)
