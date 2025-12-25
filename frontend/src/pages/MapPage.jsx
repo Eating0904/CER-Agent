@@ -40,6 +40,17 @@ export const MapPage = () => {
         return saved === 'true';
     });
 
+    const [feedbackData, setFeedbackData] = useState(null);
+
+    const handleAskClick = (message, description) => {
+        setFeedbackData({ message, description });
+        setIsChatOpen(true);
+    };
+
+    const handleCloseFeedback = () => {
+        setFeedbackData(null);
+    };
+
     useEffect(() => {
         localStorage.setItem('chatIsOpen', isChatOpen);
     }, [isChatOpen]);
@@ -88,7 +99,7 @@ export const MapPage = () => {
                         <ToolBlock />
                         <Row style={{ flex: 1, minHeight: 0 }}>
                             <Col span={3} style={{ height: '100%', overflowY: 'auto' }}>
-                                <OperateAlertList alerts={alerts} />
+                                <OperateAlertList alerts={alerts} onAskClick={handleAskClick} />
                             </Col>
                             <Col span={21} style={{ height: '100%', position: 'relative' }}>
                                 <BaseMap />
@@ -106,7 +117,12 @@ export const MapPage = () => {
                         </Row>
                     </div>
                 </MapProvider>
-                <Chat isChatOpen={isChatOpen} setIsChatOpen={setIsChatOpen} />
+                <Chat
+                    isChatOpen={isChatOpen}
+                    setIsChatOpen={setIsChatOpen}
+                    feedbackData={feedbackData}
+                    onCloseFeedback={handleCloseFeedback}
+                />
                 <FloatingChatButton
                     isChatOpen={isChatOpen}
                     onClick={() => setIsChatOpen(true)}
