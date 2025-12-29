@@ -5,8 +5,8 @@ AgentManager - Agent 管理器（工廠模式）
 """
 
 from .base import BaseAgent
-from .cer_cognitive_support import CERCognitiveSupportAgent
-from .operator_support import OperatorSupportAgent
+from .cer_cognitive_support_agent import CERCognitiveSupportAgent
+from .operator_support_agent import OperatorSupportAgent
 
 
 class AgentManager:

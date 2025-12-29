@@ -1,9 +1,9 @@
 """LangGraph Agents"""
 
 from .base import BaseAgent
-from .cer_cognitive_support import CERCognitiveSupportAgent
+from .cer_cognitive_support_agent import CERCognitiveSupportAgent
 from .manager import AgentManager
-from .operator_support import OperatorSupportAgent
+from .operator_support_agent import OperatorSupportAgent
 
 __all__ = [
     'BaseAgent',
