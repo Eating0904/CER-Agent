@@ -1,21 +1,21 @@
 import { useEffect } from 'react';
 
 import { mapEventEmitter } from './mapEventEmitter';
-import { NODE_ADDED } from './mapEventTypes';
+import { NODE_EDITED } from './mapEventTypes';
 
-export const useMapEventNotifier = (onNodeAdded) => {
+export const useMapEventNotifier = (onNodeEdited) => {
     useEffect(() => {
-        const handleNodeAdded = (event) => {
+        const handleNodeEdited = (event) => {
             const { nodeType, nodeId } = event.detail;
             const typeMap = { C: 'claim', E: 'evidence', R: 'reasoning' };
-            const message = `使用者新增了一個 ${typeMap[nodeType]} node (id: ${nodeId})`;
+            const message = `使用者編輯了 ${typeMap[nodeType]} node (id: ${nodeId})`;
 
-            if (onNodeAdded) {
-                onNodeAdded(message);
+            if (onNodeEdited) {
+                onNodeEdited(message);
             }
         };
 
-        const unsubscribe = mapEventEmitter.subscribe(NODE_ADDED, handleNodeAdded);
+        const unsubscribe = mapEventEmitter.subscribe(NODE_EDITED, handleNodeEdited);
         return unsubscribe;
-    }, [onNodeAdded]);
+    }, [onNodeEdited]);
 };

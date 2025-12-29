@@ -1,8 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 
 import { addEdge, applyEdgeChanges, applyNodeChanges } from '@xyflow/react';
 
-import { mapEventEmitter, NODE_ADDED } from '../events';
+import { mapEventEmitter, NODE_EDITED } from '../events';
 
 export const useMapNodes = (mapData) => {
     const [nodes, setNodes] = useState([]);
@@ -10,12 +15,46 @@ export const useMapNodes = (mapData) => {
     const [selectedNodeId, setSelectedNodeId] = useState(null);
     const [selectedEdgeId, setSelectedEdgeId] = useState(null);
 
+    const prevSelectedNodeIdRef = useRef(null);
+    const editingNodeSnapshot = useRef(null);
+
     useEffect(() => {
         if (mapData) {
             setNodes(JSON.parse(JSON.stringify(mapData.nodes || [])));
             setEdges(JSON.parse(JSON.stringify(mapData.edges || [])));
         }
     }, [mapData]);
+
+    useEffect(() => {
+        const prevNodeId = prevSelectedNodeIdRef.current;
+
+        // 比較前一個選取的節點內容是否有變更
+        // TODO: 差異的幅度需要再討論
+        if (prevNodeId && prevNodeId !== selectedNodeId) {
+            if (editingNodeSnapshot.current) {
+                const prevNode = nodes.find((n) => n.id === prevNodeId);
+                if (prevNode && prevNode.data.content !== editingNodeSnapshot.current.content) {
+                    mapEventEmitter.emit(NODE_EDITED, {
+                        nodeType: prevNode.data.type,
+                        nodeId: prevNodeId,
+                    });
+                }
+            }
+        }
+
+        prevSelectedNodeIdRef.current = selectedNodeId;
+
+        // 建立目前選取節點的快照
+        if (selectedNodeId) {
+            const currentNode = nodes.find((n) => n.id === selectedNodeId);
+            if (currentNode) {
+                editingNodeSnapshot.current = { content: currentNode.data.content };
+            }
+        }
+        else {
+            editingNodeSnapshot.current = null;
+        }
+    }, [selectedNodeId]);
 
     const onNodesChange = useCallback(
         (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -76,8 +115,6 @@ export const useMapNodes = (mapData) => {
 
             return [...nds, newNode];
         });
-
-        mapEventEmitter.emit(NODE_ADDED, { nodeType, nodeId: newId });
 
         setSelectedNodeId(newId);
     }, []);

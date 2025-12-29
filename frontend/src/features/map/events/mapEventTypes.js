@@ -1,1 +1,1 @@
-export const NODE_ADDED = 'NODE_ADDED';
+export const NODE_EDITED = 'NODE_EDITED';

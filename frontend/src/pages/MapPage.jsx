@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
     Alert,
@@ -25,13 +25,17 @@ export const MapPage = () => {
 
     const [alerts, setAlerts] = useState([]);
 
-    const addAlert = (message) => {
+    const addAlert = useCallback((message) => {
         const newAlert = {
             id: Date.now(),
             message,
         };
         setAlerts((prev) => [newAlert, ...prev]);
-    };
+    }, []);
+
+    useEffect(() => {
+        setAlerts([]);
+    }, [mapId]);
 
     useMapEventNotifier(addAlert);
 
