@@ -66,7 +66,7 @@ class LangGraphService:
                         callbacks=[langfuse_handler],
                     )
 
-                    print('LangGraph Result:', result)
+                    # print('LangGraph Result:', result)
 
                     # 7. 從 state['messages'] 取得最後回應
                     if result.get('messages'):

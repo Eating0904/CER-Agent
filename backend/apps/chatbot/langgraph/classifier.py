@@ -9,6 +9,7 @@ from typing import Any, List
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from .json_parser import parse_llm_json_response
 from .message_filter import filter_messages
 from .prompts import CLASSIFIER_PROMPT
 
@@ -29,23 +30,6 @@ class IntentClassifier:
 
         # 使用預定義的 prompt
         self.system_prompt = CLASSIFIER_PROMPT
-
-    def _extract_json(self, text: str) -> str:
-        """從文本中提取 JSON"""
-        # 找第一個 { 的位置
-        start = text.find('{')
-        if start == -1:
-            return text.strip()
-
-        # 找最後一個 } 的位置
-        end = text.rfind('}')
-        if end == -1:
-            return text.strip()
-
-        # 提取 { 到 } 之間的內容（包含 { 和 }）
-        json_str = text[start : end + 1]
-
-        return json_str
 
     def classify(self, messages: List[BaseMessage], callbacks: List[Any] = None) -> dict:
         """
@@ -73,8 +57,7 @@ class IntentClassifier:
             print(f'\n💡 分類器回應: {response.content}')
 
             # 提取並解析 JSON
-            json_text = self._extract_json(response.content)
-            result = json.loads(json_text)
+            result = parse_llm_json_response(response.content)
 
             # 驗證回應格式
             if 'next_action' not in result:
@@ -89,8 +72,8 @@ class IntentClassifier:
 
         except json.JSONDecodeError as e:
             print(f'\n⚠️  JSON 解析錯誤: {e}')
-            print(f'原始回應: {response.content}')
-            print(f'提取的 JSON: {json_text[:200] if "json_text" in locals() else "N/A"}')
+            # print(f'原始回應: {response.content}')
+            # print(f'提取的 JSON: {json_text[:200] if "json_text" in locals() else "N/A"}')
             # 預設回傳 operator_support
             return {
                 'reasoning': 'JSON 解析失敗，預設為介面支援',

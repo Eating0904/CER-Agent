@@ -8,6 +8,7 @@ from typing import Any, List
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from .json_parser import parse_llm_json_response
 from .message_filter import filter_messages
 from .prompts import CER_COGNITIVE_SUPPORT_PROMPT, OPERATOR_SUPPORT_PROMPT
 
@@ -57,9 +58,11 @@ class SubLLMAgent:
         if self.agent_type == 'operator_support':
             system_message_content = self.system_prompt
             filtered_messages = filter_messages(messages, context_fields_to_keep=[])
+            print('operator_support:', filtered_messages)
         elif self.agent_type == 'cer_cognitive_support':
             system_message_content = self.system_prompt.format(article_content=article_content)
             filtered_messages = messages
+            print('cer_cognitive_support:', filtered_messages)
         else:
             system_message_content = self.system_prompt
             filtered_messages = messages
@@ -72,6 +75,18 @@ class SubLLMAgent:
                 final_messages,
                 config={'callbacks': callbacks, 'run_name': f'{self.agent_type}_Agent'},
             )
+
+            if self.agent_type == 'cer_cognitive_support':
+                try:
+                    result = parse_llm_json_response(response.content)
+                    if 'final_response' not in result:
+                        print(f'⚠️  回應中缺少 final_response 欄位，回傳原始內容')
+                        return response.content
+                    return result['final_response']
+                except Exception as json_error:
+                    print(f'⚠️  JSON 解析失敗: {json_error}，回傳原始內容')
+                    return response.content
+
             return response.content
 
         except Exception as e:
