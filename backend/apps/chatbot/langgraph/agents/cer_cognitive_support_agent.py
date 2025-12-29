@@ -22,10 +22,7 @@ class CERCognitiveSupportAgent(BaseAgent):
         self.prompt_template = CER_COGNITIVE_SUPPORT_PROMPT
 
     def prepare_messages(
-        self, 
-        messages: List[BaseMessage],
-        article_content: str = '',
-        **kwargs
+        self, messages: List[BaseMessage], article_content: str = '', **kwargs
     ) -> List[BaseMessage]:
         """
         準備訊息：格式化 prompt（注入 article_content），保留完整 context

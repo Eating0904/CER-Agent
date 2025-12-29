@@ -21,11 +21,7 @@ class OperatorSupportAgent(BaseAgent):
         super().__init__(temperature=0.7)
         self.system_prompt = OPERATOR_SUPPORT_PROMPT
 
-    def prepare_messages(
-            self,
-            messages: List[BaseMessage],
-            **kwargs
-        ) -> List[BaseMessage]:
+    def prepare_messages(self, messages: List[BaseMessage], **kwargs) -> List[BaseMessage]:
         """
         準備訊息：過濾掉 context 欄位，只保留 query
 
