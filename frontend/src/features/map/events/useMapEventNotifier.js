@@ -18,12 +18,13 @@ export const useMapEventNotifier = (onEvent) => {
         };
 
         const handleEdgeConnected = (event) => {
-            const { sourceNodeId, targetNodeId } = event.detail;
+            const { sourceNodeId, targetNodeId, newEdges } = event.detail;
 
             if (onEvent) {
                 onEvent({
                     action: 'connect',
                     connected_nodes: [sourceNodeId, targetNodeId],
+                    newEdges,
                 });
             }
         };

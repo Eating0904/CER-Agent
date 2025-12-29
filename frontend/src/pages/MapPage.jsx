@@ -65,14 +65,15 @@ export const MapPage = () => {
         mapContextRef.current = mapContext;
     }, [mapContext]);
 
-    const handleAutoSave = useCallback(async () => {
+    const handleAutoSave = useCallback(async (overrideEdges = null) => {
         const currentMapContext = mapContextRef.current;
+        const edgesToSave = overrideEdges || currentMapContext.edges;
 
         try {
             await updateMap({
                 id: mapId,
                 nodes: currentMapContext.nodes,
-                edges: currentMapContext.edges,
+                edges: edgesToSave,
             }).unwrap();
             message.info('map has been auto-saved');
         }
@@ -111,7 +112,9 @@ export const MapPage = () => {
         setAlerts((prev) => [tempAlert, ...prev]);
 
         // 2. 自動儲存 map
-        await handleAutoSave();
+        // 如果是連線事件，使用傳入的 newEdges；否則使用當前的 edges
+        const edgesToSave = eventData.newEdges || null;
+        await handleAutoSave(edgesToSave);
 
         // 3. 呼叫 feedback API
         try {
@@ -146,11 +149,22 @@ export const MapPage = () => {
         }
     }, [mapId, createFeedback, handleAutoSave]);
 
+    // 使用 ref 保存最新的 addAlert，確保事件監聽器始終調用最新版本
+    const addAlertRef = useRef(addAlert);
+    useEffect(() => {
+        addAlertRef.current = addAlert;
+    }, [addAlert]);
+
+    // 創建穩定的 wrapper 函數
+    const stableAddAlert = useCallback((eventData) => {
+        addAlertRef.current(eventData);
+    }, []);
+
     useEffect(() => {
         setAlerts([]);
     }, [mapId]);
 
-    useMapEventNotifier(addAlert);
+    useMapEventNotifier(stableAddAlert);
 
     const renderContent = () => {
         if (!mapId) {

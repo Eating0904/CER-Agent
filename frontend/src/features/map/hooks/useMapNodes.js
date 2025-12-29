@@ -68,11 +68,16 @@ export const useMapNodes = (mapData) => {
 
     const onConnect = useCallback(
         (params) => {
-            setEdges((eds) => addEdge(params, eds));
+            let newEdges;
+            setEdges((eds) => {
+                newEdges = addEdge(params, eds);
+                return newEdges;
+            });
 
             mapEventEmitter.emit(EDGE_CONNECTED, {
                 sourceNodeId: params.source,
                 targetNodeId: params.target,
+                newEdges,
             });
         },
         [],
