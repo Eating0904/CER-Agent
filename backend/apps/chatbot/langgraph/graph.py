@@ -14,7 +14,7 @@ from langgraph.graph import END, START, StateGraph
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
-from .agents import SubLLMManager
+from .agents import AgentManager
 from .classifier import IntentClassifier
 
 
@@ -55,7 +55,7 @@ class ConversationGraph:
         self.db_url = db_url
         self.checkpointer = create_checkpointer(db_url)
         self.classifier = IntentClassifier()
-        self.sub_llm_manager = SubLLMManager()
+        self.agent_manager = AgentManager()
         self.graph = self._build_graph()
 
     def _classifier_node(self, state: AgentState, config: RunnableConfig) -> dict:
@@ -67,7 +67,7 @@ class ConversationGraph:
 
     def _operator_support_node(self, state: AgentState, config: RunnableConfig) -> dict:
         """Node: 介面支援 Agent"""
-        agent = self.sub_llm_manager.get_agent('operator_support')
+        agent = self.agent_manager.get_agent('operator_support')
         callbacks = config.get('callbacks', [])
         response = agent.process(state['messages'], callbacks)
 
@@ -75,7 +75,7 @@ class ConversationGraph:
 
     def _cer_cognitive_support_node(self, state: AgentState, config: RunnableConfig) -> dict:
         """Node: 認知支援 Agent"""
-        agent = self.sub_llm_manager.get_agent('cer_cognitive_support')
+        agent = self.agent_manager.get_agent('cer_cognitive_support')
         callbacks = config.get('callbacks', [])
 
         article_content = state.get('article_content', '')
