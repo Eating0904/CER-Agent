@@ -57,7 +57,7 @@ def create_feedback(request):
     # 4. 同步呼叫 LLM 生成 feedback
     try:
         feedback_service = get_feedback_service()
-        feedback_text = feedback_service.generate_feedback(meta)
+        feedback_text = feedback_service.generate_feedback(map_id, text, meta)
 
         feedback_record.feedback = feedback_text
         feedback_record.save()

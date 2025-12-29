@@ -28,7 +28,13 @@ class FeedbackGraph:
     def _feedback_node(self, state: FeedbackState, config: RunnableConfig) -> dict:
         """Node: 生成 feedback"""
         callbacks = config.get('callbacks', [])
-        response = self.agent.process(state['messages'], callbacks)
+        article_content = config.get('configurable', {}).get('article_content', '')
+
+        response = self.agent.process(
+            state['messages'],
+            article_content=article_content,
+            callbacks=callbacks,
+        )
 
         return {'messages': [AIMessage(content=response)]}
 
@@ -45,19 +51,30 @@ class FeedbackGraph:
 
         return workflow.compile()
 
-    def process_message(self, user_input: str, callbacks: List[Any] = None) -> Dict:
+    def process_message(
+        self,
+        user_input: str,
+        article_content: str = '',
+        callbacks: List[Any] = None,
+    ) -> Dict:
         """
         處理訊息並生成 feedback
 
         Args:
-            user_input: 使用者輸入（節點資訊）
+            user_input: 學生的操作資訊 (將作為 HumanMessage)
+            article_content: 文章內容 (將注入到 SystemMessage)
             callbacks: LangChain callbacks
 
         Returns:
             dict: 包含處理結果的狀態
         """
 
-        config = {'callbacks': callbacks} if callbacks else {}
+        config = {
+            'callbacks': callbacks if callbacks else [],
+            'configurable': {
+                'article_content': article_content,
+            },
+        }
 
         inputs = {'messages': [HumanMessage(content=user_input)]}
 

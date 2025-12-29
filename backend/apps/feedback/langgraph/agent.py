@@ -20,18 +20,28 @@ class FeedbackAgent:
             temperature=0.7,
         )
 
-    def process(self, messages: List[BaseMessage], callbacks: List[Any] = None) -> str:
+    def process(
+        self,
+        messages: List[BaseMessage],
+        article_content: str = '',
+        callbacks: List[Any] = None,
+    ) -> str:
         """
         處理 feedback 生成
 
         Args:
-            messages: 訊息列表
+            messages: 訊息列表 (包含學生操作的 HumanMessage)
+            article_content: 文章內容
             callbacks: LangChain callbacks (未來可用於 Langfuse 追蹤)
 
         Returns:
             str: LLM 生成的回饋
         """
-        system_message = SystemMessage(content=NODE_EDIT_FEEDBACK_PROMPT)
+        formatted_prompt = NODE_EDIT_FEEDBACK_PROMPT.format(
+            article_content=article_content
+        )
+
+        system_message = SystemMessage(content=formatted_prompt)
         final_messages = [system_message] + messages
 
         try:
