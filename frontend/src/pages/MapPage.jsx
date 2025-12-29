@@ -17,6 +17,7 @@ import { useMapNodes } from '../features/map/hooks';
 import { MapProvider } from '../features/map/MapProvider';
 import { SaveButton } from '../features/map/SaveButton';
 import { useGetMapQuery } from '../features/map/utils';
+import { useCreateFeedbackMutation } from '../features/OperateAlertList/feedbackApi';
 import { OperateAlertList } from '../features/OperateAlertList/OperateAlertList';
 
 export const MapPage = () => {
@@ -24,14 +25,56 @@ export const MapPage = () => {
     const mapId = searchParams.get('mapId');
 
     const [alerts, setAlerts] = useState([]);
+    const [createFeedback] = useCreateFeedbackMutation();
 
-    const addAlert = useCallback((message) => {
-        const newAlert = {
-            id: Date.now(),
-            message,
+    const addAlert = useCallback(async (eventData) => {
+        const { nodeType, nodeId } = eventData;
+
+        // 1. 立即新增 loading 狀態的 Alert
+        const tempAlertId = Date.now();
+        const tempAlert = {
+            id: tempAlertId,
+            message: `${nodeId} has been edited`,
+            description: 'Generating feedback...',
+            status: 'loading',
+            showAsk: false,
         };
-        setAlerts((prev) => [newAlert, ...prev]);
-    }, []);
+
+        setAlerts((prev) => [tempAlert, ...prev]);
+
+        // 2. 呼叫 feedback API
+        try {
+            const response = await createFeedback({
+                mapId: parseInt(mapId, 10),
+                nodeId,
+                nodeType,
+                text: tempAlert.message,
+            }).unwrap();
+
+            // 3. 更新 Alert 為 success 狀態
+            if (response.success) {
+                setAlerts((prev) => prev.map((alert) => (alert.id === tempAlertId
+                    ? {
+                        ...alert,
+                        description: response.data.feedback,
+                        status: 'success',
+                        showAsk: true,
+                    }
+                    : alert)));
+            }
+        }
+        catch (error) {
+            // 4. 更新 Alert 為 error 狀態
+            setAlerts((prev) => prev.map((alert) => (alert.id === tempAlertId
+                ? {
+                    ...alert,
+                    description: error.data?.error || error.message || '生成回饋失敗',
+                    status: 'error',
+                    showAsk: false,
+                }
+                : alert)));
+        }
+    }, [mapId, createFeedback]);
 
     useEffect(() => {
         setAlerts([]);

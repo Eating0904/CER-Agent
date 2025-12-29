@@ -1,29 +1,47 @@
-import { Alert, Button } from 'antd';
+import { Alert, Button, Spin } from 'antd';
 
 import './OperateAlertList.css';
 
 export const OperateAlertList = ({ alerts = [], onAskClick }) => (
     <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {alerts.map((alert) => (
-            <Alert
-                key={alert.id}
-                message={(
-                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: '4px' }}>
-                        <span>{alert.message}</span>
-                        <Button
-                            size="small"
-                            type="primary"
-                            style={{ marginLeft: '8px' }}
-                            onClick={() => onAskClick(alert.message, '試著修改內容吧!')}
-                        >
-                            Ask
-                        </Button>
-                    </div>
-                )}
-                description="試著修改內容吧!"
-                type="info"
-                style={{ padding: '8px', textAlign: 'left', backgroundColor: '#f3ecfc' }}
-            />
-        ))}
+        {alerts.map((alert) => {
+            // 根據狀態決定顯示內容
+            const isLoading = alert.status === 'loading';
+            const isError = alert.status === 'error';
+            const isSuccess = alert.status === 'success';
+
+            return (
+                <Alert
+                    key={alert.id}
+                    message={(
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: '4px' }}>
+                            <span>{alert.message}</span>
+                            {isSuccess && alert.showAsk && (
+                                <Button
+                                    size="small"
+                                    type="primary"
+                                    style={{ marginLeft: '8px' }}
+                                    onClick={() => onAskClick(alert.message, alert.description)}
+                                >
+                                    Ask
+                                </Button>
+                            )}
+                        </div>
+                    )}
+                    description={
+                        isLoading ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Spin size="small" />
+                                <span>正在生成回饋...</span>
+                            </div>
+                        ) : (
+                            alert.description
+                        )
+                    }
+                    type={isError ? 'error' : 'info'}
+                    style={{ padding: '8px', textAlign: 'left', backgroundColor: isError ? '#fff2f0' : '#f3ecfc' }}
+                />
+            );
+        })}
     </div>
 );
