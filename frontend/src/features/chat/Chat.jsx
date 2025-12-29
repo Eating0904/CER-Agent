@@ -25,7 +25,7 @@ import { InitiativeFeedback } from './InitiativeFeedback';
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import './Chat.css';
 
-export const Chat = ({ isChatOpen, setIsChatOpen, feedbackData, onCloseFeedback }) => {
+export const Chat = ({ isChatOpen, setIsChatOpen, feedbackData, onCloseFeedback, onAutoSave }) => {
     // 從 URL 讀取 mapId
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
@@ -67,6 +67,12 @@ export const Chat = ({ isChatOpen, setIsChatOpen, feedbackData, onCloseFeedback 
 
         try {
             setIsSending(true);
+
+            // 自動儲存 map
+            if (onAutoSave) {
+                await onAutoSave();
+            }
+
             await sendChatMessage({
                 message: messageToSend,
                 mapId,

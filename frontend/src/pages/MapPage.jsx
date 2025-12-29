@@ -1,8 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 
 import {
     Alert,
     Col,
+    message,
     Row,
     Spin,
 } from 'antd';
@@ -16,7 +22,7 @@ import { useMapEventNotifier } from '../features/map/events';
 import { useMapNodes } from '../features/map/hooks';
 import { MapProvider } from '../features/map/MapProvider';
 import { SaveButton } from '../features/map/SaveButton';
-import { useGetMapQuery } from '../features/map/utils';
+import { useGetMapQuery, useUpdateMapMutation } from '../features/map/utils';
 import { useCreateFeedbackMutation } from '../features/OperateAlertList/feedbackApi';
 import { OperateAlertList } from '../features/OperateAlertList/OperateAlertList';
 
@@ -26,73 +32,7 @@ export const MapPage = () => {
 
     const [alerts, setAlerts] = useState([]);
     const [createFeedback] = useCreateFeedbackMutation();
-
-    const addAlert = useCallback(async (eventData) => {
-        const {
-            action,
-            node_id: nodeId,
-            connected_nodes: connectedNodes,
-        } = eventData;
-
-        // 1. 立即新增 loading 狀態的 Alert
-        const tempAlertId = Date.now();
-        let message = '';
-
-        if (action === 'edit') {
-            message = `${nodeId} has been edited`;
-        }
-        else if (action === 'connect') {
-            message = `Connected ${connectedNodes[0]} and ${connectedNodes[1]}`;
-        }
-
-        const tempAlert = {
-            id: tempAlertId,
-            message,
-            description: 'Generating feedback...',
-            status: 'loading',
-            showAsk: false,
-        };
-
-        setAlerts((prev) => [tempAlert, ...prev]);
-
-        // 2. 呼叫 feedback API
-        try {
-            const response = await createFeedback({
-                mapId: parseInt(mapId, 10),
-                text: message,
-                meta: eventData,
-            }).unwrap();
-
-            // 3. 更新 Alert 為 success 狀態
-            if (response.success) {
-                setAlerts((prev) => prev.map((alert) => (alert.id === tempAlertId
-                    ? {
-                        ...alert,
-                        description: response.data.feedback,
-                        status: 'success',
-                        showAsk: true,
-                    }
-                    : alert)));
-            }
-        }
-        catch (error) {
-            // 4. 更新 Alert 為 error 狀態
-            setAlerts((prev) => prev.map((alert) => (alert.id === tempAlertId
-                ? {
-                    ...alert,
-                    description: error.data?.error || error.message || '生成回饋失敗',
-                    status: 'error',
-                    showAsk: false,
-                }
-                : alert)));
-        }
-    }, [mapId, createFeedback]);
-
-    useEffect(() => {
-        setAlerts([]);
-    }, [mapId]);
-
-    useMapEventNotifier(addAlert);
+    const [updateMap] = useUpdateMapMutation();
 
     const [isChatOpen, setIsChatOpen] = useState(() => {
         const saved = localStorage.getItem('chatIsOpen');
@@ -101,8 +41,8 @@ export const MapPage = () => {
 
     const [feedbackData, setFeedbackData] = useState(null);
 
-    const handleAskClick = (message, description) => {
-        setFeedbackData({ message, description });
+    const handleAskClick = (alertMessage, description) => {
+        setFeedbackData({ message: alertMessage, description });
         setIsChatOpen(true);
     };
 
@@ -119,6 +59,98 @@ export const MapPage = () => {
     });
 
     const mapContext = useMapNodes(mapData);
+
+    const mapContextRef = useRef(mapContext);
+    useEffect(() => {
+        mapContextRef.current = mapContext;
+    }, [mapContext]);
+
+    const handleAutoSave = useCallback(async () => {
+        const currentMapContext = mapContextRef.current;
+
+        try {
+            await updateMap({
+                id: mapId,
+                nodes: currentMapContext.nodes,
+                edges: currentMapContext.edges,
+            }).unwrap();
+            message.info('map has been auto-saved');
+        }
+        catch (err) {
+            message.warning('Auto-save failed');
+            console.error('自動儲存錯誤:', err);
+        }
+    }, [mapId, updateMap]);
+
+    const addAlert = useCallback(async (eventData) => {
+        const {
+            action,
+            node_id: nodeId,
+            connected_nodes: connectedNodes,
+        } = eventData;
+
+        // 1. 立即新增 loading 狀態的 Alert
+        const tempAlertId = Date.now();
+        let alertMessage = '';
+
+        if (action === 'edit') {
+            alertMessage = `${nodeId} has been edited`;
+        }
+        else if (action === 'connect') {
+            alertMessage = `Connected ${connectedNodes[0]} and ${connectedNodes[1]}`;
+        }
+
+        const tempAlert = {
+            id: tempAlertId,
+            message: alertMessage,
+            description: 'Generating feedback...',
+            status: 'loading',
+            showAsk: false,
+        };
+
+        setAlerts((prev) => [tempAlert, ...prev]);
+
+        // 2. 自動儲存 map
+        await handleAutoSave();
+
+        // 3. 呼叫 feedback API
+        try {
+            const response = await createFeedback({
+                mapId: parseInt(mapId, 10),
+                text: alertMessage,
+                meta: eventData,
+            }).unwrap();
+
+            // 4. 更新 Alert 為 success 狀態
+            if (response.success) {
+                setAlerts((prev) => prev.map((alert) => (alert.id === tempAlertId
+                    ? {
+                        ...alert,
+                        description: response.data.feedback,
+                        status: 'success',
+                        showAsk: true,
+                    }
+                    : alert)));
+            }
+        }
+        catch (err) {
+            // 5. 更新 Alert 為 error 狀態
+            setAlerts((prev) => prev.map((alert) => (alert.id === tempAlertId
+                ? {
+                    ...alert,
+                    description: err.data?.error || err.message || '生成回饋失敗',
+                    status: 'error',
+                    showAsk: false,
+                }
+                : alert)));
+        }
+    }, [mapId, createFeedback, handleAutoSave]);
+
+    useEffect(() => {
+        setAlerts([]);
+    }, [mapId]);
+
+    useMapEventNotifier(addAlert);
 
     const renderContent = () => {
         if (!mapId) {
@@ -181,6 +213,7 @@ export const MapPage = () => {
                     setIsChatOpen={setIsChatOpen}
                     feedbackData={feedbackData}
                     onCloseFeedback={handleCloseFeedback}
+                    onAutoSave={handleAutoSave}
                 />
                 <FloatingChatButton
                     isChatOpen={isChatOpen}
