@@ -34,9 +34,8 @@ def create_feedback(request):
         )
 
     map_id = serializer.validated_data['map_id']
-    node_id = serializer.validated_data['node_id']
-    node_type = serializer.validated_data.get('node_type', '')
     text = serializer.validated_data['text']
+    meta = serializer.validated_data['meta']
 
     # 2. 驗證 Map 存在
     try:
@@ -52,15 +51,13 @@ def create_feedback(request):
         user=request.user,
         map=map_instance,
         text=text,
-        metadata={'action': 'edit', 'node_id': node_id, 'node_type': node_type},
+        metadata=meta,
     )
 
     # 4. 同步呼叫 LLM 生成 feedback
     try:
         feedback_service = get_feedback_service()
-        feedback_text = feedback_service.generate_feedback(
-            {'node_id': node_id, 'node_type': node_type}
-        )
+        feedback_text = feedback_service.generate_feedback(meta)
 
         feedback_record.feedback = feedback_text
         feedback_record.save()

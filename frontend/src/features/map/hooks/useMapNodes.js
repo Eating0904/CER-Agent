@@ -7,7 +7,7 @@ import {
 
 import { addEdge, applyEdgeChanges, applyNodeChanges } from '@xyflow/react';
 
-import { mapEventEmitter, NODE_EDITED } from '../events';
+import { EDGE_CONNECTED, mapEventEmitter, NODE_EDITED } from '../events';
 
 export const useMapNodes = (mapData) => {
     const [nodes, setNodes] = useState([]);
@@ -67,7 +67,14 @@ export const useMapNodes = (mapData) => {
     );
 
     const onConnect = useCallback(
-        (params) => setEdges((eds) => addEdge(params, eds)),
+        (params) => {
+            setEdges((eds) => addEdge(params, eds));
+
+            mapEventEmitter.emit(EDGE_CONNECTED, {
+                sourceNodeId: params.source,
+                targetNodeId: params.target,
+            });
+        },
         [],
     );
 

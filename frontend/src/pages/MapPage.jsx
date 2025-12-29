@@ -28,13 +28,26 @@ export const MapPage = () => {
     const [createFeedback] = useCreateFeedbackMutation();
 
     const addAlert = useCallback(async (eventData) => {
-        const { nodeType, nodeId } = eventData;
+        const {
+            action,
+            node_id: nodeId,
+            connected_nodes: connectedNodes,
+        } = eventData;
 
         // 1. 立即新增 loading 狀態的 Alert
         const tempAlertId = Date.now();
+        let message = '';
+
+        if (action === 'edit') {
+            message = `${nodeId} has been edited`;
+        }
+        else if (action === 'connect') {
+            message = `Connected ${connectedNodes[0]} and ${connectedNodes[1]}`;
+        }
+
         const tempAlert = {
             id: tempAlertId,
-            message: `${nodeId} has been edited`,
+            message,
             description: 'Generating feedback...',
             status: 'loading',
             showAsk: false,
@@ -46,9 +59,8 @@ export const MapPage = () => {
         try {
             const response = await createFeedback({
                 mapId: parseInt(mapId, 10),
-                nodeId,
-                nodeType,
-                text: tempAlert.message,
+                text: message,
+                meta: eventData,
             }).unwrap();
 
             // 3. 更新 Alert 為 success 狀態
