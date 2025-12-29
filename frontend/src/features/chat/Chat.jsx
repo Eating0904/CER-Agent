@@ -20,11 +20,12 @@ import {
     useGetChatHistoryQuery,
     useSendChatMessageMutation,
 } from './chatApi';
+import { InitiativeFeedback } from './InitiativeFeedback';
 
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import './Chat.css';
 
-export const Chat = ({ isChatOpen, setIsChatOpen }) => {
+export const Chat = ({ isChatOpen, setIsChatOpen, feedbackData, onCloseFeedback }) => {
     // 從 URL 讀取 mapId
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
@@ -54,10 +55,20 @@ export const Chat = ({ isChatOpen, setIsChatOpen }) => {
     // 3. 處理發送訊息
     const handleSend = async (text) => {
         if (!text.trim()) return;
+
+        const messageToSend = feedbackData
+            ? `[Operate]\n${feedbackData.message}\n[Feedback]\n${feedbackData.description}\n[Question]\n${text}`
+            : text;
+
+        // 立即關閉 feedback，不等待發送完成
+        if (feedbackData && onCloseFeedback) {
+            onCloseFeedback();
+        }
+
         try {
             setIsSending(true);
             await sendChatMessage({
-                message: text,
+                message: messageToSend,
                 mapId,
             }).unwrap();
         }
@@ -152,6 +163,12 @@ export const Chat = ({ isChatOpen, setIsChatOpen }) => {
                     />
                 </ChatContainer>
             </MainContainer>
+
+            <InitiativeFeedback
+                message={feedbackData?.message}
+                description={feedbackData?.description}
+                onClose={onCloseFeedback}
+            />
         </div>
     );
 };

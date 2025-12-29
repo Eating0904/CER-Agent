@@ -8,10 +8,12 @@ import { useUpdateMapMutation } from './utils';
 export const SaveButton = () => {
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
-    const { nodes, edges } = useMapContext();
+    const { nodes, edges, selectNode, selectEdge } = useMapContext();
     const [updateMap, { isLoading }] = useUpdateMapMutation();
 
     const handleSave = async () => {
+        selectNode(null);
+        selectEdge(null);
         try {
             await updateMap({
                 id: mapId,
