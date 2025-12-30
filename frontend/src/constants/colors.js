@@ -20,6 +20,11 @@ export const BRAND_COLORS = {
     info: '#5B00AE',
 };
 
+export const BUTTON_COLORS = {
+    green: '#02F78E',
+    greenHover: '#2fdd92ff',
+};
+
 // ===== CER 模型節點顏色 =====
 export const NODE_COLORS = {
     // C - Claim（主張）

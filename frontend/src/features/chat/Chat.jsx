@@ -110,7 +110,7 @@ export const Chat = ({ isChatOpen, setIsChatOpen, feedbackData, onCloseFeedback,
                 bottom: '12px',
                 right: '24px',
                 width: '400px',
-                height: '600px',
+                height: '65vh',
                 zIndex: 1000,
                 borderRadius: '12px',
                 overflow: 'hidden',
@@ -131,7 +131,6 @@ export const Chat = ({ isChatOpen, setIsChatOpen, feedbackData, onCloseFeedback,
                                 type="text"
                                 icon={<MinusOutlined />}
                                 onClick={handleClose}
-                                style={{ color: '#666' }}
                             />
                         </ConversationHeader.Actions>
                     </ConversationHeader>
