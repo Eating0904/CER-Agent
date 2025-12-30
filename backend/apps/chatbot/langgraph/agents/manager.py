@@ -7,6 +7,7 @@ AgentManager - Agent 管理器（工廠模式）
 from .base import BaseAgent
 from .cer_cognitive_support_agent import CERCognitiveSupportAgent
 from .operator_support_agent import OperatorSupportAgent
+from .scoring_agent import ScoringAgent
 
 
 class AgentManager:
@@ -17,6 +18,7 @@ class AgentManager:
         self.agents = {
             'operator_support': OperatorSupportAgent(),
             'cer_cognitive_support': CERCognitiveSupportAgent(),
+            'cer_scoring': ScoringAgent(),
         }
 
     def get_agent(self, agent_type: str) -> BaseAgent:

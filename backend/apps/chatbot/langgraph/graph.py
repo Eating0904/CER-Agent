@@ -84,15 +84,26 @@ class ConversationGraph:
 
         return {'messages': [AIMessage(content=response)]}
 
+    def _scoring_node(self, state: AgentState, config: RunnableConfig) -> dict:
+        """Node: CER 評分 Agent"""
+        agent = self.agent_manager.get_agent('cer_scoring')
+        callbacks = config.get('callbacks', [])
+
+        article_content = state.get('article_content', '')
+
+        response = agent.process(state['messages'], callbacks, article_content=article_content)
+
+        return {'messages': [AIMessage(content=response)]}
+
     def _route_decision(
         self, state: AgentState
-    ) -> Literal['operator_support', 'cer_cognitive_support']:
+    ) -> Literal['operator_support', 'cer_cognitive_support', 'cer_scoring']:
         """條件邊：根據分類結果決定路由"""
         classification = state.get('classification', {})
         intent = classification.get('next_action', 'operator_support')
 
         # 直接回傳分類結果,預設為 operator_support
-        if intent in ['operator_support', 'cer_cognitive_support']:
+        if intent in ['operator_support', 'cer_cognitive_support', 'cer_scoring']:
             return intent
         else:
             return 'operator_support'
@@ -104,6 +115,7 @@ class ConversationGraph:
         workflow.add_node('classifier', self._classifier_node)
         workflow.add_node('operator_support', self._operator_support_node)
         workflow.add_node('cer_cognitive_support', self._cer_cognitive_support_node)
+        workflow.add_node('cer_scoring', self._scoring_node)
 
         # 設定流程
         workflow.add_edge(START, 'classifier')
@@ -113,10 +125,12 @@ class ConversationGraph:
             {
                 'operator_support': 'operator_support',
                 'cer_cognitive_support': 'cer_cognitive_support',
+                'cer_scoring': 'cer_scoring',
             },
         )
         workflow.add_edge('operator_support', END)
         workflow.add_edge('cer_cognitive_support', END)
+        workflow.add_edge('cer_scoring', END)
 
         return workflow.compile(checkpointer=self.checkpointer)
 
