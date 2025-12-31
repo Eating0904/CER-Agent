@@ -46,13 +46,7 @@ class LangGraphService:
                 # 設定 Trace 層級屬性 (Session ID 和 User ID) 並向下傳遞
                 with propagate_attributes(session_id=session_id, user_id=user_id):
                     # 更新 Trace Input
-                    trace_span.update_trace(
-                        input={
-                            'user_id': user_id,
-                            'map_id': map_id,
-                            'user_input': user_input,
-                        }
-                    )
+                    trace_span.update_trace(input=user_input)
 
                     # 初始化 CallbackHandler (會自動繼承當前 Context)
                     langfuse_handler = CallbackHandler()
@@ -76,12 +70,7 @@ class LangGraphService:
                         response_content = '系統無法產生回應'
 
                     # 更新 Trace Output
-                    trace_span.update_trace(
-                        output={
-                            'classification': result.get('classification', {}),
-                            'response': response_content,
-                        }
-                    )
+                    trace_span.update_trace(output=response_content)
 
             # 8. 回傳結果
             return {
