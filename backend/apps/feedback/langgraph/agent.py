@@ -16,7 +16,7 @@ class FeedbackAgent:
     def __init__(self):
         """初始化 Feedback Agent"""
         self.llm = ChatGoogleGenerativeAI(
-            model='gemini-2.0-flash-exp',
+            model='gemini-3-flash-preview',
             temperature=0.7,
         )
 
@@ -44,7 +44,7 @@ class FeedbackAgent:
 
         try:
             response = self.llm.invoke(
-                final_messages, config={'callbacks': callbacks} if callbacks else {}
+                final_messages, config={'callbacks': callbacks, 'run_name': 'FeedbackAgent'}
             )
             return response.content
 

@@ -2,6 +2,9 @@
 Feedback Service - 整合 LangGraph 的服務層
 """
 
+from langfuse import Langfuse, propagate_attributes
+from langfuse.langchain import CallbackHandler
+
 from apps.map.models import Map
 
 from .graph import FeedbackGraph
@@ -31,8 +34,9 @@ class FeedbackService:
     def __init__(self):
         """初始化 Feedback Service"""
         self.graph = FeedbackGraph()
+        self.langfuse = Langfuse()
 
-    def generate_feedback(self, map_id: int, text: str, meta: dict) -> str:
+    def generate_feedback(self, map_id: int, text: str, meta: dict, user_id: str) -> str:
         """
         生成節點編輯的 feedback
 
@@ -42,6 +46,7 @@ class FeedbackService:
             meta: 包含操作資訊的字典，例如:
                 - {"action": "edit", "node_id": "c1", "node_type": "C"}
                 - {"action": "connect", "connected_nodes": ["c1", "e1"]}
+            user_id: 使用者 ID
 
         Returns:
             str: LLM 生成的回饋文字
@@ -88,18 +93,40 @@ class FeedbackService:
             else:
                 raise Exception(f'Unknown action type: {action}')
 
-            # 4. 呼叫 graph 生成 feedback（未來可在此加入 Langfuse callbacks）
-            result = self.graph.process_message(
-                user_input=user_input,
-                article_content=article_content,
-                callbacks=None,
-            )
+            # 4. 設定 thread_id 和 session_id
+            thread_id = str(map_id)
+            session_id = thread_id
 
-            # 5. 取得最後的回應
-            if result.get('messages'):
-                return result['messages'][-1].content.strip()
-            else:
-                return '無法生成回饋'
+            # 5. 使用 Langfuse Context Manager 建立 Trace 並設定 Session ID 和 User ID
+            with self.langfuse.start_as_current_observation(
+                name='feedback_generation',
+                as_type='span',
+            ) as trace_span:
+                # 設定 Trace 層級屬性 (Session ID 和 User ID) 並向下傳遞
+                with propagate_attributes(session_id=session_id, user_id=user_id):
+                    # 更新 Trace Input
+                    trace_span.update_trace(input=user_input)
+
+                    # 初始化 CallbackHandler (會自動繼承當前 Context)
+                    langfuse_handler = CallbackHandler()
+
+                    # 6. 呼叫 graph 生成 feedback
+                    result = self.graph.process_message(
+                        user_input=user_input,
+                        article_content=article_content,
+                        callbacks=[langfuse_handler],
+                    )
+
+                    # 7. 取得最後的回應
+                    if result.get('messages'):
+                        feedback_response = result['messages'][-1].content.strip()
+                    else:
+                        feedback_response = '無法生成回饋'
+
+                    # 更新 Trace Output
+                    trace_span.update_trace(output=feedback_response)
+
+                    return feedback_response
 
         except Exception as e:
             raise Exception(f'LLM feedback 生成失敗: {str(e)}')
