@@ -37,9 +37,7 @@ class FeedbackAgent:
         Returns:
             str: LLM 生成的回饋
         """
-        formatted_prompt = NODE_EDIT_FEEDBACK_PROMPT.format(
-            article_content=article_content
-        )
+        formatted_prompt = NODE_EDIT_FEEDBACK_PROMPT.format(article_content=article_content)
 
         system_message = SystemMessage(content=formatted_prompt)
         final_messages = [system_message] + messages

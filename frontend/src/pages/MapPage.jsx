@@ -10,11 +10,13 @@ import {
     Col,
     message,
     Row,
+    Space,
     Spin,
 } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
 import { Chat } from '../features/chat/Chat';
+import { useSendChatMessageMutation } from '../features/chat/chatApi';
 import { FloatingChatButton } from '../features/chat/FloatingChatButton';
 import { BaseMap } from '../features/map/BaseMap';
 import { ToolBlock } from '../features/map/components/toolbar';
@@ -22,6 +24,7 @@ import { useMapEventNotifier } from '../features/map/events';
 import { useMapNodes } from '../features/map/hooks';
 import { MapProvider } from '../features/map/MapProvider';
 import { SaveButton } from '../features/map/SaveButton';
+import { ScoreButton } from '../features/map/ScoreButton';
 import { useGetMapQuery, useUpdateMapMutation } from '../features/map/utils';
 import { useCreateFeedbackMutation } from '../features/OperateAlertList/feedbackApi';
 import { OperateAlertList } from '../features/OperateAlertList/OperateAlertList';
@@ -33,6 +36,7 @@ export const MapPage = () => {
     const [alerts, setAlerts] = useState([]);
     const [createFeedback] = useCreateFeedbackMutation();
     const [updateMap] = useUpdateMapMutation();
+    const [sendChatMessage] = useSendChatMessageMutation();
 
     const [isChatOpen, setIsChatOpen] = useState(() => {
         const saved = localStorage.getItem('chatIsOpen');
@@ -40,15 +44,16 @@ export const MapPage = () => {
     });
 
     const [feedbackData, setFeedbackData] = useState(null);
+    const [isSending, setIsSending] = useState(false);
 
     const handleAskClick = (alertMessage, description) => {
         setFeedbackData({ message: alertMessage, description });
         setIsChatOpen(true);
     };
 
-    const handleCloseFeedback = () => {
+    const handleCloseFeedback = useCallback(() => {
         setFeedbackData(null);
-    };
+    }, []);
 
     useEffect(() => {
         localStorage.setItem('chatIsOpen', isChatOpen);
@@ -82,6 +87,38 @@ export const MapPage = () => {
             console.error('自動儲存錯誤:', err);
         }
     }, [mapId, updateMap]);
+
+    const handleSendMessage = useCallback(async (text) => {
+        if (!text.trim()) return;
+
+        const messageToSend = feedbackData
+            ? `[Operate]\n${feedbackData.message}\n[Feedback]\n${feedbackData.description}\n[Question]\n${text}`
+            : text;
+
+        // 立即關閉 feedback
+        if (feedbackData) {
+            setFeedbackData(null);
+        }
+
+        try {
+            setIsSending(true);
+            // 1. 自動儲存 map（總是執行）
+            await handleAutoSave();
+
+            // 2. 發送訊息
+            await sendChatMessage({
+                message: messageToSend,
+                mapId,
+            }).unwrap();
+        }
+        catch (err) {
+            console.error('發送失敗:', err);
+            throw err; // 讓呼叫者知道失敗
+        }
+        finally {
+            setIsSending(false);
+        }
+    }, [feedbackData, handleAutoSave, sendChatMessage, mapId]);
 
     const addAlert = useCallback(async (eventData) => {
         const {
@@ -216,7 +253,13 @@ export const MapPage = () => {
                                         zIndex: 10,
                                     }}
                                 >
-                                    <SaveButton />
+                                    <Space>
+                                        <SaveButton />
+                                        <ScoreButton
+                                            onSendMessage={handleSendMessage}
+                                            setIsChatOpen={setIsChatOpen}
+                                        />
+                                    </Space>
                                 </div>
                             </Col>
                         </Row>
@@ -227,7 +270,8 @@ export const MapPage = () => {
                     setIsChatOpen={setIsChatOpen}
                     feedbackData={feedbackData}
                     onCloseFeedback={handleCloseFeedback}
-                    onAutoSave={handleAutoSave}
+                    onSendMessage={handleSendMessage}
+                    isSending={isSending}
                 />
                 <FloatingChatButton
                     isChatOpen={isChatOpen}

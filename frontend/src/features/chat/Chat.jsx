@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { MinusOutlined } from '@ant-design/icons';
 import {
@@ -16,16 +16,20 @@ import { useSearchParams } from 'react-router-dom';
 
 import robotImage from '../../assets/images/robot.png';
 
-import {
-    useGetChatHistoryQuery,
-    useSendChatMessageMutation,
-} from './chatApi';
+import { useGetChatHistoryQuery } from './chatApi';
 import { InitiativeFeedback } from './InitiativeFeedback';
 
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import './Chat.css';
 
-export const Chat = ({ isChatOpen, setIsChatOpen, feedbackData, onCloseFeedback, onAutoSave }) => {
+export const Chat = ({
+    isChatOpen,
+    setIsChatOpen,
+    feedbackData,
+    onCloseFeedback,
+    onSendMessage,
+    isSending,
+}) => {
     // 從 URL 讀取 mapId
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
@@ -34,9 +38,6 @@ export const Chat = ({ isChatOpen, setIsChatOpen, feedbackData, onCloseFeedback,
         skip: !mapId,
         refetchOnMountOrArgChange: true,
     });
-
-    const [sendChatMessage] = useSendChatMessageMutation();
-    const [isSending, setIsSending] = useState(false);
 
     // 2. 資料轉換 (Data Transformation)
     // 把後端的格式轉成 UI Kit 看得懂的格式
@@ -56,33 +57,11 @@ export const Chat = ({ isChatOpen, setIsChatOpen, feedbackData, onCloseFeedback,
     const handleSend = async (text) => {
         if (!text.trim()) return;
 
-        const messageToSend = feedbackData
-            ? `[Operate]\n${feedbackData.message}\n[Feedback]\n${feedbackData.description}\n[Question]\n${text}`
-            : text;
-
-        // 立即關閉 feedback，不等待發送完成
-        if (feedbackData && onCloseFeedback) {
-            onCloseFeedback();
-        }
-
         try {
-            setIsSending(true);
-
-            // 自動儲存 map
-            if (onAutoSave) {
-                await onAutoSave();
-            }
-
-            await sendChatMessage({
-                message: messageToSend,
-                mapId,
-            }).unwrap();
+            await onSendMessage(text);
         }
         catch (error) {
             console.error('發送失敗:', error);
-        }
-        finally {
-            setIsSending(false);
         }
     };
 

@@ -25,11 +25,15 @@ PROMPT = """
 - **觸發情境**: 學生詢問關於 SDGs 議題、CER 架構定義、論點發想、證據引用或寫作邏輯的問題。這代表學生在「知識」或「思考」上卡住了，需要老師角色的協助。
 - **關鍵字範例**: "什麼是 CER?"， "這篇文章的重點是什麼?"， "我找不到證據"， "這個論點好嗎?"， "SDG 13 是什麼?"
 
+### 3. cer_scoring (CER 評分請求)
+- **觸發情境**: 學生請求對其心智圖進行 CER 評分，想了解其 Claim、Evidence、Reasoning 的表現如何。
+- **關鍵字範例**: "請評分"， "給我分數"， "評估我的心智圖"， "我的 CER 寫得如何"， "幫我看看我的表現"
+
 # Output Format
 請**嚴格**以 JSON 格式輸出，不要包含任何 Markdown 標記或額外文字:
 
 {{
   "reasoning": "簡短說明判斷依據，例如:學生詢問如何刪除節點，屬於操作問題。"，
-  "next_action": "operator_support" | "cer_cognitive_support"
+  "next_action": "operator_support" | "cer_cognitive_support" | "cer_scoring"
 }}
 """

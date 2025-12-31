@@ -23,6 +23,9 @@ export const BRAND_COLORS = {
 export const BUTTON_COLORS = {
     green: '#02F78E',
     greenHover: '#2fdd92ff',
+
+    yellow: '#FFD306',
+    yellowHover: '#e6bb00ff',
 };
 
 // ===== CER 模型節點顏色 =====

@@ -64,7 +64,7 @@ class IntentClassifier:
                 raise ValueError('分類結果缺少 next_action 欄位')
 
             # 驗證分類結果是否合法
-            valid_actions = ['operator_support', 'cer_cognitive_support']
+            valid_actions = ['operator_support', 'cer_cognitive_support', 'cer_scoring']
             if result['next_action'] not in valid_actions:
                 raise ValueError(f'無效的分類結果: {result["next_action"]}')
 
