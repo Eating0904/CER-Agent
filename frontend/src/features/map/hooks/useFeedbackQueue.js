@@ -60,8 +60,14 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
         });
 
         try {
+            // 過濾掉 newEdges（只用於自動儲存，不應存入資料庫）
+            const cleanOperations = operations.map((op) => {
+                const { newEdges, ...cleanOp } = op;
+                return cleanOp;
+            });
+
             const result = await sendFeedback(
-                operations,
+                cleanOperations,
                 alertMessage,
                 operationDetails,
                 edgesToSave,
