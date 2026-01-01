@@ -5,27 +5,11 @@ Feedback Service - 整合 LangGraph 的服務層
 from langfuse import Langfuse, propagate_attributes
 from langfuse.langchain import CallbackHandler
 
+from apps.common.utils.map_data_utils import simplify_map_data
 from apps.map.models import Map
 
+from ..models import NodeFeedback
 from .graph import FeedbackGraph
-
-
-def _get_node_content(nodes: list, node_id: str) -> str:
-    """
-    從 nodes 列表中找到對應 node_id 的 content
-
-    Args:
-        nodes: Map 的 nodes JSONField 資料
-        node_id: 要查找的 node ID
-
-    Returns:
-        str: 對應的 node content，若找不到則返回錯誤訊息
-    """
-    for node in nodes:
-        if node.get('id') == node_id:
-            data = node.get('data', {})
-            return data.get('content', '')
-    return f'[找不到 Node {node_id}]'
 
 
 class FeedbackService:
@@ -36,16 +20,42 @@ class FeedbackService:
         self.graph = FeedbackGraph()
         self.langfuse = Langfuse()
 
-    def generate_feedback(self, map_id: int, text: str, meta: dict, user_id: str) -> str:
+    def _build_operation_description(self, operations: list) -> str:
+        """
+        組成操作描述文字
+
+        Args:
+            operations: 操作列表
+
+        Returns:
+            str: 格式化的操作描述
+        """
+        if not operations:
+            return '學生進行了操作'
+
+        description_lines = ['學生進行了以下操作：']
+        for idx, op in enumerate(operations, 1):
+            action = op.get('action', '')
+            if action == 'edit':
+                node_id = op.get('node_id', '')
+                description_lines.append(f'{idx}. 編輯了節點 {node_id}')
+            elif action == 'connect':
+                nodes = op.get('connected_nodes', [])
+                if len(nodes) >= 2:
+                    description_lines.append(f'{idx}. 連接了 {nodes[0]} 和 {nodes[1]}')
+
+        return '\n'.join(description_lines)
+
+    def generate_feedback(
+        self, map_id: int, operations: list, alert_message: str, user_id: str
+    ) -> str:
         """
         生成節點編輯的 feedback
 
         Args:
             map_id: 地圖 ID
-            text: 前端傳來的 alert message
-            meta: 包含操作資訊的字典，例如:
-                - {"action": "edit", "node_id": "c1", "node_type": "C"}
-                - {"action": "connect", "connected_nodes": ["c1", "e1"]}
+            operations: 操作列表
+            alert_message: 前端傳來的 alert message (例如："完成了 3 個操作")
             user_id: 使用者 ID
 
         Returns:
@@ -61,43 +71,24 @@ class FeedbackService:
             except Map.DoesNotExist:
                 raise Exception(f'Map with id {map_id} does not exist')
 
-            # 2. 取得文章內容
+            # 2. 簡化 map 資料（與 chatbot 相同處理）
+            simplified_map = simplify_map_data(
+                {'nodes': map_instance.nodes, 'edges': map_instance.edges}
+            )
+
+            # 3. 組成操作描述（作為 query）
+            query = self._build_operation_description(operations)
+
+            # 4. 取得文章內容
             article_content = ''
             if map_instance.template:
                 article_content = map_instance.template.article_content
 
-            # 3. 根據 action 類型構建學生操作訊息
-            action = meta.get('action', '')
-
-            if action == 'edit':
-                # 編輯操作
-                node_id = meta.get('node_id', '')
-                node_content = _get_node_content(map_instance.nodes, node_id)
-                user_input = f'學生操作: {text}\nNode {node_id} Content: {node_content}'
-
-            elif action == 'connect':
-                # 連線操作
-                connected_nodes = meta.get('connected_nodes', [])
-                if len(connected_nodes) >= 2:
-                    node_1_id = connected_nodes[0]
-                    node_2_id = connected_nodes[1]
-                    node_1_content = _get_node_content(map_instance.nodes, node_1_id)
-                    node_2_content = _get_node_content(map_instance.nodes, node_2_id)
-                    user_input = (
-                        f'學生操作: {text}\n'
-                        f'Node {node_1_id} Content: {node_1_content}\n'
-                        f'Node {node_2_id} Content: {node_2_content}'
-                    )
-                else:
-                    raise Exception('connect action requires at least 2 nodes in connected_nodes')
-            else:
-                raise Exception(f'Unknown action type: {action}')
-
-            # 4. 設定 thread_id 和 session_id
+            # 5. 設定 thread_id 和 session_id
             thread_id = str(map_id)
             session_id = thread_id
 
-            # 5. 使用 Langfuse Context Manager 建立 Trace 並設定 Session ID 和 User ID
+            # 6. 使用 Langfuse Context Manager 建立 Trace 並設定 Session ID 和 User ID
             with self.langfuse.start_as_current_observation(
                 name='feedback_generation',
                 as_type='span',
@@ -105,19 +96,20 @@ class FeedbackService:
                 # 設定 Trace 層級屬性 (Session ID 和 User ID) 並向下傳遞
                 with propagate_attributes(session_id=session_id, user_id=user_id):
                     # 更新 Trace Input
-                    trace_span.update_trace(input=user_input)
+                    trace_span.update_trace(input=query)
 
                     # 初始化 CallbackHandler (會自動繼承當前 Context)
                     langfuse_handler = CallbackHandler()
 
-                    # 6. 呼叫 graph 生成 feedback
+                    # 7. 調用 graph
                     result = self.graph.process_message(
-                        user_input=user_input,
+                        user_input=query,
+                        mind_map_data=simplified_map,
                         article_content=article_content,
                         callbacks=[langfuse_handler],
                     )
 
-                    # 7. 取得最後的回應
+                    # 8. 取得最後的回應
                     if result.get('messages'):
                         feedback_response = result['messages'][-1].content.strip()
                     else:
@@ -125,6 +117,15 @@ class FeedbackService:
 
                     # 更新 Trace Output
                     trace_span.update_trace(output=feedback_response)
+
+                    # 9. 儲存到資料庫
+                    NodeFeedback.objects.create(
+                        user_id=user_id,
+                        map=map_instance,
+                        text=alert_message,
+                        feedback=feedback_response,
+                        metadata={'operations': operations},
+                    )
 
                     return feedback_response
 

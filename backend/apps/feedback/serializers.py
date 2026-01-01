@@ -7,22 +7,25 @@ class CreateFeedbackSerializer(serializers.Serializer):
     """建立 Feedback 的請求 Serializer"""
 
     map_id = serializers.IntegerField()
-    text = serializers.CharField()
-    meta = serializers.JSONField()
+    operations = serializers.ListField(
+        child=serializers.DictField(), min_length=1, help_text='操作列表'
+    )
+    alert_message = serializers.CharField(help_text='前端組成的 alert 訊息')
 
-    def validate_meta(self, value):
-        action = value.get('action')
+    def validate_operations(self, value):
+        """驗證 operations 列表格式"""
+        for op in value:
+            action = op.get('action')
+            if not action:
+                raise serializers.ValidationError("Each operation must have an 'action' field")
 
-        if action == 'edit':
-            if 'node_id' not in value:
+            if action not in ['edit', 'connect']:
+                raise serializers.ValidationError(f'Unknown action: {action}')
+
+            if action == 'edit' and 'node_id' not in op:
                 raise serializers.ValidationError("edit action requires 'node_id'")
-        elif action == 'connect':
-            if 'connected_nodes' not in value or len(value['connected_nodes']) != 2:
-                raise serializers.ValidationError(
-                    "connect action requires 'connected_nodes' with 2 nodes"
-                )
-        else:
-            raise serializers.ValidationError(f'Unknown action: {action}')
+            elif action == 'connect' and 'connected_nodes' not in op:
+                raise serializers.ValidationError("connect action requires 'connected_nodes'")
 
         return value
 

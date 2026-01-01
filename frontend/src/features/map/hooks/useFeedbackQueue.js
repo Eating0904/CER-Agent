@@ -1,0 +1,97 @@
+import { useCallback, useRef } from 'react';
+
+import { useFeedbackRequest } from './useFeedbackRequest';
+import { useMapAlerts } from './useMapAlerts';
+
+const MAX_COUNT = 10;
+const DELAY_MS = 60000;
+
+/**
+ * Feedback 隊列 Hook (整合版)
+ *
+ * 封裝所有 feedback 相關邏輯：
+ * - 操作隊列管理 (累積、計時、觸發)
+ * - API 請求處理
+ * - Alert 顯示管理
+ *
+ * @param {string} mapId - 心智圖 ID
+ * @param {Function} handleAutoSave - 自動儲存函數
+ * @returns {{ addOperation: Function, alerts: Array, setAlerts: Function }}
+ */
+export const useFeedbackQueue = (mapId, handleAutoSave) => {
+    const queueRef = useRef([]);
+    const timerRef = useRef(null);
+
+    const { alerts, setAlerts, addAlert, updateAlert } = useMapAlerts();
+    const { sendFeedback } = useFeedbackRequest(mapId, handleAutoSave);
+
+    const processBatch = useCallback(async () => {
+        if (queueRef.current.length === 0) return;
+
+        const operations = [...queueRef.current];
+        queueRef.current = [];
+
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+
+        const operationCount = operations.length;
+        const alertMessage = `完成了 ${operationCount} 個操作`;
+
+        // 找出最後一個有 newEdges 的 connect 操作（最新的 edges）
+        let edgesToSave = null;
+        for (let i = operations.length - 1; i >= 0; i -= 1) {
+            if (operations[i].action === 'connect' && operations[i].newEdges) {
+                edgesToSave = operations[i].newEdges;
+                break;
+            }
+        }
+
+        const alertId = addAlert({
+            message: alertMessage,
+            description: 'Generating feedback...',
+            status: 'loading',
+            showAsk: false,
+        });
+
+        try {
+            const result = await sendFeedback(operations, alertMessage, edgesToSave);
+            updateAlert(alertId, {
+                description: result.feedback,
+                status: 'success',
+                showAsk: true,
+            });
+        }
+        catch (err) {
+            updateAlert(alertId, {
+                description: err.data?.error || err.message || '生成回饋失敗',
+                status: 'error',
+                showAsk: false,
+            });
+        }
+    }, [addAlert, updateAlert, sendFeedback]);
+
+    const addOperation = useCallback(
+        (operation) => {
+            queueRef.current.push(operation);
+
+            // 條件 1: 數量超過限制，立即發送
+            if (queueRef.current.length >= MAX_COUNT) {
+                processBatch();
+                return;
+            }
+
+            // 條件 2: 重置計時器（Debounce）
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+            timerRef.current = setTimeout(() => {
+                processBatch();
+            }, DELAY_MS);
+        },
+        [processBatch],
+    );
+
+    return { addOperation, alerts, setAlerts };
+};

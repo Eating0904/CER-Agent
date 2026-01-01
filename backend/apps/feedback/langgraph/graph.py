@@ -2,6 +2,7 @@
 Feedback Graph - 簡化版 LangGraph 流程
 """
 
+import json
 import operator
 from typing import Annotated, Any, Dict, List, TypedDict
 
@@ -15,11 +16,10 @@ from .agent import FeedbackAgent
 # 定義狀態結構
 class FeedbackState(TypedDict):
     messages: Annotated[List[BaseMessage], operator.add]
+    article_content: str  # 新增此欄位
 
 
 class FeedbackGraph:
-    """節點編輯回饋流程圖 - 簡化版（無 classifier，單一路徑）"""
-
     def __init__(self):
         """初始化 Feedback Graph"""
         self.agent = FeedbackAgent()
@@ -28,7 +28,7 @@ class FeedbackGraph:
     def _feedback_node(self, state: FeedbackState, config: RunnableConfig) -> dict:
         """Node: 生成 feedback"""
         callbacks = config.get('callbacks', [])
-        article_content = config.get('configurable', {}).get('article_content', '')
+        article_content = state.get('article_content', '')
 
         response = self.agent.process(
             state['messages'],
@@ -54,6 +54,7 @@ class FeedbackGraph:
     def process_message(
         self,
         user_input: str,
+        mind_map_data: Dict,
         article_content: str = '',
         callbacks: List[Any] = None,
     ) -> Dict:
@@ -61,21 +62,29 @@ class FeedbackGraph:
         處理訊息並生成 feedback
 
         Args:
-            user_input: 學生的操作資訊 (將作為 HumanMessage)
-            article_content: 文章內容 (將注入到 SystemMessage)
+            user_input: 學生的操作描述（作為 query）
+            mind_map_data: 簡化後的心智圖資料
+            article_content: 文章內容
             callbacks: LangChain callbacks
 
         Returns:
             dict: 包含處理結果的狀態
         """
-
         config = {
-            'callbacks': callbacks if callbacks else [],
-            'configurable': {
-                'article_content': article_content,
-            },
+            'callbacks': callbacks,
         }
 
-        inputs = {'messages': [HumanMessage(content=user_input)]}
+        # 與 chatbot 相同的方式組成 inputs
+        inputs = {
+            'messages': [
+                HumanMessage(
+                    content=json.dumps(
+                        {'query': user_input, 'context': {'mind_map_data': mind_map_data}},
+                        ensure_ascii=False,
+                    )
+                )
+            ],
+            'article_content': article_content,
+        }
 
         return self.graph.invoke(inputs, config=config)

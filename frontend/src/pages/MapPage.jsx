@@ -8,7 +8,7 @@ import {
     useAutoSave,
     useChatState,
     useFeedback,
-    useMapAlerts,
+    useFeedbackQueue,
     useMapNodes,
     useSendMessage,
 } from '../features/map/hooks';
@@ -26,13 +26,14 @@ export const MapPage = () => {
     const mapContext = useMapNodes(mapData);
 
     const handleAutoSave = useAutoSave(mapId, mapContext.nodes, mapContext.edges);
-    const { alerts, setAlerts, addAlert } = useMapAlerts(mapId, handleAutoSave);
+    const { addOperation, alerts, setAlerts } = useFeedbackQueue(mapId, handleAutoSave);
+
     const { isChatOpen, setIsChatOpen } = useChatState();
     const { feedbackData, setFeedbackData, handleCloseFeedback } = useFeedback();
     const { isSending, handleSendMessage: sendMessage } = useSendMessage(mapId, handleAutoSave);
 
     // 事件監聽
-    useMapEventNotifier(addAlert);
+    useMapEventNotifier(addOperation);
 
     // 處理 Ask 按鈕點擊
     const handleAskClick = useCallback(

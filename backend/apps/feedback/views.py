@@ -17,10 +17,9 @@ def create_feedback(request):
     建立 Node 編輯的 feedback 並同步呼叫 LLM 生成回饋
 
     Request Body:
-        - map_id: int
-        - node_id: str
-        - node_type: str (optional)
-        - text: str (Alert message)
+        - mapId: int
+        - operations: list (操作列表)
+        - alertMessage: str (前端組成的 alert 訊息，例如："完成了 3 個操作")
 
     Returns:
         NodeFeedback object with generated feedback
@@ -34,56 +33,47 @@ def create_feedback(request):
         )
 
     map_id = serializer.validated_data['map_id']
-    text = serializer.validated_data['text']
-    meta = serializer.validated_data['meta']
+    operations = serializer.validated_data['operations']
+    alert_message = serializer.validated_data['alert_message']
 
     # 2. 驗證 Map 存在
     try:
-        map_instance = Map.objects.get(id=map_id)
+        Map.objects.get(id=map_id)
     except Map.DoesNotExist:
         return Response(
             {'success': False, 'error': f'Map with id {map_id} not found'},
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    # 3. 建立 feedback record（先不含 LLM feedback）
-    feedback_record = NodeFeedback.objects.create(
-        user=request.user,
-        map=map_instance,
-        text=text,
-        metadata=meta,
-    )
-
-    # 4. 同步呼叫 LLM 生成 feedback
+    # 3. 同步呼叫 LLM 生成 feedback（service 會自動儲存到資料庫）
     try:
         feedback_service = get_feedback_service()
         user_id = str(request.user.id)
-        feedback_text = feedback_service.generate_feedback(map_id, text, meta, user_id)
+        feedback_text = feedback_service.generate_feedback(
+            map_id, operations, alert_message, user_id
+        )
 
-        feedback_record.feedback = feedback_text
-        feedback_record.save()
+        # 4. 查詢剛才儲存的 feedback record
+        feedback_record = NodeFeedback.objects.filter(map_id=map_id, user=request.user).latest(
+            'created_at'
+        )
 
         # 5. 回傳成功結果
         return Response(
             {
                 'success': True,
-                'data': NodeFeedbackSerializer(feedback_record).data,
+                'data': {'feedback': feedback_text, **NodeFeedbackSerializer(feedback_record).data},
             }
         )
 
     except Exception as e:
-        # LLM 呼叫失敗，仍保留 record 但標記錯誤
         error_message = '生成回饋失敗，請稍後再試'
-
-        # 將錯誤訊息存入 metadata
-        feedback_record.metadata['error'] = str(e)
-        feedback_record.save()
 
         return Response(
             {
                 'success': False,
                 'error': error_message,
-                'data': NodeFeedbackSerializer(feedback_record).data,
+                'details': str(e),
             },
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
