@@ -11,6 +11,7 @@ class CreateFeedbackSerializer(serializers.Serializer):
         child=serializers.DictField(), min_length=1, help_text='操作列表'
     )
     alert_message = serializers.CharField(help_text='前端組成的 alert 訊息')
+    operation_details = serializers.CharField(help_text='前端組成的具體操作描述')
 
     def validate_operations(self, value):
         """驗證 operations 列表格式"""
@@ -35,4 +36,4 @@ class NodeFeedbackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NodeFeedback
-        fields = ['id', 'text', 'feedback', 'metadata', 'created_at']
+        fields = ['id', 'text', 'operation_details', 'feedback', 'metadata', 'created_at']

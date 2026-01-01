@@ -20,34 +20,13 @@ class FeedbackService:
         self.graph = FeedbackGraph()
         self.langfuse = Langfuse()
 
-    def _build_operation_description(self, operations: list) -> str:
-        """
-        組成操作描述文字
-
-        Args:
-            operations: 操作列表
-
-        Returns:
-            str: 格式化的操作描述
-        """
-        if not operations:
-            return '學生進行了操作'
-
-        description_lines = ['學生進行了以下操作：']
-        for idx, op in enumerate(operations, 1):
-            action = op.get('action', '')
-            if action == 'edit':
-                node_id = op.get('node_id', '')
-                description_lines.append(f'{idx}. 編輯了節點 {node_id}')
-            elif action == 'connect':
-                nodes = op.get('connected_nodes', [])
-                if len(nodes) >= 2:
-                    description_lines.append(f'{idx}. 連接了 {nodes[0]} 和 {nodes[1]}')
-
-        return '\n'.join(description_lines)
-
     def generate_feedback(
-        self, map_id: int, operations: list, alert_message: str, user_id: str
+        self,
+        map_id: int,
+        operations: list,
+        alert_message: str,
+        operation_details: str,
+        user_id: str,
     ) -> str:
         """
         生成節點編輯的 feedback
@@ -56,6 +35,7 @@ class FeedbackService:
             map_id: 地圖 ID
             operations: 操作列表
             alert_message: 前端傳來的 alert message (例如："完成了 3 個操作")
+            operation_details: 前端組裝的具體操作描述
             user_id: 使用者 ID
 
         Returns:
@@ -76,8 +56,8 @@ class FeedbackService:
                 {'nodes': map_instance.nodes, 'edges': map_instance.edges}
             )
 
-            # 3. 組成操作描述（作為 query）
-            query = self._build_operation_description(operations)
+            # 3. 直接使用前端傳來的操作描述（作為 query）
+            query = operation_details
 
             # 4. 取得文章內容
             article_content = ''
@@ -123,6 +103,7 @@ class FeedbackService:
                         user_id=user_id,
                         map=map_instance,
                         text=alert_message,
+                        operation_details=operation_details,
                         feedback=feedback_response,
                         metadata={'operations': operations},
                     )

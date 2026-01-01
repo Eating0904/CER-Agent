@@ -1,4 +1,7 @@
-import { Alert, Button, Spin } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import {
+    Alert, Button, Spin, Tooltip,
+} from 'antd';
 
 import './OperateAlertList.css';
 
@@ -15,13 +18,21 @@ export const OperateAlertList = ({ alerts = [], onAskClick }) => (
                     key={alert.id}
                     message={(
                         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: '4px' }}>
-                            <span>{alert.message}</span>
+                            <span>
+                                {alert.operationDetails && (
+                                    <Tooltip title={<pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{alert.operationDetails}</pre>}>
+                                        <InfoCircleOutlined style={{ marginRight: '8px', color: '#5B00AE', cursor: 'pointer' }} />
+                                    </Tooltip>
+                                )}
+                                {alert.message}
+                            </span>
                             {isSuccess && alert.showAsk && (
                                 <Button
                                     size="small"
                                     type="primary"
                                     style={{ marginLeft: '8px' }}
-                                    onClick={() => onAskClick(alert.message, alert.description)}
+                                    onClick={() => onAskClick(alert.operationDetails
+                                        || alert.message, alert.description)}
                                 >
                                     Ask
                                 </Button>

@@ -1,5 +1,7 @@
 import { useCallback, useRef } from 'react';
 
+import { buildOperationDetails } from '../../OperateAlertList/utils/buildOperationDetails';
+
 import { useFeedbackRequest } from './useFeedbackRequest';
 import { useMapAlerts } from './useMapAlerts';
 
@@ -38,6 +40,7 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
 
         const operationCount = operations.length;
         const alertMessage = `完成了 ${operationCount} 個操作`;
+        const operationDetails = buildOperationDetails(operations);
 
         // 找出最後一個有 newEdges 的 connect 操作（最新的 edges）
         let edgesToSave = null;
@@ -53,10 +56,16 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
             description: 'Generating feedback...',
             status: 'loading',
             showAsk: false,
+            operationDetails,
         });
 
         try {
-            const result = await sendFeedback(operations, alertMessage, edgesToSave);
+            const result = await sendFeedback(
+                operations,
+                alertMessage,
+                operationDetails,
+                edgesToSave,
+            );
             updateAlert(alertId, {
                 description: result.feedback,
                 status: 'success',

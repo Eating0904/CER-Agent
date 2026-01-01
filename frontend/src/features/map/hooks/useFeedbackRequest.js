@@ -15,13 +15,14 @@ export const useFeedbackRequest = (mapId, handleAutoSave) => {
     const [createFeedback] = useCreateFeedbackMutation();
 
     const sendFeedback = useCallback(
-        async (operations, alertMessage, edgesToSave = null) => {
+        async (operations, alertMessage, operationDetails, edgesToSave = null) => {
             await handleAutoSave(edgesToSave);
 
             const response = await createFeedback({
                 mapId: parseInt(mapId, 10),
                 operations,
                 alertMessage,
+                operationDetails,
             }).unwrap();
 
             if (!response.success) {
