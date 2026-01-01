@@ -8,7 +8,8 @@ from typing import List
 
 from langchain_core.messages import BaseMessage, SystemMessage
 
-from ..message_filter import filter_messages
+from apps.common.utils.message_filter import filter_messages
+
 from ..prompts import OPERATOR_SUPPORT_PROMPT
 from .base import BaseAgent
 

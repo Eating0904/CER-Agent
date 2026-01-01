@@ -4,11 +4,11 @@ from typing import Dict
 from langfuse import Langfuse, propagate_attributes
 from langfuse.langchain import CallbackHandler
 
+from apps.common.utils.map_data_utils import simplify_map_data
 from apps.map.models import Map
 from config.settings import DATABASE_URL
 
 from .graph import ConversationGraph
-from .map_data_utils import simplify_map_data
 
 
 class LangGraphService:

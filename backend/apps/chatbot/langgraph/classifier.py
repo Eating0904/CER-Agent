@@ -9,8 +9,9 @@ from typing import Any, List
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from apps.common.utils.message_filter import filter_messages
+
 from .json_parser import parse_llm_json_response
-from .message_filter import filter_messages
 from .prompts import CLASSIFIER_PROMPT
 
 
