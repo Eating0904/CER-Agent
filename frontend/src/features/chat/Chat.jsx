@@ -144,6 +144,7 @@ export const Chat = ({
                         onSend={handleSend}
                         onPaste={handlePaste}
                         attachButton={false}
+                        disabled={isSending}
                     />
                 </ChatContainer>
             </MainContainer>
