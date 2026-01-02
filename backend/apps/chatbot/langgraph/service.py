@@ -137,6 +137,7 @@ class LangGraphService:
 
                     message_data = {'id': idx, 'role': role, 'content': msg.content}
 
+                    # 對於 user 訊息，解析並提取 query
                     if isinstance(msg.content, str) and role == 'user':
                         try:
                             parsed_content = json.loads(msg.content)
@@ -144,6 +145,12 @@ class LangGraphService:
                                 message_data['content'] = parsed_content['query']
                         except (json.JSONDecodeError, ValueError):
                             pass
+
+                    # 對於 assistant 訊息，從 additional_kwargs 取得 message_type
+                    if role == 'assistant' and hasattr(msg, 'additional_kwargs'):
+                        message_data['message_type'] = msg.additional_kwargs.get(
+                            'message_type', None
+                        )
 
                     messages.append(message_data)
 

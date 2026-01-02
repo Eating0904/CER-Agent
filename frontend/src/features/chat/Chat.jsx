@@ -18,6 +18,7 @@ import robotImage from '../../assets/images/robot.png';
 
 import { useGetChatHistoryQuery } from './chatApi';
 import { InitiativeFeedback } from './InitiativeFeedback';
+import { ScoringResult } from './ScoringResult';
 
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import './Chat.css';
@@ -46,10 +47,11 @@ export const Chat = ({
         if (!historyData?.messages) return [];
 
         return historyData.messages.map((msg) => ({
-            id: msg.id, // 保留 id 作為 React key
+            id: msg.id,
             message: msg.content,
             direction: msg.role === 'user' ? 'outgoing' : 'incoming',
             sender: msg.role === 'user' ? 'Me' : 'AI',
+            messageType: msg.message_type,
         }));
     }, [historyData]);
 
@@ -121,22 +123,31 @@ export const Chat = ({
                                 : null
                         }
                     >
-                        {messages.map((msg) => (
-                            <Message
-                                key={msg.id}
-                                model={{
-                                    message: msg.message,
-                                    sentTime: 'just now',
-                                    sender: msg.sender,
-                                    direction: msg.direction,
-                                }}
-                                avatarPosition="tl"
-                            >
-                                {msg.direction === 'incoming' && (
-                                    <Avatar src={robotImage} name="AI" />
-                                )}
-                            </Message>
-                        ))}
+                        {messages.map((msg) => {
+                            const isScoringMessage = msg.messageType === 'cer_scoring';
+
+                            return (
+                                <Message
+                                    key={msg.id}
+                                    model={{
+                                        message: isScoringMessage ? '' : msg.message,
+                                        sentTime: 'just now',
+                                        sender: msg.sender,
+                                        direction: msg.direction,
+                                    }}
+                                    avatarPosition="tl"
+                                >
+                                    {msg.direction === 'incoming' && (
+                                        <Avatar src={robotImage} name="AI" />
+                                    )}
+                                    {isScoringMessage && (
+                                        <Message.CustomContent>
+                                            <ScoringResult data={msg.message} />
+                                        </Message.CustomContent>
+                                    )}
+                                </Message>
+                            );
+                        })}
                     </MessageList>
 
                     <MessageInput

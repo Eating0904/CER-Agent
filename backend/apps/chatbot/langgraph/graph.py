@@ -73,7 +73,9 @@ class ConversationGraph:
         response, metadata = agent.process(state['messages'], callbacks)
 
         return {
-            'messages': [AIMessage(content=response)],
+            'messages': [
+                AIMessage(content=response, additional_kwargs={'message_type': 'operator_support'})
+            ],
             'agent_metadata': metadata,
         }
 
@@ -89,7 +91,11 @@ class ConversationGraph:
         )
 
         return {
-            'messages': [AIMessage(content=response)],
+            'messages': [
+                AIMessage(
+                    content=response, additional_kwargs={'message_type': 'cer_cognitive_support'}
+                )
+            ],
             'agent_metadata': metadata,
         }
 
@@ -105,7 +111,9 @@ class ConversationGraph:
         )
 
         return {
-            'messages': [AIMessage(content=response)],
+            'messages': [
+                AIMessage(content=response, additional_kwargs={'message_type': 'cer_scoring'})
+            ],
             'agent_metadata': metadata,
         }
 
