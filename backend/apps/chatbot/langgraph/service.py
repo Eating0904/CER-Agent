@@ -70,7 +70,23 @@ class LangGraphService:
                         response_content = '系統無法產生回應'
 
                     # 更新 Trace Output
-                    trace_span.update_trace(output=response_content)
+                    trace_metadata = {
+                        'classifier_next_action': result.get('classification', {}).get(
+                            'next_action', 'unknown'
+                        ),
+                        'classifier_reasoning': result.get('classification', {}).get(
+                            'reasoning', 'unknown'
+                        ),
+                    }
+
+                    agent_metadata = result.get('agent_metadata', {})
+                    if agent_metadata:
+                        trace_metadata.update(agent_metadata)
+
+                    trace_span.update_trace(
+                        output=response_content,
+                        metadata=trace_metadata,
+                    )
 
             # 8. 回傳結果
             return {

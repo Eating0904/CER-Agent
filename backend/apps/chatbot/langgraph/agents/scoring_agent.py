@@ -86,3 +86,37 @@ class ScoringAgent(BaseAgent):
         except Exception as json_error:
             print(f'⚠️  JSON 解析失敗: {json_error}，回傳原始內容')
             return response.content
+
+    def extract_metadata(self, response) -> dict:
+        """
+        提取 metadata：從 JSON 回應中提取完整的評分資訊
+
+        Args:
+            response: LLM 的回應
+
+        Returns:
+            dict: metadata 包含 Claim, Evidence, Reasoning 的評分資訊
+        """
+        try:
+            result = parse_llm_json_response(response.content)
+            required_keys = ['Claim', 'Evidence', 'Reasoning']
+
+            for key in required_keys:
+                if key not in result:
+                    return {}
+
+            return {
+                'claim_coverage': result['Claim'].get('coverage', ''),
+                'claim_score': result['Claim'].get('score', ''),
+                'claim_feedback': result['Claim'].get('feedback', ''),
+                'evidence_coverage': result['Evidence'].get('coverage', ''),
+                'evidence_score': result['Evidence'].get('score', ''),
+                'evidence_feedback': result['Evidence'].get('feedback', ''),
+                'reasoning_coverage': result['Reasoning'].get('coverage', ''),
+                'reasoning_score': result['Reasoning'].get('score', ''),
+                'reasoning_feedback': result['Reasoning'].get('feedback', ''),
+            }
+
+        except Exception as json_error:
+            print(f'⚠️  Metadata 提取失敗: {json_error}')
+            return {}

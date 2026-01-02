@@ -47,3 +47,15 @@ class OperatorSupportAgent(BaseAgent):
             str: LLM 回應的內容
         """
         return response.content
+
+    def extract_metadata(self, response) -> dict:
+        """
+        提取 metadata：OperatorSupportAgent 沒有結構化輸出
+
+        Args:
+            response: LLM 的回應
+
+        Returns:
+            dict: 空字典
+        """
+        return {}

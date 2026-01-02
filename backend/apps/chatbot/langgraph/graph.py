@@ -23,6 +23,7 @@ class AgentState(TypedDict):
     messages: Annotated[List[BaseMessage], operator.add]
     classification: Dict[str, Any]
     article_content: str
+    agent_metadata: Dict[str, Any]
 
 
 def create_checkpointer(db_url: str) -> PostgresSaver:
@@ -69,9 +70,12 @@ class ConversationGraph:
         """Node: 介面支援 Agent"""
         agent = self.agent_manager.get_agent('operator_support')
         callbacks = config.get('callbacks', [])
-        response = agent.process(state['messages'], callbacks)
+        response, metadata = agent.process(state['messages'], callbacks)
 
-        return {'messages': [AIMessage(content=response)]}
+        return {
+            'messages': [AIMessage(content=response)],
+            'agent_metadata': metadata,
+        }
 
     def _cer_cognitive_support_node(self, state: AgentState, config: RunnableConfig) -> dict:
         """Node: 認知支援 Agent"""
@@ -80,9 +84,14 @@ class ConversationGraph:
 
         article_content = state.get('article_content', '')
 
-        response = agent.process(state['messages'], callbacks, article_content=article_content)
+        response, metadata = agent.process(
+            state['messages'], callbacks, article_content=article_content
+        )
 
-        return {'messages': [AIMessage(content=response)]}
+        return {
+            'messages': [AIMessage(content=response)],
+            'agent_metadata': metadata,
+        }
 
     def _scoring_node(self, state: AgentState, config: RunnableConfig) -> dict:
         """Node: CER 評分 Agent"""
@@ -91,9 +100,14 @@ class ConversationGraph:
 
         article_content = state.get('article_content', '')
 
-        response = agent.process(state['messages'], callbacks, article_content=article_content)
+        response, metadata = agent.process(
+            state['messages'], callbacks, article_content=article_content
+        )
 
-        return {'messages': [AIMessage(content=response)]}
+        return {
+            'messages': [AIMessage(content=response)],
+            'agent_metadata': metadata,
+        }
 
     def _route_decision(
         self, state: AgentState
@@ -168,6 +182,7 @@ class ConversationGraph:
             ],
             'classification': {},
             'article_content': article_content,
+            'agent_metadata': {},
         }
 
         return self.graph.invoke(inputs, config=config)

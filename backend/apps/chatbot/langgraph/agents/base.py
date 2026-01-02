@@ -53,7 +53,22 @@ class BaseAgent(ABC):
         """
         pass
 
-    def process(self, messages: List[BaseMessage], callbacks: List[Any] = None, **kwargs) -> str:
+    @abstractmethod
+    def extract_metadata(self, response) -> dict:
+        """
+        從 LLM 回應中提取 metadata（子類必須實作）
+
+        Args:
+            response: LLM 的原始回應
+
+        Returns:
+            dict: metadata 資訊（用於 Langfuse 追踪）
+        """
+        pass
+
+    def process(
+        self, messages: List[BaseMessage], callbacks: List[Any] = None, **kwargs
+    ) -> tuple[str, dict]:
         """
         統一的處理流程
 
@@ -63,7 +78,7 @@ class BaseAgent(ABC):
             **kwargs: 額外參數（傳遞給 prepare_messages）
 
         Returns:
-            str: 處理後的回應
+            tuple: (處理後的回應文字, metadata 字典)
         """
         try:
             # 準備訊息
@@ -75,10 +90,13 @@ class BaseAgent(ABC):
                 final_messages, config={'callbacks': callbacks, 'run_name': agent_name}
             )
 
-            # 處理回應
-            return self.process_response(response)
+            # 處理回應並提取 metadata
+            response_text = self.process_response(response)
+            metadata = self.extract_metadata(response)
+
+            return response_text, metadata
 
         except Exception as e:
             agent_name = self.__class__.__name__
             print(f'❌ {agent_name} 錯誤: {e}')
-            return f'抱歉，我遇到了一些技術問題。錯誤訊息: {str(e)}'
+            return f'抱歉，我遇到了一些技術問題。錯誤訊息: {str(e)}', {}

@@ -58,3 +58,24 @@ class CERCognitiveSupportAgent(BaseAgent):
         except Exception as json_error:
             print(f'⚠️  JSON 解析失敗: {json_error}，回傳原始內容')
             return response.content
+
+    def extract_metadata(self, response) -> dict:
+        """
+        提取 metadata：從 JSON 回應中提取 reasoning, response_strategy, strategy_detail
+
+        Args:
+            response: LLM 的回應
+
+        Returns:
+            dict: metadata 包含 reasoning, response_strategy, strategy_detail
+        """
+        try:
+            result = parse_llm_json_response(response.content)
+            return {
+                'reasoning': result.get('reasoning', ''),
+                'response_strategy': result.get('response_strategy', ''),
+                'strategy_detail': result.get('strategy_detail', ''),
+            }
+        except Exception as json_error:
+            print(f'⚠️  Metadata 提取失敗: {json_error}')
+            return {}
