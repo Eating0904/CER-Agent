@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { SaveOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';
+import { App, Button } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
 import { BUTTON_COLORS, NEUTRAL_COLORS } from '../../constants/colors';
@@ -10,6 +10,7 @@ import { useMapContext } from './hooks';
 import { useUpdateMapMutation } from './utils';
 
 export const SaveButton = () => {
+    const { message } = App.useApp();
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
     const { nodes, edges, selectNode, selectEdge } = useMapContext();

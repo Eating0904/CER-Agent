@@ -1,8 +1,8 @@
 import {
     Alert,
+    App,
     Card,
     Col,
-    message,
     Row,
     Spin,
 } from 'antd';
@@ -15,6 +15,7 @@ import { useGetMindMapTemplatesQuery } from './mindMapTemplateApi';
 const { Meta } = Card;
 
 export const MindMapTemplateList = () => {
+    const { message } = App.useApp();
     const navigate = useNavigate();
     const { data: templates = [], isLoading, error } = useGetMindMapTemplatesQuery();
     const [createMapFromTemplate, { isLoading: isCreating }] = useCreateMapFromTemplateMutation();

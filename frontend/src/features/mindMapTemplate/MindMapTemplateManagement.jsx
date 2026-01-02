@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import {
     Alert,
+    App,
     Button,
     Card,
     Col,
-    message,
     Modal,
     Row,
     Spin,
@@ -20,6 +20,7 @@ import './MindMapTemplateManagement.css';
 const { Meta } = Card;
 
 export const MindMapTemplateManagement = () => {
+    const { message } = App.useApp();
     const [editingTemplate, setEditingTemplate] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 

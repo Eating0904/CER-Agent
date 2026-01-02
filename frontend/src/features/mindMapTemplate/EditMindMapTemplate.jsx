@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 
 import { PlusOutlined } from '@ant-design/icons';
 import {
+    App,
     Button,
     Form,
     Input,
-    message,
     Modal,
 } from 'antd';
 
@@ -22,6 +22,7 @@ export const EditMindMapTemplate = ({
     initialValues,
     isEdit = false,
 }) => {
+    const { message } = App.useApp();
     const [internalOpen, setInternalOpen] = useState(false);
     const [form] = Form.useForm();
     const [createTemplate] = useCreateMindMapTemplateMutation();

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import { message } from 'antd';
+import { App } from 'antd';
 
 import { useUpdateMapMutation } from '../utils';
 
@@ -14,6 +14,7 @@ import { useUpdateMapMutation } from '../utils';
  * @returns {Function} handleAutoSave - 自動儲存函數
  */
 export const useAutoSave = (mapId, nodes, edges) => {
+    const { message } = App.useApp();
     const [updateMap] = useUpdateMapMutation();
     const nodesRef = useRef(nodes);
     const edgesRef = useRef(edges);
@@ -42,7 +43,7 @@ export const useAutoSave = (mapId, nodes, edges) => {
                 console.error('自動儲存錯誤:', err);
             }
         },
-        [mapId, updateMap],
+        [mapId, updateMap, message],
     );
 
     return handleAutoSave;
