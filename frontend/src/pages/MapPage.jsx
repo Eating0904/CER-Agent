@@ -3,6 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { Alert, Spin } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
+import { ViewSwitcher } from '../features/map/components/viewSwitcher';
 import { useMapEventNotifier } from '../features/map/events';
 import {
     useAutoSave,
@@ -13,12 +14,17 @@ import {
     useSendMessage,
 } from '../features/map/hooks';
 import { useGetMapQuery } from '../features/map/utils';
+import { useHeaderContext } from '../shared/HeaderContext';
 
+import { EssayPageContent } from './EssayPageContent';
 import { MapPageContent } from './MapPageContent';
 
 export const MapPage = () => {
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
+    const view = searchParams.get('view') || 'mindmap';
+
+    const { setHeaderContent } = useHeaderContext();
 
     const { data: mapData, isLoading, error } = useGetMapQuery(mapId, {
         skip: !mapId,
@@ -34,6 +40,14 @@ export const MapPage = () => {
 
     // 事件監聽
     useMapEventNotifier(addOperation);
+
+    // 設定 Header 內容為 ViewSwitcher
+    useEffect(() => {
+        setHeaderContent(<ViewSwitcher />);
+
+        // 清理函數：當組件卸載時清空 Header 內容
+        return () => setHeaderContent(null);
+    }, [setHeaderContent]);
 
     // 處理 Ask 按鈕點擊
     const handleAskClick = useCallback(
@@ -99,6 +113,16 @@ export const MapPage = () => {
         );
     }
 
+    // 根據 view 參數決定顯示的內容
+    if (view === 'essay') {
+        return (
+            <div style={{ height: '100%', width: '100%' }}>
+                <EssayPageContent />
+            </div>
+        );
+    }
+
+    // 預設顯示 Mind Map
     return (
         <div style={{ height: '100%', width: '100%' }}>
             <MapPageContent
