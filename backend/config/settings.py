@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'apps.map',
     'apps.chatbot',
     'apps.feedback',
+    'apps.essay',
 ]
 
 REST_FRAMEWORK = {
