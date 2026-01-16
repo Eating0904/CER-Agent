@@ -35,7 +35,7 @@ class LangGraphService:
                 article_content = map_instance.template.article_content
 
             # 4. 設定 thread_id 和 session_id
-            thread_id = str(map_id)
+            thread_id = f'mindmap-{map_id}'
             session_id = thread_id
 
             # 5. 使用 Langfuse Context Manager 建立 Trace/Span 並設定 Session ID 和 User ID
@@ -119,7 +119,7 @@ class LangGraphService:
             dict: 包含成功狀態和訊息陣列的字典
         """
         try:
-            thread_id = str(map_id)
+            thread_id = f'mindmap-{map_id}'
             config = {'configurable': {'thread_id': thread_id}}
 
             state_snapshot = self.conversation_graph.graph.get_state(config)

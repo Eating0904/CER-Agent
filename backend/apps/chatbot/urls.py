@@ -3,6 +3,15 @@ from django.urls import path
 from .views import chat, get_chat_history
 
 urlpatterns = [
-    path('chat/', chat, name='chat'),
-    path('history/<int:map_id>/', get_chat_history, name='get_chat_history'),
+    # Mind Map chat
+    path('mindmap/chat/', chat, {'chat_type': 'mindmap'}, name='mindmap_chat'),
+    path(
+        'mindmap/history/<int:map_id>/',
+        get_chat_history,
+        {'chat_type': 'mindmap'},
+        name='mindmap_chat_history',
+    ),
+    # Essay chat (未來)
+    # path('essay/chat/', chat, {'chat_type': 'essay'}, name='essay_chat'),
+    # path('essay/history/<int:map_id>/', get_chat_history, {'chat_type': 'essay'}, name='essay_chat_history'),
 ]

@@ -4,7 +4,7 @@ const chatApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         sendChatMessage: build.mutation({
             query: ({ message, mapId }) => ({
-                url: 'chatbot/chat/',
+                url: 'chatbot/mindmap/chat/',
                 method: 'POST',
                 body: {
                     message,
@@ -38,13 +38,13 @@ const chatApi = baseApi.injectEndpoints({
         }),
         getChatHistory: build.query({
             query: (mapId) => ({
-                url: `chatbot/history/${mapId}/`,
+                url: `chatbot/mindmap/history/${mapId}/`,
             }),
             providesTags: (result, error, mapId) => [{ type: 'ChatHistory', id: mapId }],
         }),
         saveChatMessage: build.mutation({
             query: ({ mapId, role, content }) => ({
-                url: `chatbot/history/${mapId}/save/`,
+                url: `chatbot/mindmap/history/${mapId}/save/`,
                 method: 'POST',
                 body: {
                     role,
