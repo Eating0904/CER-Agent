@@ -21,7 +21,7 @@ const compat = new FlatCompat({
 
 export default [
     ...compat.extends('airbnb'),
-    { ignores: ['dist'] },
+    { ignores: ['dist', '**/src/tiptap-ui/**'] },
     {
         files: ['**/*.{js,jsx}'],
         languageOptions: {
