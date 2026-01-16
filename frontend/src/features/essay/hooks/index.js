@@ -1,2 +1,2 @@
-export { useAutoSave } from './useAutoSave';
-export { useSendMessage } from './useSendMessage';
+export { useEssayAutoSave } from './useEssayAutoSave';
+export { useEssaySendMessage } from './useEssaySendMessage';

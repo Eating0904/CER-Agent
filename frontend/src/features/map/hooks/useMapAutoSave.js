@@ -13,7 +13,7 @@ import { useUpdateMapMutation } from '../utils';
  * @param {Array} edges - 連線陣列
  * @returns {Function} handleAutoSave - 自動儲存函數
  */
-export const useAutoSave = (mapId, nodes, edges) => {
+export const useMapAutoSave = (mapId, nodes, edges) => {
     const { message } = App.useApp();
     const [updateMap] = useUpdateMapMutation();
     const nodesRef = useRef(nodes);

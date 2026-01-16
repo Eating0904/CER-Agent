@@ -12,7 +12,7 @@ import { useUpdateEssayMutation } from '../essayApi';
  * @param {string} essayContent - Essay 內容
  * @returns {Function} handleAutoSave - 自動儲存函數
  */
-export const useAutoSave = (mapId, essayContent) => {
+export const useEssayAutoSave = (mapId, essayContent) => {
     const { message } = App.useApp();
     const [updateEssay] = useUpdateEssayMutation();
 

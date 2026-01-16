@@ -5,7 +5,7 @@ import { FloatingChatButton } from '../features/chat/FloatingChatButton';
 import { BaseMap } from '../features/map/BaseMap';
 import { ToolBlock } from '../features/map/components/toolbar';
 import { MapProvider } from '../features/map/MapProvider';
-import { SaveButton } from '../features/map/SaveButton';
+import { MapSaveButton } from '../features/map/MapSaveButton';
 import { ScoreButton } from '../features/map/ScoreButton';
 import { OperateAlertList } from '../features/OperateAlertList/OperateAlertList';
 
@@ -54,7 +54,7 @@ export const MapPageContent = ({
                             }}
                         >
                             <Space>
-                                <SaveButton />
+                                <MapSaveButton />
                                 <ScoreButton
                                     onSendMessage={handleSendMessage}
                                     setIsChatOpen={setIsChatOpen}

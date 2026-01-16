@@ -10,7 +10,7 @@ import { useSendChatMessageMutation } from '../../chat/chatApi';
  * @param {Function} handleAutoSave - 自動儲存函數
  * @returns {Object} { isSending, handleSendMessage }
  */
-export const useSendMessage = (mapId, handleAutoSave) => {
+export const useMapSendMessage = (mapId, handleAutoSave) => {
     const [isSending, setIsSending] = useState(false);
     const [sendChatMessage] = useSendChatMessageMutation();
 

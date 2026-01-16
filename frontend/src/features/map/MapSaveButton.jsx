@@ -9,7 +9,7 @@ import { BUTTON_COLORS, NEUTRAL_COLORS } from '../../constants/colors';
 import { useMapContext } from './hooks';
 import { useUpdateMapMutation } from './utils';
 
-export const SaveButton = () => {
+export const MapSaveButton = () => {
     const { message } = App.useApp();
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');

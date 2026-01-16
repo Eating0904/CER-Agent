@@ -10,7 +10,7 @@ import { useSendEssayChatMessageMutation } from '../../chat/chatApi';
  * @param {Function} handleSave - Essay 儲存函數
  * @returns {Object} { isSending, handleSendMessage }
  */
-export const useSendMessage = (mapId, handleSave) => {
+export const useEssaySendMessage = (mapId, handleSave) => {
     const [isSending, setIsSending] = useState(false);
     const [sendChatMessage] = useSendEssayChatMessageMutation();
 
