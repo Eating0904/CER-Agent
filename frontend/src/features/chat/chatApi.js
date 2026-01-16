@@ -53,6 +53,42 @@ const chatApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: (result, error, { mapId }) => [{ type: 'ChatHistory', id: mapId }],
         }),
+        // ===== Essay Chat =====
+        sendEssayChatMessage: build.mutation({
+            query: ({ message, mapId }) => ({
+                url: 'chatbot/essay/chat/',
+                method: 'POST',
+                body: {
+                    message,
+                    map_id: mapId,
+                },
+            }),
+            async onQueryStarted({ message, mapId }, { dispatch, queryFulfilled }) {
+                const patchResult = dispatch(
+                    chatApi.util.updateQueryData('getEssayChatHistory', mapId, (draft) => {
+                        draft.messages.push({
+                            id: draft.messages.length,
+                            role: 'user',
+                            content: message,
+                        });
+                    }),
+                );
+
+                try {
+                    await queryFulfilled;
+                }
+                catch {
+                    patchResult.undo();
+                }
+            },
+            invalidatesTags: (result, error, { mapId }) => [{ type: 'EssayChatHistory', id: mapId }],
+        }),
+        getEssayChatHistory: build.query({
+            query: (mapId) => ({
+                url: `chatbot/essay/history/${mapId}/`,
+            }),
+            providesTags: (result, error, mapId) => [{ type: 'EssayChatHistory', id: mapId }],
+        }),
     }),
 });
 
@@ -60,6 +96,9 @@ export const {
     useSendChatMessageMutation,
     useGetChatHistoryQuery,
     useSaveChatMessageMutation,
+    // Essay Chat
+    useSendEssayChatMessageMutation,
+    useGetEssayChatHistoryQuery,
 } = chatApi;
 
 export default chatApi;

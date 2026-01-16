@@ -1,8 +1,17 @@
-import { useCallback, useEffect } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useState,
+} from 'react';
 
 import { Alert, Spin } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
+import { useGetEssayQuery } from '../features/essay/essayApi';
+import {
+    useAutoSave as useEssayAutoSave,
+    useSendMessage as useEssaySendMessage,
+} from '../features/essay/hooks';
 import { ViewSwitcher } from '../features/map/components/viewSwitcher';
 import { useMapEventNotifier } from '../features/map/events';
 import {
@@ -38,6 +47,27 @@ export const MapPage = () => {
     const { feedbackData, setFeedbackData, handleCloseFeedback } = useFeedback();
     const { isSending, handleSendMessage: sendMessage } = useSendMessage(mapId, handleAutoSave);
 
+    // Essay state 和邏輯
+    const [essayContent, setEssayContent] = useState('');
+
+    const { data: essayData } = useGetEssayQuery(mapId, { skip: !mapId || view !== 'essay' });
+
+    // 載入 essay 內容
+    useEffect(() => {
+        if (essayData?.essay?.content) {
+            setEssayContent(essayData.essay.content);
+        }
+    }, [essayData]);
+
+    // Essay 自動儲存（使用 hook）
+    const handleEssayAutoSave = useEssayAutoSave(mapId, essayContent);
+
+    // Essay chat 發送訊息（發送前自動儲存）
+    const {
+        isSending: isEssaySending,
+        handleSendMessage: sendEssayMessage,
+    } = useEssaySendMessage(mapId, handleEssayAutoSave);
+
     // 事件監聽
     useMapEventNotifier(addOperation);
 
@@ -64,7 +94,7 @@ export const MapPage = () => {
             if (!text.trim()) return;
 
             const messageToSend = feedbackData
-                ? `[Operate]\n${feedbackData.message}\n[Feedback]\n${feedbackData.description}\n[Question]\n${text}`
+                ? `[Operate]\\n${feedbackData.message}\\n[Feedback]\\n${feedbackData.description}\\n[Question]\\n${text}`
                 : text;
 
             // 立即關閉 feedback
@@ -117,7 +147,14 @@ export const MapPage = () => {
     if (view === 'essay') {
         return (
             <div style={{ height: '100%', width: '100%' }}>
-                <EssayPageContent />
+                <EssayPageContent
+                    essayContent={essayContent}
+                    setEssayContent={setEssayContent}
+                    isChatOpen={isChatOpen}
+                    setIsChatOpen={setIsChatOpen}
+                    handleSendMessage={sendEssayMessage}
+                    isSending={isEssaySending}
+                />
             </div>
         );
     }

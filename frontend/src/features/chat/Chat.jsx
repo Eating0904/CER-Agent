@@ -16,7 +16,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import robotImage from '../../assets/images/robot.png';
 
-import { useGetChatHistoryQuery } from './chatApi';
+import { useGetChatHistoryQuery, useGetEssayChatHistoryQuery } from './chatApi';
 import { InitiativeFeedback } from './InitiativeFeedback';
 import { ScoringResult } from './ScoringResult';
 
@@ -30,12 +30,19 @@ export const Chat = ({
     onCloseFeedback,
     onSendMessage,
     isSending,
+    chatType = 'mindmap',
 }) => {
     // 從 URL 讀取 mapId
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
+
+    // 根據 chatType 選擇對應的 history query
+    const useHistoryQuery = chatType === 'essay'
+        ? useGetEssayChatHistoryQuery
+        : useGetChatHistoryQuery;
+
     // 1. 取得資料 (RTK Query)
-    const { data: historyData } = useGetChatHistoryQuery(mapId, {
+    const { data: historyData } = useHistoryQuery(mapId, {
         skip: !mapId,
         refetchOnMountOrArgChange: true,
     });

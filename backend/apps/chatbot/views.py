@@ -4,6 +4,8 @@ from rest_framework.response import Response
 
 from apps.map.permissions import require_map_owner
 
+from .langgraph.essay import get_essay_langgraph_service
+from .langgraph.mindmap import get_langgraph_service
 from .serializers import ChatMessageSerializer
 
 
@@ -27,12 +29,9 @@ def chat(request, chat_type):
 
         # 根據 chat_type 選擇對應的 service
         if chat_type == 'mindmap':
-            from .langgraph.mindmap import get_langgraph_service
-
             service = get_langgraph_service()
-        # elif chat_type == 'essay':
-        #     from .langgraph.essay import get_essay_langgraph_service
-        #     service = get_essay_langgraph_service()
+        elif chat_type == 'essay':
+            service = get_essay_langgraph_service()
         else:
             return Response(
                 {'success': False, 'error': f'Unknown chat type: {chat_type}'},
@@ -74,12 +73,9 @@ def get_chat_history(request, chat_type, map_id):
     try:
         # 根據 chat_type 選擇對應的 service
         if chat_type == 'mindmap':
-            from .langgraph.mindmap import get_langgraph_service
-
             service = get_langgraph_service()
-        # elif chat_type == 'essay':
-        #     from .langgraph.essay import get_essay_langgraph_service
-        #     service = get_essay_langgraph_service()
+        elif chat_type == 'essay':
+            service = get_essay_langgraph_service()
         else:
             return Response(
                 {'success': False, 'error': f'Unknown chat type: {chat_type}'},
