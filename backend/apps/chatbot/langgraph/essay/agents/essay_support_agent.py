@@ -1,8 +1,4 @@
-"""
-CERCognitiveSupportAgent - CER 認知學習支援 Agent
-
-處理 CER 認知學習相關問題，協助學生克服繪製 CER 心智圖時遇到的技術性障礙。
-"""
+"""Essay Support Agent - 文章寫作引導"""
 
 from typing import List
 
@@ -10,17 +6,16 @@ from langchain_core.messages import BaseMessage, SystemMessage
 
 from apps.common.utils.json_parser import parse_llm_json_response
 
-from ..prompts import CER_COGNITIVE_SUPPORT_PROMPT
+from ..prompts import ESSAY_SUPPORT_PROMPT
 from .base import BaseAgent
 
 
-class CERCognitiveSupportAgent(BaseAgent):
-    """CER 認知學習支援 Agent"""
+class EssaySupportAgent(BaseAgent):
+    """Essay 寫作引導 Agent"""
 
     def __init__(self):
-        """初始化 CERCognitiveSupportAgent"""
         super().__init__(temperature=0.5)
-        self.prompt_template = CER_COGNITIVE_SUPPORT_PROMPT
+        self.prompt_template = ESSAY_SUPPORT_PROMPT
 
     def prepare_messages(
         self, messages: List[BaseMessage], article_content: str = '', **kwargs
@@ -62,20 +57,19 @@ class CERCognitiveSupportAgent(BaseAgent):
 
     def extract_metadata(self, response) -> dict:
         """
-        提取 metadata：從 JSON 回應中提取 reasoning, response_strategy, strategy_detail
+        提取 metadata：從 JSON 回應中提取 reasoning, response_strategy
 
         Args:
             response: LLM 的回應
 
         Returns:
-            dict: metadata 包含 reasoning, response_strategy, strategy_detail
+            dict: metadata
         """
         try:
             result = parse_llm_json_response(response.content)
             return {
                 'reasoning': result.get('reasoning', ''),
                 'response_strategy': result.get('response_strategy', ''),
-                'strategy_detail': result.get('strategy_detail', ''),
             }
         except Exception as json_error:
             print(f'⚠️  Metadata 提取失敗: {json_error}')

@@ -1,8 +1,4 @@
-"""
-ScoringAgent - CER 評分 Agent
-
-處理 CER 心智圖的評分請求，提供結構化的評分結果（Claim、Evidence、Reasoning）。
-"""
+"""Essay Scoring Agent - 文章評分"""
 
 import json
 from typing import List
@@ -15,11 +11,10 @@ from ..prompts.scoring_prompt import SCORING_PROMPT
 from .base import BaseAgent
 
 
-class ScoringAgent(BaseAgent):
-    """CER 評分 Agent - 單一請求模式"""
+class EssayScoringAgent(BaseAgent):
+    """Essay 評分 Agent"""
 
     def __init__(self):
-        """初始化 ScoringAgent"""
         super().__init__(temperature=0.3)
         self.prompt_template = SCORING_PROMPT
 
@@ -30,26 +25,28 @@ class ScoringAgent(BaseAgent):
         **kwargs,
     ) -> List[BaseMessage]:
         """
+        準備訊息：只傳 essay_content
+
         Args:
             messages: 原始對話歷史
             article_content: 文章內容
             **kwargs: 未使用的額外參數
 
         Returns:
-            List[BaseMessage]: SystemMessage（已格式化）+ HumanMessage（只包含 mind_map_data）
+            List[BaseMessage]: SystemMessage（已格式化）+ HumanMessage（只包含 essay_content）
         """
         last_message = messages[-1]
-        mind_map_data = {}
+        essay_content = ''
 
         try:
             content = json.loads(last_message.content)
-            mind_map_data = content.get('context', {}).get('mind_map_data', {})
+            essay_content = content.get('context', {}).get('essay_content', '')
         except (json.JSONDecodeError, AttributeError):
             pass
 
         system_message_content = self.prompt_template.format(article_content=article_content)
 
-        human_message_content = json.dumps(mind_map_data, ensure_ascii=False)
+        human_message_content = essay_content if essay_content else '（尚未撰寫）'
 
         return [
             SystemMessage(content=system_message_content),
@@ -60,13 +57,6 @@ class ScoringAgent(BaseAgent):
         """
         處理回應：解析並驗證 JSON 評分結果
 
-        期望 LLM 回傳 JSON 格式：
-        {
-            "Claim": {"coverage": "X%", "score": "Y分", "feedback": "..."},
-            "Evidence": {"coverage": "X%", "score": "Y分", "feedback": "..."},
-            "Reasoning": {"coverage": "X%", "score": "Y分", "feedback": "..."}
-        }
-
         Args:
             response: LLM 的回應
 
@@ -76,7 +66,7 @@ class ScoringAgent(BaseAgent):
 
         try:
             result = parse_llm_json_response(response.content)
-            required_keys = ['Claim', 'Evidence', 'Reasoning']
+            required_keys = ['Structure', 'Content', 'Language', 'Creativity']
             for key in required_keys:
                 if key not in result:
                     print(f'⚠️  評分結果缺少 {key} 欄位，回傳原始內容')
@@ -96,26 +86,25 @@ class ScoringAgent(BaseAgent):
             response: LLM 的回應
 
         Returns:
-            dict: metadata 包含 Claim, Evidence, Reasoning 的評分資訊
+            dict: metadata 包含各面向評分資訊
         """
         try:
             result = parse_llm_json_response(response.content)
-            required_keys = ['Claim', 'Evidence', 'Reasoning']
+            required_keys = ['Structure', 'Content', 'Language', 'Creativity']
 
             for key in required_keys:
                 if key not in result:
                     return {}
 
             return {
-                'claim_coverage': result['Claim'].get('coverage', ''),
-                'claim_score': result['Claim'].get('score', ''),
-                'claim_feedback': result['Claim'].get('feedback', ''),
-                'evidence_coverage': result['Evidence'].get('coverage', ''),
-                'evidence_score': result['Evidence'].get('score', ''),
-                'evidence_feedback': result['Evidence'].get('feedback', ''),
-                'reasoning_coverage': result['Reasoning'].get('coverage', ''),
-                'reasoning_score': result['Reasoning'].get('score', ''),
-                'reasoning_feedback': result['Reasoning'].get('feedback', ''),
+                'structure_score': result['Structure'].get('score', ''),
+                'structure_feedback': result['Structure'].get('feedback', ''),
+                'content_score': result['Content'].get('score', ''),
+                'content_feedback': result['Content'].get('feedback', ''),
+                'language_score': result['Language'].get('score', ''),
+                'language_feedback': result['Language'].get('feedback', ''),
+                'creativity_score': result['Creativity'].get('score', ''),
+                'creativity_feedback': result['Creativity'].get('feedback', ''),
             }
 
         except Exception as json_error:
