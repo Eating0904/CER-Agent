@@ -49,7 +49,7 @@ export const MapPage = () => {
         data: mapData,
         isLoading: isMapLoading,
         error: mapError,
-    } = useGetMapQuery(mapId, { skip: !mapId || view !== 'mindmap' });
+    } = useGetMapQuery(mapId, { skip: !mapId });
     const mapContext = useMapNodes(mapData);
 
     const handleMapAutoSave = useMapAutoSave(mapId, mapContext.nodes, mapContext.edges);
@@ -170,6 +170,7 @@ export const MapPage = () => {
                     handleSendMessage={sendEssayMessage}
                     isSending={isEssaySending}
                     editorRef={editorRef}
+                    mapContext={mapContext}
                 />
             </div>
         );

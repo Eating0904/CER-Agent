@@ -29,7 +29,7 @@ const UpdateNodeInternals = ({ nodes }) => {
     return null;
 };
 
-export const BaseMap = () => {
+export const BaseMap = ({ readOnly = false }) => {
     const {
         nodes,
         edges,
@@ -47,21 +47,28 @@ export const BaseMap = () => {
                 edges={edges}
                 nodeTypes={nodeTypes}
                 fitView
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onNodeClick={(e, n) => selectNode(n.id)}
-                onEdgeClick={(e, edge) => selectEdge(edge.id)}
-                onPaneClick={() => {
+                onNodesChange={readOnly ? undefined : onNodesChange}
+                onEdgesChange={readOnly ? undefined : onEdgesChange}
+                onConnect={readOnly ? undefined : onConnect}
+                onNodeClick={readOnly ? undefined : (e, n) => selectNode(n.id)}
+                onEdgeClick={readOnly ? undefined : (e, edge) => selectEdge(edge.id)}
+                onPaneClick={readOnly ? undefined : () => {
                     selectNode(null);
                     selectEdge(null);
                 }}
                 connectionMode={ConnectionMode.Loose}
                 proOptions={{ hideAttribution: true }}
-                deleteKeyCode={null}
+                deleteKeyCode={readOnly ? null : 'Backspace'}
+                nodesDraggable={!readOnly}
+                nodesConnectable={!readOnly}
+                elementsSelectable={!readOnly}
+                zoomOnDoubleClick={!readOnly}
+                panOnDrag
+                zoomOnScroll
+                zoomOnPinch
             >
                 <Background />
-                <Controls showInteractive={false} />
+                {!readOnly && <Controls showInteractive={false} />}
                 <UpdateNodeInternals nodes={nodes} />
             </ReactFlow>
         </div>

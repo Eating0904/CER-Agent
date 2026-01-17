@@ -4,6 +4,8 @@ import { Chat } from '../features/chat/Chat';
 import { FloatingChatButton } from '../features/chat/FloatingChatButton';
 import { EssayEditor } from '../features/essay/EssayEditor';
 import { EssaySaveButton } from '../features/essay/EssaySaveButton';
+import { BaseMap } from '../features/map/BaseMap';
+import { MapProvider } from '../features/map/MapProvider';
 
 /**
  * EssayPageContent 組件（presentational）
@@ -17,6 +19,7 @@ export const EssayPageContent = ({
     handleSendMessage,
     isSending,
     editorRef,
+    mapContext,
 }) => (
     <>
         <div style={{ height: '100%', display: 'flex' }}>
@@ -31,10 +34,12 @@ export const EssayPageContent = ({
                     style={{
                         height: '100%',
                         backgroundColor: '#f5f5f5',
-                        padding: '16px',
+                        position: 'relative',
                     }}
                 >
-                    {/* 未來可在此放置其他內容 */}
+                    <MapProvider value={mapContext}>
+                        <BaseMap readOnly />
+                    </MapProvider>
                 </div>
 
                 {/* 右側面板 - Editor */}
