@@ -163,6 +163,7 @@ export const MapPage = () => {
         return (
             <div style={{ height: '100%', width: '100%' }}>
                 <EssayPageContent
+                    key={mapId}
                     essayContent={essayContent}
                     setEssayContent={setEssayContent}
                     isChatOpen={isChatOpen}
@@ -180,6 +181,7 @@ export const MapPage = () => {
     return (
         <div style={{ height: '100%', width: '100%' }}>
             <MapPageContent
+                key={mapId}
                 mapContext={mapContext}
                 alerts={alerts}
                 handleAskClick={handleAskClick}

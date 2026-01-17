@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import {
     Background,
@@ -7,6 +7,7 @@ import {
     ReactFlow,
     useUpdateNodeInternals,
 } from '@xyflow/react';
+import throttle from 'lodash.throttle';
 
 import { NEUTRAL_COLORS } from '../../constants/colors';
 
@@ -40,13 +41,44 @@ export const BaseMap = ({ readOnly = false }) => {
         selectEdge,
     } = useMapContext();
 
+    const reactFlowInstanceRef = useRef(null);
+    const containerRef = useRef(null);
+    const observerRef = useRef(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return undefined;
+
+        // 使用 throttle 限制 fitView 的呼叫頻率
+        const handleResize = throttle(() => {
+            if (reactFlowInstanceRef.current && nodes.length > 0) {
+                reactFlowInstanceRef.current.fitView({ duration: 200 });
+            }
+        }, 100);
+
+        observerRef.current = new ResizeObserver(handleResize);
+        observerRef.current.observe(containerRef.current);
+
+        return () => {
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
+            handleResize.cancel();
+        };
+    }, [nodes.length]);
+
     return (
-        <div style={{ height: '100%', width: '100%', backgroundColor: NEUTRAL_COLORS.white }}>
+        <div
+            ref={containerRef}
+            style={{ height: '100%', width: '100%', backgroundColor: NEUTRAL_COLORS.white }}
+        >
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
                 nodeTypes={nodeTypes}
                 fitView
+                onInit={(instance) => {
+                    reactFlowInstanceRef.current = instance;
+                }}
                 onNodesChange={readOnly ? undefined : onNodesChange}
                 onEdgesChange={readOnly ? undefined : onEdgesChange}
                 onConnect={readOnly ? undefined : onConnect}
