@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { MinusOutlined } from '@ant-design/icons';
 import {
@@ -11,7 +11,7 @@ import {
     MessageList,
     TypingIndicator,
 } from '@chatscope/chat-ui-kit-react';
-import { Button } from 'antd';
+import { App, Button } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
 import robotImage from '../../assets/images/robot.png';
@@ -30,9 +30,11 @@ export const Chat = ({
     onCloseFeedback,
     onSendMessage,
     isSending,
-    isEssayValid = true,
     chatType = 'mindmap',
+    isEssayValid = true,
 }) => {
+    const { message } = App.useApp();
+    const [inputValue, setInputValue] = useState('');
     // 從 URL 讀取 mapId
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
@@ -64,14 +66,36 @@ export const Chat = ({
     }, [historyData]);
 
     // 3. 處理發送訊息
-    const handleSend = async (text) => {
-        if (!text.trim()) return;
+    const handleSend = async () => {
+        // 如果被禁用，顯示警告並不發送
+        if (chatType === 'essay' && !isEssayValid) {
+            message.error({
+                content: 'The essay content should be in English',
+                key: 'chat-validation',
+            });
+            return;
+        }
+
+        // 如果 AI 正在思考，顯示警告並不發送
+        if (isSending) {
+            message.error({
+                content: 'Please wait for the current response to finish.',
+                key: 'chat-sending',
+            });
+            return;
+        }
+
+        if (!inputValue.trim()) return;
 
         try {
-            await onSendMessage(text);
+            const textToSend = inputValue;
+            setInputValue(''); // 立即清空輸入框
+            await onSendMessage(textToSend);
         }
         catch (error) {
             console.error('發送失敗:', error);
+            // 如果發送失敗，將內容放回輸入框
+            setInputValue(inputValue);
         }
     };
 
@@ -157,13 +181,13 @@ export const Chat = ({
                             );
                         })}
                     </MessageList>
-
                     <MessageInput
                         placeholder="Input message..."
+                        value={inputValue}
+                        onChange={setInputValue}
                         onSend={handleSend}
                         onPaste={handlePaste}
                         attachButton={false}
-                        disabled={isSending || (chatType === 'essay' && !isEssayValid)}
                     />
                 </ChatContainer>
             </MainContainer>

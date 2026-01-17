@@ -76,7 +76,6 @@ export const EssayPageContent = ({
             isSending={isSending}
             chatType="essay"
             isEssayValid={isEssayValid}
-            disabledReason="Only English allowed"
         />
 
         <FloatingChatButton

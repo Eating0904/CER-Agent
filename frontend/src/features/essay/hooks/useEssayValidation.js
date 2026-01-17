@@ -25,7 +25,7 @@ export const useEssayValidation = () => {
         if (!isValid) {
             setIsEssayValid(false);
             message.warning({
-                content: 'Only English and numbers are allowed',
+                content: 'The essay content should be in English',
                 key: 'essay-validation',
             });
         }
