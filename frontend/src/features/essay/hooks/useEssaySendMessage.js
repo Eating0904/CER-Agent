@@ -8,9 +8,10 @@ import { useSendEssayChatMessageMutation } from '../../chat/chatApi';
  *
  * @param {string} mapId - 地圖 ID
  * @param {Function} handleSave - Essay 儲存函數
+ * @param {Object} editorRef - Editor instance ref (for getText())
  * @returns {Object} { isSending, handleSendMessage }
  */
-export const useEssaySendMessage = (mapId, handleSave) => {
+export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
     const [isSending, setIsSending] = useState(false);
     const [sendChatMessage] = useSendEssayChatMessageMutation();
 
@@ -25,10 +26,14 @@ export const useEssaySendMessage = (mapId, handleSave) => {
                     await handleSave();
                 }
 
-                // 2. 發送訊息
+                // 2. 提取純文字內容
+                const essayPlainText = editorRef?.current?.getText() || '';
+
+                // 3. 發送訊息（包含純文字）
                 await sendChatMessage({
                     message: text,
                     mapId,
+                    essayPlainText,
                 }).unwrap();
             }
             catch (err) {
@@ -39,7 +44,7 @@ export const useEssaySendMessage = (mapId, handleSave) => {
                 setIsSending(false);
             }
         },
-        [handleSave, sendChatMessage, mapId],
+        [handleSave, sendChatMessage, mapId, editorRef],
     );
 
     return { isSending, handleSendMessage };

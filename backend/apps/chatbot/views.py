@@ -26,22 +26,27 @@ def chat(request, chat_type):
     try:
         message = serializer.validated_data['message']
         map_id = serializer.validated_data['map_id']
+        essay_plain_text = serializer.validated_data.get('essay_plain_text', '')
 
         # 根據 chat_type 選擇對應的 service
         if chat_type == 'mindmap':
             service = get_langgraph_service()
+            result = service.process_user_message(
+                user_input=message, map_id=map_id, user_id=str(request.user.id)
+            )
         elif chat_type == 'essay':
             service = get_essay_langgraph_service()
+            result = service.process_user_message(
+                user_input=message,
+                map_id=map_id,
+                user_id=str(request.user.id),
+                essay_plain_text=essay_plain_text,
+            )
         else:
             return Response(
                 {'success': False, 'error': f'Unknown chat type: {chat_type}'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        # 使用 LangGraph 服務處理訊息
-        result = service.process_user_message(
-            user_input=message, map_id=map_id, user_id=str(request.user.id)
-        )
 
         # 檢查處理結果
         if not result['success']:

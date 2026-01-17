@@ -1,6 +1,7 @@
 import {
     useCallback,
     useEffect,
+    useRef,
     useState,
 } from 'react';
 
@@ -114,12 +115,13 @@ export const MapPage = () => {
         }
     }, [essayData, mapId]);
 
+    const editorRef = useRef(null);
     const handleEssayAutoSave = useEssayAutoSave(mapId, essayContent);
 
     const {
         isSending: isEssaySending,
         handleSendMessage: sendEssayMessage,
-    } = useEssaySendMessage(mapId, handleEssayAutoSave);
+    } = useEssaySendMessage(mapId, handleEssayAutoSave, editorRef);
 
     // ==================== 渲染邏輯 ====================
     if (!mapId) {
@@ -167,6 +169,7 @@ export const MapPage = () => {
                     setIsChatOpen={setIsChatOpen}
                     handleSendMessage={sendEssayMessage}
                     isSending={isEssaySending}
+                    editorRef={editorRef}
                 />
             </div>
         );

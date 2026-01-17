@@ -128,7 +128,7 @@ const MobileToolbarContent = ({
   </>
 )
 
-export function SimpleEditor({ content, onChange }) {
+export function SimpleEditor({ content, onChange, editorRef }) {
   const isMobile = useIsBreakpoint()
   const { height } = useWindowSize()
   const [mobileView, setMobileView] = useState("main")
@@ -174,6 +174,12 @@ export function SimpleEditor({ content, onChange }) {
       onChange?.(e.getHTML())
     },
   })
+
+  useEffect(() => {
+    if (editor && editorRef) {
+      editorRef.current = editor
+    }
+  }, [editor, editorRef])
 
   useEffect(() => {
     if (editor && content && editor.getHTML() !== content) {

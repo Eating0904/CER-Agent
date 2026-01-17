@@ -14,12 +14,14 @@ export const EssayPageContent = ({
     setIsChatOpen,
     handleSendMessage,
     isSending,
+    editorRef,
 }) => (
     <>
         <div style={{ height: '100%', position: 'relative' }}>
             <EssayEditor
                 essayContent={essayContent}
                 setEssayContent={setEssayContent}
+                editorRef={editorRef}
             />
 
             <div

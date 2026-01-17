@@ -13,7 +13,6 @@ from langfuse import Langfuse, propagate_attributes
 from langfuse.langchain import CallbackHandler
 
 from apps.common.utils.map_data_utils import simplify_map_data
-from apps.essay.models import Essay
 from apps.map.models import Map
 from config.settings import DATABASE_URL
 
@@ -25,7 +24,9 @@ class EssayLangGraphService:
         self.conversation_graph = EssayConversationGraph(DATABASE_URL)
         self.langfuse = Langfuse()
 
-    def process_user_message(self, user_input: str, map_id: int, user_id: str) -> Dict:
+    def process_user_message(
+        self, user_input: str, map_id: int, user_id: str, essay_plain_text: str = ''
+    ) -> Dict:
         try:
             # 1. 獲取 Map 和 Essay
             try:
@@ -37,13 +38,8 @@ class EssayLangGraphService:
             mind_map_data = {'nodes': map_instance.nodes, 'edges': map_instance.edges}
             simplified_map_data = simplify_map_data(mind_map_data)
 
-            # 3. 獲取 Essay 內容
-            essay_content = ''
-            try:
-                essay = Essay.objects.get(map=map_instance)
-                essay_content = essay.content
-            except Essay.DoesNotExist:
-                pass  # Essay 不存在就用空字串
+            # 3. 獲取 Essay 純文字內容（來自前端）
+            essay_content = essay_plain_text
 
             # 4. 獲取文章模板
             article_content = ''

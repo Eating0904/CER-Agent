@@ -1,6 +1,6 @@
 import { SimpleEditor } from '../../tiptap-ui/tiptap-templates/simple/simple-editor';
 
-export const EssayEditor = ({ essayContent, setEssayContent }) => (
+export const EssayEditor = ({ essayContent, setEssayContent, editorRef }) => (
     <div
         style={{
             height: '100%',
@@ -15,6 +15,7 @@ export const EssayEditor = ({ essayContent, setEssayContent }) => (
             <SimpleEditor
                 content={essayContent}
                 onChange={setEssayContent}
+                editorRef={editorRef}
             />
         </div>
     </div>

@@ -55,12 +55,13 @@ const chatApi = baseApi.injectEndpoints({
         }),
         // ===== Essay Chat =====
         sendEssayChatMessage: build.mutation({
-            query: ({ message, mapId }) => ({
+            query: ({ message, mapId, essayPlainText }) => ({
                 url: 'chatbot/essay/chat/',
                 method: 'POST',
                 body: {
                     message,
                     map_id: mapId,
+                    essay_plain_text: essayPlainText,
                 },
             }),
             async onQueryStarted({ message, mapId }, { dispatch, queryFulfilled }) {
