@@ -30,6 +30,7 @@ export const Chat = ({
     onCloseFeedback,
     onSendMessage,
     isSending,
+    isEssayValid = true,
     chatType = 'mindmap',
 }) => {
     // 從 URL 讀取 mapId
@@ -162,7 +163,7 @@ export const Chat = ({
                         onSend={handleSend}
                         onPaste={handlePaste}
                         attachButton={false}
-                        disabled={isSending}
+                        disabled={isSending || (chatType === 'essay' && !isEssayValid)}
                     />
                 </ChatContainer>
             </MainContainer>

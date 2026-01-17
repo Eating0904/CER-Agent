@@ -20,6 +20,7 @@ export const EssayPageContent = ({
     isSending,
     editorRef,
     mapContext,
+    isEssayValid = true,
 }) => (
     <>
         <div style={{ height: '100%', display: 'flex' }}>
@@ -59,7 +60,10 @@ export const EssayPageContent = ({
                             width: '100px',
                         }}
                     >
-                        <EssaySaveButton essayContent={essayContent} />
+                        <EssaySaveButton
+                            essayContent={essayContent}
+                            disabled={!isEssayValid}
+                        />
                     </div>
                 </div>
             </Split>
@@ -71,6 +75,8 @@ export const EssayPageContent = ({
             onSendMessage={handleSendMessage}
             isSending={isSending}
             chatType="essay"
+            isEssayValid={isEssayValid}
+            disabledReason="Only English allowed"
         />
 
         <FloatingChatButton

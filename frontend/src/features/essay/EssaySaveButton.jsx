@@ -8,7 +8,7 @@ import { BUTTON_COLORS, NEUTRAL_COLORS } from '../../constants/colors';
 
 import { useUpdateEssayMutation } from './essayApi';
 
-export const EssaySaveButton = ({ essayContent }) => {
+export const EssaySaveButton = ({ essayContent, disabled = false }) => {
     const { message } = App.useApp();
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
@@ -16,6 +16,7 @@ export const EssaySaveButton = ({ essayContent }) => {
     const [isSaveHovered, setIsSaveHovered] = useState(false);
 
     const handleSave = async () => {
+        if (disabled) return;
         try {
             await updateEssay({
                 mapId,
@@ -28,22 +29,28 @@ export const EssaySaveButton = ({ essayContent }) => {
         }
     };
 
+    const getBackgroundColor = () => {
+        if (disabled) return '#f5f5f5';
+        if (isSaveHovered) return BUTTON_COLORS.greenHover;
+        return BUTTON_COLORS.green;
+    };
+
     return (
         <Button
             icon={<SaveOutlined />}
             onClick={handleSave}
             loading={isLoading}
+            disabled={disabled}
             onMouseEnter={() => setIsSaveHovered(true)}
             onMouseLeave={() => setIsSaveHovered(false)}
             style={{
                 width: '100%',
-                color: NEUTRAL_COLORS.black,
-                backgroundColor: isSaveHovered
-                    ? BUTTON_COLORS.greenHover
-                    : BUTTON_COLORS.green,
+                color: disabled ? 'rgba(0, 0, 0, 0.25)' : NEUTRAL_COLORS.black,
+                backgroundColor: getBackgroundColor(),
                 transition: 'background-color 0.2s ease',
-                borderColor: BUTTON_COLORS.green,
-                boxShadow: '2px 2px 2px black',
+                borderColor: disabled ? '#d9d9d9' : BUTTON_COLORS.green,
+                boxShadow: disabled ? 'none' : '2px 2px 2px black',
+                cursor: disabled ? 'not-allowed' : 'pointer',
             }}
         >
             Save
