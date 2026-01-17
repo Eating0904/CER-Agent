@@ -136,8 +136,8 @@ export const MapPage = () => {
     }
 
     // 根據 view 決定使用哪個 loading 和 error
-    const isLoading = view === 'essay' ? isEssayLoading : isMapLoading;
-    const error = view === 'essay' ? essayError : mapError;
+    const isLoading = view === 'essay' ? (isEssayLoading || isMapLoading) : isMapLoading;
+    const error = view === 'essay' ? (essayError || mapError) : mapError;
 
     if (isLoading) {
         return (
