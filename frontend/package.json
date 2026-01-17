@@ -45,6 +45,7 @@
     "react-hotkeys-hook": "^5.2.3",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.5.0",
+    "react-split": "^2.0.14",
     "redux-logger": "^3.0.6"
   },
   "devDependencies": {
