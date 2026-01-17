@@ -55,28 +55,29 @@ body,
 }
 
 .simple-editor-wrapper {
-  width: 100vw;
-  height: 100vh;
-  overflow: auto;
-}
-
-.simple-editor-content {
-  max-width: 648px;
   width: 100%;
-  margin: 0 auto;
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+.simple-editor-content {
+  width: 100%;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 }
 
 .simple-editor-content .tiptap.ProseMirror.simple-editor {
   flex: 1;
-  padding: 3rem 3rem 30vh;
+  padding: 1rem 2rem 2rem;
+  outline: none;
 }
 
 @media screen and (max-width: 480px) {
   .simple-editor-content .tiptap.ProseMirror.simple-editor {
-    padding: 1rem 1.5rem 30vh;
+    padding: 1rem 1rem 2rem;
   }
 }

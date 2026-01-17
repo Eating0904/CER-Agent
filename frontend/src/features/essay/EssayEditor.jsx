@@ -1,6 +1,4 @@
-import { Input } from 'antd';
-
-const { TextArea } = Input;
+import { SimpleEditor } from '../../tiptap-ui/tiptap-templates/simple/simple-editor';
 
 export const EssayEditor = ({ essayContent, setEssayContent }) => (
     <div
@@ -10,14 +8,14 @@ export const EssayEditor = ({ essayContent, setEssayContent }) => (
             display: 'flex',
             flexDirection: 'column',
             gap: '8px',
+            backgroundColor: '#f0f2f5',
         }}
     >
-        <TextArea
-            value={essayContent}
-            onChange={(e) => setEssayContent(e.target.value)}
-            placeholder="請輸入文章內容..."
-            style={{ flex: 1, resize: 'none' }}
-            autoSize={false}
-        />
+        <div style={{ flex: 1, border: '1px solid #d9d9d9', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#fff' }}>
+            <SimpleEditor
+                content={essayContent}
+                onChange={setEssayContent}
+            />
+        </div>
     </div>
 );
