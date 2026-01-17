@@ -1,11 +1,6 @@
+/* eslint-disable import/extensions */
 import { forwardRef, useState } from 'react';
 
-// Using HighlighterIcon as placeholder or need a 'A' icon?
-// Usually text color is represented by 'A'.
-// I'll check if there is a Font/Text icon, otherwise I'll use a generic one or just text 'A'.
-// Checking available icons: only saw arrow, chevron, highlighter, link, ban.
-// I will create a simple SVG icon inline for 'A' if needed, or just use text.
-// Let's use a simple SVG for "Text Color" icon.
 // --- Hooks ---
 import { useTiptapEditor } from '@/tiptap-ui/hooks/use-tiptap-editor';
 // --- Icons ---
@@ -40,10 +35,12 @@ const TextColorIcon = ({ className }) => (
     </svg>
 );
 
-export const TextColorPopover = forwardRef(({
-    editor: providedEditor,
-    ...props
-}, ref) => {
+export const TextColorPopover = forwardRef((
+    {
+        editor: providedEditor,
+    },
+    ref,
+) => {
     const { editor } = useTiptapEditor(providedEditor);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -84,7 +81,6 @@ export const TextColorPopover = forwardRef(({
                     tooltip="Text Color"
                     ref={ref}
                     style={{ position: 'relative' }}
-                    {...props}
                 >
                     <TextColorIcon className="tiptap-button-icon" />
                     <span
