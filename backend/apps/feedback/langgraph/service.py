@@ -7,6 +7,7 @@ from langfuse.langchain import CallbackHandler
 
 from apps.common.utils.map_data_utils import simplify_map_data
 from apps.map.models import Map
+from config.settings import DATABASE_URL
 
 from ..models import NodeFeedback
 from .graph import FeedbackGraph
@@ -17,7 +18,7 @@ class FeedbackService:
 
     def __init__(self):
         """初始化 Feedback Service"""
-        self.graph = FeedbackGraph()
+        self.graph = FeedbackGraph(DATABASE_URL)
         self.langfuse = Langfuse()
 
     def generate_feedback(
@@ -65,7 +66,7 @@ class FeedbackService:
                 article_content = map_instance.template.article_content
 
             # 5. 設定 thread_id 和 session_id
-            thread_id = str(map_id)
+            thread_id = f'feedback-{map_id}'
             session_id = thread_id
 
             # 6. 使用 Langfuse Context Manager 建立 Trace 並設定 Session ID 和 User ID
@@ -86,6 +87,7 @@ class FeedbackService:
                         user_input=query,
                         mind_map_data=simplified_map,
                         article_content=article_content,
+                        thread_id=thread_id,
                         callbacks=[langfuse_handler],
                     )
 
