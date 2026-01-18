@@ -52,7 +52,7 @@ class EssayLangGraphService:
 
             # 6. Langfuse tracing
             with self.langfuse.start_as_current_observation(
-                name='essay_user_interaction',
+                name='essay_interaction',
                 as_type='span',
             ) as trace_span:
                 with propagate_attributes(session_id=session_id, user_id=user_id):

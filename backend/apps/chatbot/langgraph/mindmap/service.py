@@ -40,7 +40,7 @@ class LangGraphService:
 
             # 5. 使用 Langfuse Context Manager 建立 Trace/Span 並設定 Session ID 和 User ID
             with self.langfuse.start_as_current_observation(
-                name='user_interaction',
+                name='mindmap_interaction',
                 as_type='span',
             ) as trace_span:
                 # 設定 Trace 層級屬性 (Session ID 和 User ID) 並向下傳遞
