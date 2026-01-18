@@ -54,7 +54,7 @@ export const EssayPageContent = ({
                     <div
                         style={{
                             position: 'absolute',
-                            top: '16px',
+                            top: '10px',
                             right: '16px',
                             zIndex: 10,
                             width: '100px',
