@@ -63,6 +63,8 @@ export const EssayPageContent = ({
                         <EssaySaveButton
                             essayContent={essayContent}
                             disabled={!isEssayValid}
+                            onSendMessage={handleSendMessage}
+                            setIsChatOpen={setIsChatOpen}
                         />
                     </div>
                 </div>

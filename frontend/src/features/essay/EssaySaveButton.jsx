@@ -11,6 +11,8 @@ import { useUpdateEssayMutation } from './essayApi';
 export const EssaySaveButton = ({
     essayContent,
     disabled = false,
+    onSendMessage,
+    setIsChatOpen,
 }) => {
     const { message } = App.useApp();
     const [searchParams] = useSearchParams();
@@ -21,11 +23,18 @@ export const EssaySaveButton = ({
     const handleSave = async () => {
         if (disabled) return;
         try {
+            // 1. 先儲存 essay
             await updateEssay({
                 mapId,
                 content: essayContent,
             }).unwrap();
             message.success('Essay 已成功保存');
+
+            // 2. 開啟聊天室
+            setIsChatOpen(true);
+
+            // 3. 自動發送 [scoring] 訊息
+            await onSendMessage('[scoring]');
         }
         catch (error) {
             message.error('保存失敗，請稍後再試', error);
