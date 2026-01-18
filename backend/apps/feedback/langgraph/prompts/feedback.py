@@ -77,22 +77,34 @@ PROMPT_TEMPLATE = """
 {article_content}
 
 # 輸入說明
+請務必理解使用者的格式與內容。
 使用者訊息的格式為 JSON:
 - `query`：使用者的操作行為描述（自然語言），包含「新增節點」、「編輯節點內容」、「建立連線」、「刪除節點」、「刪除連線」等資訊。
 - `context`:
-    - `mind_map_data`: 使用者當前的心智圖資料。
+    - `mind_map_data`: 使用者當前的心智圖資料。包含：
+        - `nodes` ：節點清單。清單中每筆資料皆有 id 以及 content，id 的開頭可辨別 Node 類型，c 表示 Claim、e 表示 Evidence、r 表示 Reasoning，content 則為該 Node 的內容。
+        - `edges` ：連線清單。清單中每筆資料皆有 node1 以及 node2，代表其之間有連線、互相有關連性，但是不具備方向性。
     - `metadata`: 操作的詳細資訊（JSON 陣列），包含：
-        - **edit 動作**：`action`, `node_id`, `node_type`, `original_content`, `updated_content`
-        - **connect 動作**：`action`, `connected_nodes`, `nodes_content`
-        - **delete_node 動作**：`action`, `node_id`, `node_type`, `node_content`, `deleted_connections` (選填)
-        - **delete_edge 動作**：`action`, `connected_nodes`, `nodes_content`
-        
-註: 
-- `mind_map_data` 中的 nodes 為節點清單，清單中每筆資料皆有 id 以及 content，id 的開頭可辨別 Node 類型，c 表示 Claim、e 表示 Evidence、r 表示 Reasoning，content 則為該 Node 的內容。
-- `mind_map_data` 中的 edges 為連線清單，清單中每筆資料皆有 node1 以及 node2，代表其之間有連線、互相有關連性，但是不具備方向性。
-- `metadata` 提供每個操作的詳細資訊，例如編輯前後的內容對比、連接的節點內容、刪除的節點和邊等，可用於更精準地分析學生的操作意圖。
-- 刪除節點時，`deleted_connections` 包含所有與被刪除節點連接的**其他節點**的 ID 和內容。
-- 刪除邊時，`nodes_content` 包含連接的兩個節點的內容。
+        - **edit 動作**：
+            - `action`： 操作動作類型
+            - `node_id`：被操作的 Node ID
+            - `node_type`：被操作的 Node 類型
+            - `original_content`：被操作的 Node 的原始內容
+            - `updated_content`：被操作的 Node 的更新後內容
+        - **connect 動作**：
+            - `action`：操作動作類型
+            - `connected_nodes`：被連結的兩個 Node ID 清單
+            - `nodes_content`：被連結的兩個 Node 內容清單
+        - **delete_node 動作**：
+            - `action`：操作動作類型
+            - `node_id`：被操作的 Node ID
+            - `node_type`：被操作的 Node 類型
+            - `node_content`：被操作的 Node 內容
+            - `deleted_connections` (選填)：所有與被刪除節點連接的**其他節點**的 ID 和內容。(因刪除 Node 會同時刪除相關連線)
+        - **delete_edge 動作**：
+            - `action`：操作動作類型
+            - `connected_nodes`：被斷開連結的兩個 Node ID 清單
+            - `nodes_content`：被斷開連結的兩個 Node 內容清單
 
 # Output Format
 直接給出簡短的純文字回饋，不需要其他說明，並且確保字數在 30 字以內。
