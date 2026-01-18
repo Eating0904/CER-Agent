@@ -30,7 +30,7 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
     const processBatch = useCallback(async () => {
         if (queueRef.current.length === 0) return;
 
-        const operations = [...queueRef.current];
+        const metadata = [...queueRef.current];
         queueRef.current = [];
 
         if (timerRef.current) {
@@ -38,21 +38,21 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
             timerRef.current = null;
         }
 
-        const operationCount = operations.length;
-        const alertMessage = `完成了 ${operationCount} 個操作`;
-        const operationDetails = buildOperationDetails(operations);
+        const operationCount = metadata.length;
+        const alertTitle = `完成了 ${operationCount} 個操作`;
+        const operationDetails = buildOperationDetails(metadata);
 
         // 找出最後一個有 newEdges 的 connect 操作（最新的 edges）
         let edgesToSave = null;
-        for (let i = operations.length - 1; i >= 0; i -= 1) {
-            if (operations[i].action === 'connect' && operations[i].newEdges) {
-                edgesToSave = operations[i].newEdges;
+        for (let i = metadata.length - 1; i >= 0; i -= 1) {
+            if (metadata[i].action === 'connect' && metadata[i].newEdges) {
+                edgesToSave = metadata[i].newEdges;
                 break;
             }
         }
 
         const alertId = addAlert({
-            message: alertMessage,
+            message: alertTitle,
             description: 'Generating feedback...',
             status: 'loading',
             showAsk: false,
@@ -61,14 +61,14 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
 
         try {
             // 過濾掉 newEdges（只用於自動儲存，不應存入資料庫）
-            const cleanOperations = operations.map((op) => {
+            const cleanMetadata = metadata.map((op) => {
                 const { newEdges, ...cleanOp } = op;
                 return cleanOp;
             });
 
             const result = await sendFeedback(
-                cleanOperations,
-                alertMessage,
+                cleanMetadata,
+                alertTitle,
                 operationDetails,
                 edgesToSave,
             );

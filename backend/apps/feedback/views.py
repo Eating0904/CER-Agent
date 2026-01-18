@@ -33,8 +33,8 @@ def create_feedback(request):
         )
 
     map_id = serializer.validated_data['map_id']
-    operations = serializer.validated_data['operations']
-    alert_message = serializer.validated_data['alert_message']
+    metadata = serializer.validated_data['metadata']
+    alert_title = serializer.validated_data['alert_title']
     operation_details = serializer.validated_data['operation_details']
 
     # 2. 驗證 Map 存在
@@ -51,7 +51,7 @@ def create_feedback(request):
         feedback_service = get_feedback_service()
         user_id = str(request.user.id)
         feedback_text = feedback_service.generate_feedback(
-            map_id, operations, alert_message, operation_details, user_id
+            map_id, metadata, alert_title, operation_details, user_id
         )
 
         # 4. 查詢剛才儲存的 feedback record

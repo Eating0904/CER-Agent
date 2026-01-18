@@ -35,8 +35,11 @@ export const useMapNodes = (mapData) => {
                 const prevNode = nodes.find((n) => n.id === prevNodeId);
                 if (prevNode && prevNode.data.content !== editingNodeSnapshot.current.content) {
                     mapEventEmitter.emit(NODE_EDITED, {
-                        nodeType: prevNode.data.type,
-                        nodeId: prevNodeId,
+                        action: 'edit',
+                        node_id: prevNodeId,
+                        node_type: prevNode.data.type,
+                        original_content: editingNodeSnapshot.current.content,
+                        updated_content: prevNode.data.content,
                     });
                 }
             }
@@ -74,10 +77,21 @@ export const useMapNodes = (mapData) => {
                 return newEdges;
             });
 
-            mapEventEmitter.emit(EDGE_CONNECTED, {
-                sourceNodeId: params.source,
-                targetNodeId: params.target,
-                newEdges,
+            setNodes((nds) => {
+                const sourceNode = nds.find((n) => n.id === params.source);
+                const targetNode = nds.find((n) => n.id === params.target);
+
+                mapEventEmitter.emit(EDGE_CONNECTED, {
+                    action: 'connect',
+                    connected_nodes: [params.source, params.target],
+                    nodes_content: {
+                        [params.source]: sourceNode?.data?.content || '',
+                        [params.target]: targetNode?.data?.content || '',
+                    },
+                    newEdges,
+                });
+
+                return nds;
             });
         },
         [],

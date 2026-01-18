@@ -24,8 +24,8 @@ class FeedbackService:
     def generate_feedback(
         self,
         map_id: int,
-        operations: list,
-        alert_message: str,
+        metadata: list,
+        alert_title: str,
         operation_details: str,
         user_id: str,
     ) -> str:
@@ -34,8 +34,8 @@ class FeedbackService:
 
         Args:
             map_id: 地圖 ID
-            operations: 操作列表
-            alert_message: 前端傳來的 alert message (例如："完成了 3 個操作")
+            metadata: 操作列表（包含詳細資訊）
+            alert_title: 前端傳來的 alert title (例如："完成了 3 個操作")
             operation_details: 前端組裝的具體操作描述
             user_id: 使用者 ID
 
@@ -86,6 +86,7 @@ class FeedbackService:
                     result = self.graph.process_message(
                         user_input=query,
                         mind_map_data=simplified_map,
+                        metadata=metadata,
                         article_content=article_content,
                         thread_id=thread_id,
                         callbacks=[langfuse_handler],
@@ -104,10 +105,10 @@ class FeedbackService:
                     NodeFeedback.objects.create(
                         user_id=user_id,
                         map=map_instance,
-                        text=alert_message,
+                        alert_title=alert_title,
                         operation_details=operation_details,
                         feedback=feedback_response,
-                        metadata={'operations': operations},
+                        metadata={'operations': metadata},
                     )
 
                     return feedback_response

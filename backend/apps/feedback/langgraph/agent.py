@@ -40,7 +40,9 @@ class FeedbackAgent:
         Returns:
             str: LLM 生成的回饋
         """
-        filtered_messages = filter_messages(messages, context_fields_to_keep=['mind_map_data'])
+        filtered_messages = filter_messages(
+            messages, context_fields_to_keep=['mind_map_data', 'metadata']
+        )
         system_message_content = self.prompt_template.format(article_content=article_content)
 
         final_messages = [SystemMessage(content=system_message_content)] + filtered_messages

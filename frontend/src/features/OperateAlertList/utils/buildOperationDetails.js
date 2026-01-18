@@ -1,16 +1,16 @@
 /**
  * 組成操作描述文字
  *
- * @param {Array} operations - 操作列表
+ * @param {Array} metadata - 操作列表
  * @returns {string} 格式化的操作描述
  */
-export const buildOperationDetails = (operations) => {
-    if (!operations || operations.length === 0) {
+export const buildOperationDetails = (metadata) => {
+    if (!metadata || metadata.length === 0) {
         return '學生進行了操作';
     }
 
     const descriptionLines = ['學生進行了以下操作：'];
-    operations.forEach((op, idx) => {
+    metadata.forEach((op, idx) => {
         const { action } = op;
         if (action === 'edit') {
             const nodeId = op.node_id || '';

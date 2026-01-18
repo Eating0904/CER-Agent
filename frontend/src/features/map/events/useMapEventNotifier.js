@@ -6,26 +6,14 @@ import { EDGE_CONNECTED, NODE_EDITED } from './mapEventTypes';
 export const useMapEventNotifier = (onEvent) => {
     useEffect(() => {
         const handleNodeEdited = (event) => {
-            const { nodeType, nodeId } = event.detail;
-
             if (onEvent) {
-                onEvent({
-                    action: 'edit',
-                    node_id: nodeId,
-                    node_type: nodeType,
-                });
+                onEvent(event.detail);
             }
         };
 
         const handleEdgeConnected = (event) => {
-            const { sourceNodeId, targetNodeId, newEdges } = event.detail;
-
             if (onEvent) {
-                onEvent({
-                    action: 'connect',
-                    connected_nodes: [sourceNodeId, targetNodeId],
-                    newEdges,
-                });
+                onEvent(event.detail);
             }
         };
 

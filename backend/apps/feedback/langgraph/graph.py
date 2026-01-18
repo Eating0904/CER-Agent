@@ -76,6 +76,7 @@ class FeedbackGraph:
         self,
         user_input: str,
         mind_map_data: Dict,
+        metadata: List[Dict],
         article_content: str = '',
         thread_id: str = '',
         callbacks: List[Any] = None,
@@ -86,6 +87,7 @@ class FeedbackGraph:
         Args:
             user_input: 學生的操作描述（作為 query）
             mind_map_data: 簡化後的心智圖資料
+            metadata: 操作的詳細資訊（陣列）
             article_content: 文章內容
             thread_id: 對話執行緒 ID
             callbacks: LangChain callbacks
@@ -103,7 +105,10 @@ class FeedbackGraph:
             'messages': [
                 HumanMessage(
                     content=json.dumps(
-                        {'query': user_input, 'context': {'mind_map_data': mind_map_data}},
+                        {
+                            'query': user_input,
+                            'context': {'mind_map_data': mind_map_data, 'metadata': metadata},
+                        },
                         ensure_ascii=False,
                     )
                 )
