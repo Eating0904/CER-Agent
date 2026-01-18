@@ -7,7 +7,13 @@ import {
 
 import { addEdge, applyEdgeChanges, applyNodeChanges } from '@xyflow/react';
 
-import { EDGE_CONNECTED, mapEventEmitter, NODE_EDITED } from '../events';
+import {
+    EDGE_CONNECTED,
+    EDGE_DELETED,
+    mapEventEmitter,
+    NODE_DELETED,
+    NODE_EDITED,
+} from '../events';
 
 export const useMapNodes = (mapData) => {
     const [nodes, setNodes] = useState([]);
@@ -168,15 +174,71 @@ export const useMapNodes = (mapData) => {
     }, []);
 
     const deleteNode = useCallback((nodeId) => {
+        // 在刪除前收集資訊
+        const nodeToDelete = nodes.find((node) => node.id === nodeId);
+        if (!nodeToDelete) return;
+
+        // 找出所有與此節點相關的其他節點
+        const deletedConnections = [];
+        edges.forEach((edge) => {
+            if (edge.source === nodeId) {
+                const targetNode = nodes.find((n) => n.id === edge.target);
+                if (targetNode) {
+                    deletedConnections.push({
+                        node_id: edge.target,
+                        node_content: targetNode.data.content,
+                    });
+                }
+            }
+            else if (edge.target === nodeId) {
+                const sourceNode = nodes.find((n) => n.id === edge.source);
+                if (sourceNode) {
+                    deletedConnections.push({
+                        node_id: edge.source,
+                        node_content: sourceNode.data.content,
+                    });
+                }
+            }
+        });
+
+        // 觸發刪除事件
+        mapEventEmitter.emit(NODE_DELETED, {
+            action: 'delete_node',
+            node_id: nodeId,
+            node_type: nodeToDelete.data.type,
+            node_content: nodeToDelete.data.content,
+            deleted_connections: deletedConnections,
+        });
+
+        // 執行刪除
         setNodes((nds) => nds.filter((node) => node.id !== nodeId));
         setEdges((eds) => eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
         setSelectedNodeId(null);
-    }, []);
+    }, [nodes, edges]);
 
     const deleteEdge = useCallback((edgeId) => {
+        // 在刪除前收集資訊
+        const edgeToDelete = edges.find((edge) => edge.id === edgeId);
+        if (!edgeToDelete) return;
+
+        // 取得連接的兩個節點的內容
+        const sourceNode = nodes.find((n) => n.id === edgeToDelete.source);
+        const targetNode = nodes.find((n) => n.id === edgeToDelete.target);
+
+        // 觸發刪除事件
+        mapEventEmitter.emit(EDGE_DELETED, {
+            action: 'delete_edge',
+            connected_nodes: [edgeToDelete.source, edgeToDelete.target],
+            nodes_content: {
+                [edgeToDelete.source]: sourceNode?.data?.content || '',
+                [edgeToDelete.target]: targetNode?.data?.content || '',
+            },
+        });
+
+        // 執行刪除
         setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
         setSelectedEdgeId(null);
-    }, []);
+    }, [edges, nodes]);
 
     const selectedNode = nodes.find((node) => node.id === selectedNodeId);
     const selectedEdge = edges.find((edge) => edge.id === selectedEdgeId);

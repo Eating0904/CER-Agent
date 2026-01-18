@@ -22,6 +22,25 @@ export const buildOperationDetails = (metadata) => {
                 descriptionLines.push(`${idx + 1}. 連接了 ${nodes[0]} 和 ${nodes[1]}`);
             }
         }
+        else if (action === 'delete_node') {
+            const nodeId = op.node_id || '';
+            const deletedConnections = op.deleted_connections || [];
+
+            if (deletedConnections.length > 0) {
+                // 提取所有連接的節點 ID
+                const nodesList = deletedConnections.map((conn) => conn.node_id).join(', ');
+                descriptionLines.push(`${idx + 1}. 刪除了節點 ${nodeId} (包含與 ${nodesList} 的連接)`);
+            }
+            else {
+                descriptionLines.push(`${idx + 1}. 刪除了節點 ${nodeId}`);
+            }
+        }
+        else if (action === 'delete_edge') {
+            const nodes = op.connected_nodes || [];
+            if (nodes.length >= 2) {
+                descriptionLines.push(`${idx + 1}. 刪除了 ${nodes[0]} 和 ${nodes[1]} 之間的連接`);
+            }
+        }
     });
 
     return descriptionLines.join('\n');
