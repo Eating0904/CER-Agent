@@ -25,7 +25,7 @@ class EssayScoringAgent(BaseAgent):
         **kwargs,
     ) -> List[BaseMessage]:
         """
-        準備訊息：只傳 essay_content
+        準備訊息：傳入 essay_content 和當前的 mind_map_data
 
         Args:
             messages: 原始對話歷史
@@ -37,14 +37,19 @@ class EssayScoringAgent(BaseAgent):
         """
         last_message = messages[-1]
         essay_content = ''
+        mind_map_data = {}
 
         try:
             content = json.loads(last_message.content)
             essay_content = content.get('context', {}).get('essay_content', '')
+            mind_map_data = content.get('context', {}).get('mind_map_data', {})
         except (json.JSONDecodeError, AttributeError):
             pass
 
-        system_message_content = self.prompt_template.format(article_content=article_content)
+        system_message_content = self.prompt_template.format(
+            article_content=article_content,
+            cer_mind_map_data=json.dumps(mind_map_data, ensure_ascii=False),
+        )
 
         human_message_content = essay_content if essay_content else '（尚未撰寫）'
 
