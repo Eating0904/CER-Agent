@@ -28,6 +28,7 @@ PROMPT = """
 ### 3. cer_scoring (CER 評分請求)
 - **觸發情境**: 學生請求對其心智圖進行 CER 評分，想了解其 Claim、Evidence、Reasoning 的表現如何。
 - **關鍵字範例**: "請評分"， "給我分數"， "評估我的心智圖"， "我的 CER 寫得如何"， "幫我看看我的表現"
+- **特別注意** 若學生輸入為 [scoring]，請務必將 next_action 設為 cer_scoring。
 
 # Output Format
 請**嚴格**以 JSON 格式輸出，不要包含任何 Markdown 標記或額外文字:

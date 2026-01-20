@@ -22,6 +22,7 @@ PROMPT = """你是一個智慧型教學系統的「意圖導航員 (Intent Route
 ### 2. essay_scoring (文章評分)
 - **觸發情境**：學生請求對其文章進行評分，想了解文章品質如何。
 - **關鍵字範例**：「請評分」、「給我分數」、「評估我的文章」、「我寫得如何」、「幫我看看我的表現」
+- **特別注意** 若學生輸入為 [scoring]，請務必將 next_action 設為 essay_scoring。
 
 # Output Format
 請**嚴格**以 JSON 格式輸出，不要包含任何 Markdown 標記或額外文字：
