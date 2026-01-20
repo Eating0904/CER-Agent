@@ -1,5 +1,6 @@
 """Essay Support Agent - 文章寫作引導"""
 
+import json
 from typing import List
 
 from langchain_core.messages import BaseMessage, SystemMessage
@@ -21,7 +22,7 @@ class EssaySupportAgent(BaseAgent):
         self, messages: List[BaseMessage], article_content: str = '', **kwargs
     ) -> List[BaseMessage]:
         """
-        準備訊息：格式化 prompt（注入 article_content），保留完整 context
+        準備訊息：格式化 prompt（注入 article_content 和當前的 mind_map_data），保留完整 context
 
         Args:
             messages: 原始對話歷史
@@ -31,7 +32,20 @@ class EssaySupportAgent(BaseAgent):
         Returns:
             List[BaseMessage]: SystemMessage（已格式化）+ 原始訊息
         """
-        system_message_content = self.prompt_template.format(article_content=article_content)
+        # 從最後一則訊息提取當前的 mind_map_data
+        last_message = messages[-1]
+        mind_map_data = {}
+
+        try:
+            content = json.loads(last_message.content)
+            mind_map_data = content.get('context', {}).get('mind_map_data', {})
+        except (json.JSONDecodeError, AttributeError):
+            pass
+
+        system_message_content = self.prompt_template.format(
+            article_content=article_content,
+            cer_mind_map_data=json.dumps(mind_map_data, ensure_ascii=False),
+        )
 
         return [SystemMessage(content=system_message_content)] + messages
 
