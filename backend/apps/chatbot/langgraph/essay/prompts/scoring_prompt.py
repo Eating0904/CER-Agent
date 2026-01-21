@@ -27,7 +27,7 @@ PROMPT_TEMPLATE = """
 2. **[轉化品質診斷]**:
    - 在確認「有沒有寫到」(覆蓋率) 之後，接著評估「寫得好不好」。
    - 學生是僅僅提及（Mention）還是進行了深入分析（Analyze）？
-   - 參照 `## 評分標準` 的 1-6 分層級，判斷其深度。
+   - 參照 `# 評分標準` 的 1-6 分層級，判斷其深度。
 
 3. **[綜合給分]**:
    - 將學生撰寫的申論文章，請嚴格依據你計算的覆蓋率以及我提供的評分標準，給予每個維度一個最終分數。
@@ -42,7 +42,7 @@ PROMPT_TEMPLATE = """
 # CER 心智圖內容
 以下為學生所繪製的 CER 心智圖資料，請務必參考此心智圖內容來評估學生的文章轉化品質。
 {cer_mind_map_data}
-- nodes 為節點清單，清單中每筆資料皆有 id 以及 content，id 的開頭可辨別 Node 類型，c 表示 Claim、e 表示 Evidence、r 表示 Reasoning，content 則為該 Node 的內容。
+- nodes 為節點清單，清單中每筆資料皆有 id 以及 content，id 的開頭可辨別節點類型，c 表示主張 (Claim)、e 表示證據 (Evidence)、r 表示推論 (Reasoning)，content 則為該節點 (Node) 的內容。
 - edges 為連線清單，清單中每筆資料皆有 node1 以及 node2，代表其之間有連線、互相有關連性，但是不具備方向性。
 
 # Output Format
