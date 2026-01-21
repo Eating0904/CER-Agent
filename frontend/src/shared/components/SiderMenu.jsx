@@ -1,6 +1,11 @@
 import { useState } from 'react';
 
-import { EditOutlined, EllipsisOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import {
+    EditOutlined,
+    EllipsisOutlined,
+    PlusCircleOutlined,
+    SettingOutlined,
+} from '@ant-design/icons';
 import {
     Alert,
     Button,
@@ -12,6 +17,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { LAYOUT_COLORS, NEUTRAL_COLORS } from '../../constants/colors';
 import { useGetMapsQuery } from '../../features/map/utils/mapApi';
+import { useGetMeQuery } from '../../features/user/userApi';
 
 import { RenameMapModal } from './RenameMapModal';
 
@@ -22,6 +28,7 @@ export const SiderMenu = () => {
     const [hoveredMapId, setHoveredMapId] = useState(null);
     const [renameModalState, setRenameModalState] = useState({ open: false, map: null });
 
+    const { data: currentUser } = useGetMeQuery();
     const { data: maps = [], isLoading, error } = useGetMapsQuery();
 
     if (isLoading) {
@@ -55,8 +62,24 @@ export const SiderMenu = () => {
         },
     ];
 
+    const canManage = currentUser?.role && ['admin', 'teacher', 'assistant'].includes(currentUser.role);
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            {canManage && (
+                <Button
+                    onClick={() => navigate('/mind-map-template-management')}
+                    style={{
+                        height: '40px',
+                        padding: '8px 8px 8px 10px',
+                        borderRadius: '8px',
+                        margin: '4px 8px',
+                    }}
+                    icon={<SettingOutlined />}
+                >
+                    Manage
+                </Button>
+            )}
             <Button
                 onClick={() => navigate('/mind-map-template-list')}
                 style={{
