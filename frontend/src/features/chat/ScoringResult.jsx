@@ -2,7 +2,7 @@ import { Card, Space, Typography } from 'antd';
 
 const { Text, Paragraph } = Typography;
 
-export const ScoringResult = ({ data }) => {
+export const ScoringResult = ({ data, chatType = 'mindmap' }) => {
     // 解析 JSON 資料
     let scoringData;
     try {
@@ -13,18 +13,60 @@ export const ScoringResult = ({ data }) => {
         return <Text>{typeof data === 'string' ? data : JSON.stringify(data)}</Text>;
     }
 
-    // 驗證資料結構
-    if (!scoringData?.Claim || !scoringData?.Evidence || !scoringData?.Reasoning) {
-        console.error('Invalid scoring data structure:', scoringData);
-        return <Text>{typeof data === 'string' ? data : JSON.stringify(data)}</Text>;
-    }
+    // 根據 chatType 定義評分項目配置
+    let scoringItems;
 
-    // 評分項目配置
-    const scoringItems = [
-        { key: 'Claim', title: 'Claim（主張）', data: scoringData.Claim },
-        { key: 'Evidence', title: 'Evidence（證據）', data: scoringData.Evidence },
-        { key: 'Reasoning', title: 'Reasoning（推論）', data: scoringData.Reasoning },
-    ];
+    if (chatType === 'essay') {
+        // Essay 評分項目配置
+        const essayItems = [
+            { key: 'Interpretation', title: 'Interpretation（詮釋）' },
+            { key: 'Analysis', title: 'Analysis（分析）' },
+            { key: 'Evaluation', title: 'Evaluation（評估）' },
+            { key: 'Inference', title: 'Inference（推論）' },
+            { key: 'Explanation', title: 'Explanation（解釋）' },
+            { key: 'Disposition', title: 'Disposition（傾向）' },
+        ];
+
+        // 驗證 essay 資料結構
+        const hasValidEssayData = essayItems.every(
+            (item) => scoringData?.[item.key]?.score && scoringData?.[item.key]?.feedback,
+        );
+
+        if (!hasValidEssayData) {
+            console.error('Invalid essay scoring data structure:', scoringData);
+            return <Text>{typeof data === 'string' ? data : JSON.stringify(data)}</Text>;
+        }
+
+        scoringItems = essayItems.map((item) => ({
+            key: item.key,
+            title: item.title,
+            data: scoringData[item.key],
+        }));
+    }
+    else {
+        // Mindmap 評分項目配置
+        const mindmapItems = [
+            { key: 'Claim', title: 'Claim（主張）' },
+            { key: 'Evidence', title: 'Evidence（證據）' },
+            { key: 'Reasoning', title: 'Reasoning（推論）' },
+        ];
+
+        // 驗證 mindmap 資料結構
+        const hasValidMindmapData = mindmapItems.every(
+            (item) => scoringData?.[item.key]?.score && scoringData?.[item.key]?.feedback,
+        );
+
+        if (!hasValidMindmapData) {
+            console.error('Invalid mindmap scoring data structure:', scoringData);
+            return <Text>{typeof data === 'string' ? data : JSON.stringify(data)}</Text>;
+        }
+
+        scoringItems = mindmapItems.map((item) => ({
+            key: item.key,
+            title: item.title,
+            data: scoringData[item.key],
+        }));
+    }
 
     return (
         <Space direction="vertical" size="small" style={{ width: '100%' }}>

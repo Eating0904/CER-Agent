@@ -156,7 +156,7 @@ export const Chat = ({
                         }
                     >
                         {messages.map((msg) => {
-                            const isScoringMessage = msg.messageType === 'cer_scoring';
+                            const isScoringMessage = msg.messageType === 'cer_scoring' || msg.messageType === 'essay_scoring';
 
                             return (
                                 <Message
@@ -174,7 +174,7 @@ export const Chat = ({
                                     )}
                                     {isScoringMessage && (
                                         <Message.CustomContent>
-                                            <ScoringResult data={msg.message} />
+                                            <ScoringResult data={msg.message} chatType={chatType} />
                                         </Message.CustomContent>
                                     )}
                                 </Message>
