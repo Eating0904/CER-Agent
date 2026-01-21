@@ -1,6 +1,10 @@
 import { useState } from 'react';
 
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import {
+    DeleteOutlined,
+    EditOutlined,
+    TeamOutlined,
+} from '@ant-design/icons';
 import {
     Alert,
     App,
@@ -10,10 +14,17 @@ import {
     Modal,
     Row,
     Spin,
+    Tag,
 } from 'antd';
 
+import { useGetMeQuery } from '../user/userApi';
+
 import { EditMindMapTemplate } from './EditMindMapTemplate';
-import { useDeleteMindMapTemplateMutation, useGetMindMapTemplatesQuery } from './mindMapTemplateApi';
+import { ManageAssistants } from './ManageAssistants';
+import {
+    useDeleteMindMapTemplateMutation,
+    useGetMyMindMapTemplatesQuery,
+} from './mindMapTemplateApi';
 
 import './MindMapTemplateManagement.css';
 
@@ -23,8 +34,11 @@ export const MindMapTemplateManagement = () => {
     const { message } = App.useApp();
     const [editingTemplate, setEditingTemplate] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [managingTemplate, setManagingTemplate] = useState(null);
+    const [isManageAssistantsOpen, setIsManageAssistantsOpen] = useState(false);
 
-    const { data: templates = [], isLoading, error } = useGetMindMapTemplatesQuery();
+    const { data: currentUser } = useGetMeQuery();
+    const { data: templates = [], isLoading, error } = useGetMyMindMapTemplatesQuery();
     const [deleteTemplate] = useDeleteMindMapTemplateMutation();
 
     const handleEdit = (templateId) => {
@@ -59,9 +73,19 @@ export const MindMapTemplateManagement = () => {
         });
     };
 
+    const handleManageAssistants = (template) => {
+        setManagingTemplate(template);
+        setIsManageAssistantsOpen(true);
+    };
+
     const handleCloseEditModal = () => {
         setIsEditModalOpen(false);
         setEditingTemplate(null);
+    };
+
+    const handleCloseManageAssistants = () => {
+        setIsManageAssistantsOpen(false);
+        setManagingTemplate(null);
     };
 
     if (isLoading) {
@@ -83,9 +107,11 @@ export const MindMapTemplateManagement = () => {
         );
     }
 
+    const isAssistant = currentUser?.role === 'assistant';
+
     return (
         <>
-            <EditMindMapTemplate />
+            {!isAssistant && <EditMindMapTemplate />}
             <Row gutter={[16, 16]} justify="start">
                 {templates.map((template) => (
                     <Col xs={24} sm={12} md={12} lg={6} xl={6} key={template.id} style={{ display: 'flex' }}>
@@ -104,34 +130,63 @@ export const MindMapTemplateManagement = () => {
                                     key="actions"
                                     style={{
                                         display: 'flex',
+                                        flexDirection: 'column',
                                         gap: '8px',
                                         width: '100%',
                                         padding: '0 8px',
                                     }}
                                 >
-                                    <Button
-                                        type="primary"
-                                        icon={<EditOutlined />}
-                                        onClick={() => handleEdit(template.id)}
-                                        size="medium"
-                                        style={{ flex: 3 }}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        danger
-                                        icon={<DeleteOutlined />}
-                                        onClick={() => handleDelete(template.id, template.name)}
-                                        size="medium"
-                                        style={{ flex: 1 }}
-                                    />
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <Button
+                                            type="primary"
+                                            icon={<EditOutlined />}
+                                            onClick={() => handleEdit(template.id)}
+                                            size="medium"
+                                            style={{ flex: 3 }}
+                                        >
+                                            Edit
+                                        </Button>
+                                        {!isAssistant && (
+                                            <Button
+                                                danger
+                                                icon={<DeleteOutlined />}
+                                                onClick={
+                                                    () => handleDelete(template.id, template.name)
+                                                }
+                                                size="medium"
+                                                style={{ flex: 1 }}
+                                            />
+                                        )}
+                                    </div>
+
+                                    {!isAssistant && (
+                                        <Button
+                                            icon={<TeamOutlined />}
+                                            onClick={() => handleManageAssistants(template)}
+                                            size="medium"
+                                            block
+                                        >
+                                            Manage Assistants
+                                        </Button>
+                                    )}
                                 </div>,
                             ]}
                             style={{ width: '100%', border: '1px solid #d9d9d9' }}
                         >
                             <Meta
                                 title={<div className="card-title">{template.name}</div>}
-                                description={<div className="card-description">{template.issue_topic}</div>}
+                                description={(
+                                    <>
+                                        <div className="card-description">{template.issue_topic}</div>
+                                        {template.created_by && (
+                                            <div>
+                                                <Tag color="blue">
+                                                    Creator: {template.created_by.username}
+                                                </Tag>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                             />
                         </Card>
                     </Col>
@@ -144,6 +199,14 @@ export const MindMapTemplateManagement = () => {
                 initialValues={editingTemplate}
                 isEdit
             />
+
+            {managingTemplate && (
+                <ManageAssistants
+                    open={isManageAssistantsOpen}
+                    onClose={handleCloseManageAssistants}
+                    template={managingTemplate}
+                />
+            )}
         </>
     );
 };

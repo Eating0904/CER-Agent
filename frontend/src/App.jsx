@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom';
 
 import { isAuthenticated } from './features/user/authUtils';
+import { RoleProtectedRoute } from './features/user/RoleProtectedRoute';
 import { useTokenCheckTimer } from './hooks/useTokenCheckTimer';
 import { MainLayout, PublicLayout } from './layouts';
 import {
@@ -55,7 +56,14 @@ const App = () => {
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<Navigate to="/mind-map-template-list" replace />} />
                     <Route path="/map" element={<MapPage />} />
-                    <Route path="/mind-map-template-management" element={<MindMapTemplateManagementPage />} />
+                    <Route
+                        path="/mind-map-template-management"
+                        element={(
+                            <RoleProtectedRoute allowedRoles={['admin', 'teacher', 'assistant']}>
+                                <MindMapTemplateManagementPage />
+                            </RoleProtectedRoute>
+                        )}
+                    />
                     <Route path="/mind-map-template-list" element={<MindMapTemplateListPage />} />
                 </Route>
             </Route>
