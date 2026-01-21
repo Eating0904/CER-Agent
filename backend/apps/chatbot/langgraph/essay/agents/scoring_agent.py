@@ -71,7 +71,14 @@ class EssayScoringAgent(BaseAgent):
 
         try:
             result = parse_llm_json_response(response.content)
-            required_keys = ['Structure', 'Content', 'Language', 'Creativity']
+            required_keys = [
+                'Interpretation',
+                'Analysis',
+                'Evaluation',
+                'Inference',
+                'Explanation',
+                'Disposition',
+            ]
             for key in required_keys:
                 if key not in result:
                     print(f'⚠️  評分結果缺少 {key} 欄位，回傳原始內容')
@@ -95,21 +102,32 @@ class EssayScoringAgent(BaseAgent):
         """
         try:
             result = parse_llm_json_response(response.content)
-            required_keys = ['Structure', 'Content', 'Language', 'Creativity']
+            required_keys = [
+                'Interpretation',
+                'Analysis',
+                'Evaluation',
+                'Inference',
+                'Explanation',
+                'Disposition',
+            ]
 
             for key in required_keys:
                 if key not in result:
                     return {}
 
             return {
-                'structure_score': result['Structure'].get('score', ''),
-                'structure_feedback': result['Structure'].get('feedback', ''),
-                'content_score': result['Content'].get('score', ''),
-                'content_feedback': result['Content'].get('feedback', ''),
-                'language_score': result['Language'].get('score', ''),
-                'language_feedback': result['Language'].get('feedback', ''),
-                'creativity_score': result['Creativity'].get('score', ''),
-                'creativity_feedback': result['Creativity'].get('feedback', ''),
+                'interpretation_score': result['Interpretation'].get('score', ''),
+                'interpretation_feedback': result['Interpretation'].get('feedback', ''),
+                'analysis_score': result['Analysis'].get('score', ''),
+                'analysis_feedback': result['Analysis'].get('feedback', ''),
+                'evaluation_score': result['Evaluation'].get('score', ''),
+                'evaluation_feedback': result['Evaluation'].get('feedback', ''),
+                'inference_score': result['Inference'].get('score', ''),
+                'inference_feedback': result['Inference'].get('feedback', ''),
+                'explanation_score': result['Explanation'].get('score', ''),
+                'explanation_feedback': result['Explanation'].get('feedback', ''),
+                'disposition_score': result['Disposition'].get('score', ''),
+                'disposition_feedback': result['Disposition'].get('feedback', ''),
             }
 
         except Exception as json_error:
