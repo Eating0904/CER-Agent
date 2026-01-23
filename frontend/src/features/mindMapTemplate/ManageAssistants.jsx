@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
     DeleteOutlined,
@@ -6,6 +6,7 @@ import {
     SearchOutlined,
 } from '@ant-design/icons';
 import {
+    Alert,
     App,
     Button,
     List,
@@ -30,10 +31,16 @@ export const ManageAssistants = ({ open, onClose, template }) => {
     const { message } = App.useApp();
     const [selectedAssistant, setSelectedAssistant] = useState(null);
 
-    const { data: permissions = [], isLoading } = useGetTemplateAssistantsQuery(
+    const { data: permissions = [], isLoading, error } = useGetTemplateAssistantsQuery(
         template?.id,
         { skip: !template },
     );
+
+    useEffect(() => {
+        if (error) {
+            console.error('Failed to load template assistants:', error);
+        }
+    }, [error]);
 
     const [
         searchAssistants,
@@ -64,9 +71,9 @@ export const ManageAssistants = ({ open, onClose, template }) => {
             message.success('Granted successfully！');
             setSelectedAssistant(null);
         }
-        catch (error) {
+        catch (err) {
             message.error('Failed to grant permission.');
-            console.error('Failed to grant permission:', error);
+            console.error('Failed to grant permission:', err);
         }
     };
 
@@ -86,9 +93,9 @@ export const ManageAssistants = ({ open, onClose, template }) => {
 
                     message.success('Removed successfully！');
                 }
-                catch (error) {
+                catch (err) {
                     message.error('Failed to remove permission.');
-                    console.error('Failed to revoke permission:', error);
+                    console.error('Failed to revoke permission:', err);
                 }
             },
         });
@@ -146,7 +153,16 @@ export const ManageAssistants = ({ open, onClose, template }) => {
                             <Spin />
                         </div>
                     )}
-                    {!isLoading && permissions.length === 0 && (
+                    {error && (
+                        <Alert
+                            message="Error"
+                            description="Failed to load assistants."
+                            type="error"
+                            showIcon
+                            style={{ marginTop: '8px' }}
+                        />
+                    )}
+                    {!isLoading && !error && permissions.length === 0 && (
                         <div
                             style={{
                                 textAlign: 'center',
@@ -157,7 +173,7 @@ export const ManageAssistants = ({ open, onClose, template }) => {
                             No assistants have been authorized yet.
                         </div>
                     )}
-                    {!isLoading && permissions.length > 0 && (
+                    {!isLoading && !error && permissions.length > 0 && (
                         <List
                             style={{ marginTop: '8px' }}
                             dataSource={permissions}

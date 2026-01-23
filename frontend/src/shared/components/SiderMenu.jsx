@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
     EditOutlined,
@@ -30,6 +30,12 @@ export const SiderMenu = () => {
 
     const { data: currentUser } = useGetMeQuery();
     const { data: maps = [], isLoading, error } = useGetMapsQuery();
+
+    useEffect(() => {
+        if (error) {
+            console.error('Failed to load maps:', error);
+        }
+    }, [error]);
 
     if (isLoading) {
         return (

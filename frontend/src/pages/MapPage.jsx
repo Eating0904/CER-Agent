@@ -108,6 +108,15 @@ export const MapPage = () => {
     const [essayContent, setEssayContent] = useState('');
 
     useEffect(() => {
+        if (mapError) {
+            console.error('Failed to load map:', mapError);
+        }
+        if (essayError) {
+            console.error('Failed to load essay:', essayError);
+        }
+    }, [mapError, essayError]);
+
+    useEffect(() => {
         if (essayData?.essay?.content) {
             setEssayContent(essayData.essay.content);
         }

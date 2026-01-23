@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
     DeleteOutlined,
@@ -40,6 +40,12 @@ export const MindMapTemplateManagement = () => {
     const { data: currentUser } = useGetMeQuery();
     const { data: templates = [], isLoading, error } = useGetMyMindMapTemplatesQuery();
     const [deleteTemplate] = useDeleteMindMapTemplateMutation();
+
+    useEffect(() => {
+        if (error) {
+            console.error('Failed to load my mind map templates:', error);
+        }
+    }, [error]);
 
     const handleEdit = (templateId) => {
         const template = templates.find((t) => t.id === templateId);

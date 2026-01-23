@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import {
     Alert,
     App,
@@ -19,6 +21,12 @@ export const MindMapTemplateList = () => {
     const navigate = useNavigate();
     const { data: templates = [], isLoading, error } = useGetMindMapTemplatesQuery();
     const [createMapFromTemplate, { isLoading: isCreating }] = useCreateMapFromTemplateMutation();
+
+    useEffect(() => {
+        if (error) {
+            console.error('Failed to load mind map templates:', error);
+        }
+    }, [error]);
 
     const handleClick = async (template) => {
         try {

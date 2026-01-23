@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { MinusOutlined } from '@ant-design/icons';
 import {
@@ -45,10 +45,16 @@ export const Chat = ({
         : useGetChatHistoryQuery;
 
     // 1. 取得資料 (RTK Query)
-    const { data: historyData } = useHistoryQuery(mapId, {
+    const { data: historyData, isLoading, error } = useHistoryQuery(mapId, {
         skip: !mapId,
         refetchOnMountOrArgChange: true,
     });
+
+    useEffect(() => {
+        if (error) {
+            console.error('Failed to load chat history:', error);
+        }
+    }, [error]);
 
     // 2. 資料轉換 (Data Transformation)
     // 把後端的格式轉成 UI Kit 看得懂的格式
@@ -92,8 +98,8 @@ export const Chat = ({
             setInputValue(''); // 立即清空輸入框
             await onSendMessage(textToSend);
         }
-        catch (error) {
-            console.error('發送失敗:', error);
+        catch (err) {
+            console.error('發送失敗:', err);
             // 如果發送失敗，將內容放回輸入框
             setInputValue(inputValue);
         }
@@ -155,7 +161,17 @@ export const Chat = ({
                                 : null
                         }
                     >
-                        {messages.map((msg) => {
+                        {isLoading && (
+                            <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                                Loading messages...
+                            </div>
+                        )}
+                        {error && (
+                            <div style={{ textAlign: 'center', padding: '20px', color: '#ff4d4f' }}>
+                                Failed to load chat history
+                            </div>
+                        )}
+                        {!isLoading && !error && messages.map((msg) => {
                             const isScoringMessage = msg.messageType === 'cer_scoring' || msg.messageType === 'essay_scoring';
 
                             return (
