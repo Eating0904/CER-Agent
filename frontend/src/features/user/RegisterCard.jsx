@@ -52,8 +52,9 @@ export const RegisterCard = () => {
                 }
             }
             else {
-                setErrorMessage('註冊失敗，請稍後再試');
+                setErrorMessage('Registration failed. Please check your information or try again later.');
             }
+            console.error('Registration error:', err);
         }
     };
 

@@ -66,8 +66,9 @@ export const MindMapTemplateManagement = () => {
                     await deleteTemplate(templateId).unwrap();
                     message.success('Mind map template deleted successfully!');
                 }
-                catch {
-                    message.error('Failed to delete mind map template. Please try again.');
+                catch (err) {
+                    message.error('Failed to delete mind map template.');
+                    console.error('Failed to delete template:', err);
                 }
             },
         });

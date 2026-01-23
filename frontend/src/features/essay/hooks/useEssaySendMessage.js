@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
 
+import { App } from 'antd';
+
 import { useSendEssayChatMessageMutation } from '../../chat/chatApi';
 
 /**
@@ -12,6 +14,7 @@ import { useSendEssayChatMessageMutation } from '../../chat/chatApi';
  * @returns {Object} { isSending, handleSendMessage }
  */
 export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
+    const { message } = App.useApp();
     const [isSending, setIsSending] = useState(false);
     const [sendChatMessage] = useSendEssayChatMessageMutation();
 
@@ -37,7 +40,8 @@ export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
                 }).unwrap();
             }
             catch (err) {
-                console.error('發送失敗:', err);
+                message.error('Operation failed');
+                console.error('Failed to send essay message:', err);
                 throw err;
             }
             finally {

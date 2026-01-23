@@ -64,8 +64,9 @@ export const ManageAssistants = ({ open, onClose, template }) => {
             message.success('Granted successfully！');
             setSelectedAssistant(null);
         }
-        catch {
-            message.error('Failed to grant permission. Please try again later.');
+        catch (error) {
+            message.error('Failed to grant permission.');
+            console.error('Failed to grant permission:', error);
         }
     };
 
@@ -85,8 +86,9 @@ export const ManageAssistants = ({ open, onClose, template }) => {
 
                     message.success('Removed successfully！');
                 }
-                catch {
-                    message.error('Failed to remove permission. Please try again later.');
+                catch (error) {
+                    message.error('Failed to remove permission.');
+                    console.error('Failed to revoke permission:', error);
                 }
             },
         });

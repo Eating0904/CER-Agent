@@ -26,11 +26,12 @@ export const MindMapTemplateList = () => {
                 template_id: template.id,
             }).unwrap();
 
+            message.success('Mind map created successfully');
             navigate(`/map?mapId=${result.id}`);
         }
         catch (err) {
-            message.error('建立地圖失敗，請稍後再試');
-            console.error('Failed to create map:', err);
+            message.error('Operation failed');
+            console.error('Failed to create mind map:', err);
         }
     };
 

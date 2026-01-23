@@ -28,7 +28,7 @@ export const EssaySaveButton = ({
                 mapId,
                 content: essayContent,
             }).unwrap();
-            message.success('Essay 已成功保存');
+            message.success('Essay saved successfully');
 
             // 2. 開啟聊天室
             setIsChatOpen(true);
@@ -37,7 +37,8 @@ export const EssaySaveButton = ({
             await onSendMessage('[scoring]');
         }
         catch (error) {
-            message.error('保存失敗，請稍後再試', error);
+            message.error('Failed to save');
+            console.error('Failed to save essay:', error);
         }
     };
 

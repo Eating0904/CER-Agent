@@ -84,6 +84,7 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
                 status: 'error',
                 showAsk: false,
             });
+            console.error('Failed to generate feedback:', err);
         }
     }, [addAlert, updateAlert, sendFeedback]);
 

@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
 
+import { App } from 'antd';
+
 import { useSendChatMessageMutation } from '../../chat/chatApi';
 
 /**
@@ -11,6 +13,7 @@ import { useSendChatMessageMutation } from '../../chat/chatApi';
  * @returns {Object} { isSending, handleSendMessage }
  */
 export const useMapSendMessage = (mapId, handleAutoSave) => {
+    const { message } = App.useApp();
     const [isSending, setIsSending] = useState(false);
     const [sendChatMessage] = useSendChatMessageMutation();
 
@@ -30,7 +33,8 @@ export const useMapSendMessage = (mapId, handleAutoSave) => {
                 }).unwrap();
             }
             catch (err) {
-                console.error('發送失敗:', err);
+                message.error('Operation failed');
+                console.error('Failed to send mindmap message:', err);
                 throw err; // 讓呼叫者知道失敗
             }
             finally {

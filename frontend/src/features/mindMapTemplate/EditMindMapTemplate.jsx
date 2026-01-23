@@ -69,8 +69,9 @@ export const EditMindMapTemplate = ({
                 setInternalOpen(false);
             }
         }
-        catch {
-            message.error('Failed to save mind map template. Please try again.');
+        catch (error) {
+            message.error('Failed to save mind map template.');
+            console.error('Failed to save template:', error);
         }
     };
 

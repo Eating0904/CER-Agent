@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { Input, Modal } from 'antd';
+import { App, Input, Modal } from 'antd';
 
 import { useUpdateMapMutation } from '../../features/map/utils/mapApi';
 
 export const RenameMapModal = ({ open, mapId, currentName, onClose, onSuccess }) => {
+    const { message } = App.useApp();
     const [newMapName, setNewMapName] = useState(currentName || '');
     const [updateMap, { isLoading }] = useUpdateMapMutation();
 
@@ -25,11 +26,13 @@ export const RenameMapModal = ({ open, mapId, currentName, onClose, onSuccess })
                 name: newMapName.trim(),
             }).unwrap();
 
+            message.success('Renamed successfully');
             setNewMapName('');
             onSuccess?.();
         }
         catch (err) {
-            console.error('重新命名失敗:', err);
+            message.error('Operation failed');
+            console.error('Failed to rename:', err);
         }
     };
 
