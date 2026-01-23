@@ -237,7 +237,7 @@ LOGGING = {
             'level': 'INFO',
         },
         'django.db': {
-            'handlers': ['file'],
+            'handlers': ['file_main'],
             'level': 'INFO',
         },
         'django.db.backends': {
