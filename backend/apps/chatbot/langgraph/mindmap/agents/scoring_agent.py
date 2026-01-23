@@ -5,6 +5,7 @@ ScoringAgent - CER 評分 Agent
 """
 
 import json
+import logging
 from typing import List
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
@@ -13,6 +14,8 @@ from apps.common.utils.json_parser import parse_llm_json_response
 
 from ..prompts.scoring_prompt import SCORING_PROMPT
 from .base import BaseAgent
+
+logger = logging.getLogger(__name__)
 
 
 class ScoringAgent(BaseAgent):
@@ -44,8 +47,8 @@ class ScoringAgent(BaseAgent):
         try:
             content = json.loads(last_message.content)
             mind_map_data = content.get('context', {}).get('mind_map_data', {})
-        except (json.JSONDecodeError, AttributeError):
-            pass
+        except (json.JSONDecodeError, AttributeError) as e:
+            logger.warning(f'Failed to parse mind_map_data: {str(e)[:100]}')
 
         system_message_content = self.prompt_template.format(article_content=article_content)
 
@@ -79,13 +82,13 @@ class ScoringAgent(BaseAgent):
             required_keys = ['Claim', 'Evidence', 'Reasoning']
             for key in required_keys:
                 if key not in result:
-                    print(f'⚠️  評分結果缺少 {key} 欄位，回傳原始內容')
+                    logger.warning(f'Scoring result missing {key} field, using raw content')
                     return response.content
 
             return json.dumps(result, ensure_ascii=False, indent=2)
 
-        except Exception as json_error:
-            print(f'⚠️  JSON 解析失敗: {json_error}，回傳原始內容')
+        except Exception as e:
+            logger.warning(f'Failed to parse scoring result: {str(e)[:100]}, using raw content')
             return response.content
 
     def extract_metadata(self, response) -> dict:
@@ -118,6 +121,6 @@ class ScoringAgent(BaseAgent):
                 'reasoning_feedback': result['Reasoning'].get('feedback', ''),
             }
 
-        except Exception as json_error:
-            print(f'⚠️  Metadata 提取失敗: {json_error}')
+        except Exception as e:
+            logger.warning(f'Failed to extract metadata: {str(e)[:100]}')
             return {}

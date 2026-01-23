@@ -7,6 +7,7 @@ Essay LangGraph Service
 """
 
 import json
+import logging
 from typing import Dict
 
 from langfuse import Langfuse, propagate_attributes
@@ -18,6 +19,8 @@ from config.settings import DATABASE_URL
 
 from .graph import EssayConversationGraph
 
+logger = logging.getLogger(__name__)
+
 
 class EssayLangGraphService:
     def __init__(self):
@@ -27,11 +30,18 @@ class EssayLangGraphService:
     def process_user_message(
         self, user_input: str, map_id: int, user_id: str, essay_plain_text: str = ''
     ) -> Dict:
+        logger.info(f'Processing essay message: map_id={map_id}, user_id={user_id}')
+        logger.debug(f'User input: {user_input[:100]}...')
+
         try:
             # 1. 獲取 Map 和 Essay
             try:
                 map_instance = Map.objects.select_related('template').get(id=map_id)
+                logger.debug(
+                    f'Map loaded: nodes={len(map_instance.nodes)}, edges={len(map_instance.edges)}, template_id={map_instance.template_id}'
+                )
             except Map.DoesNotExist:
+                logger.error(f'Map not found in process_user_message: map_id={map_id}')
                 raise ValueError(f'Map with id {map_id} does not exist')
 
             # 2. 簡化 Mind Map
@@ -40,11 +50,13 @@ class EssayLangGraphService:
 
             # 3. 獲取 Essay 純文字內容（來自前端）
             essay_content = essay_plain_text
+            logger.debug(f'Essay content: {essay_content[:100]}...')
 
             # 4. 獲取文章模板
             article_content = ''
             if map_instance.template:
                 article_content = map_instance.template.article_content
+                logger.debug(f'Article content: {article_content[:100]}...')
 
             # 5. 設定 thread_id
             thread_id = f'essay-{map_id}'
@@ -96,6 +108,7 @@ class EssayLangGraphService:
                         metadata=trace_metadata,
                     )
 
+            logger.info(f'Essay message processed successfully: map_id={map_id}')
             return {
                 'success': True,
                 'message': response_content,
@@ -103,20 +116,16 @@ class EssayLangGraphService:
             }
 
         except Exception as e:
-            error_info = self._classify_error(e)
-
+            logger.exception(f'Essay processing failed: map_id={map_id}')
             return {
                 'success': False,
-                'message': error_info['user_message'],
-                'error': {
-                    'type': error_info['error_type'],
-                    'detail': str(e),
-                    'user_actionable': error_info['user_actionable'],
-                },
+                'message': '抱歉，系統遇到了一些問題，請稍後再試。',
             }
 
     def get_conversation_history(self, map_id: int) -> Dict:
         """獲取對話歷史"""
+        logger.info(f'Getting essay conversation history: map_id={map_id}')
+
         try:
             thread_id = f'essay-{map_id}'
             config = {'configurable': {'thread_id': thread_id}}
@@ -141,8 +150,10 @@ class EssayLangGraphService:
                             parsed_content = json.loads(msg.content)
                             if isinstance(parsed_content, dict) and 'query' in parsed_content:
                                 message_data['content'] = parsed_content['query']
-                        except (json.JSONDecodeError, ValueError):
-                            pass
+                        except (json.JSONDecodeError, ValueError) as e:
+                            logger.warning(
+                                f'Message content is not JSON, using raw content: {str(e)[:100]}'
+                            )
 
                     # 取得 message_type
                     if role == 'assistant' and hasattr(msg, 'additional_kwargs'):
@@ -152,44 +163,18 @@ class EssayLangGraphService:
 
                     messages.append(message_data)
 
+            logger.debug(f'Retrieved {len(messages)} messages')
+            logger.info(
+                f'Essay conversation history retrieved: map_id={map_id}, count={len(messages)}'
+            )
             return {'success': True, 'messages': messages}
 
         except Exception as e:
-            error_info = self._classify_error(e)
-
+            logger.exception(f'Failed to get essay conversation history: map_id={map_id}')
             return {
                 'success': False,
                 'messages': [],
-                'error': {
-                    'type': error_info['error_type'],
-                    'detail': str(e),
-                    'user_actionable': error_info['user_actionable'],
-                },
             }
-
-    def _classify_error(self, exception: Exception) -> Dict:
-        """分類錯誤"""
-        error_message = str(exception)
-
-        if 'API key' in error_message or 'GOOGLE_API_KEY' in error_message:
-            return {
-                'error_type': 'API_KEY_ERROR',
-                'user_message': '系統配置有誤，請聯繫管理員',
-                'user_actionable': False,
-            }
-
-        if 'DoesNotExist' in error_message or 'database' in error_message.lower():
-            return {
-                'error_type': 'DATABASE_ERROR',
-                'user_message': '找不到相關資料，請確認地圖是否存在',
-                'user_actionable': True,
-            }
-
-        return {
-            'error_type': 'UNKNOWN_ERROR',
-            'user_message': '系統發生錯誤，請稍後再試或聯繫管理員',
-            'user_actionable': False,
-        }
 
 
 _essay_langgraph_service = None

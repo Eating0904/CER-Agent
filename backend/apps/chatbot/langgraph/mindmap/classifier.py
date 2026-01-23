@@ -4,6 +4,7 @@
 """
 
 import json
+import logging
 from typing import Any, List
 
 from langchain_core.messages import BaseMessage, SystemMessage
@@ -13,6 +14,8 @@ from apps.common.utils.json_parser import parse_llm_json_response
 from apps.common.utils.message_filter import filter_messages
 
 from .prompts import CLASSIFIER_PROMPT
+
+logger = logging.getLogger(__name__)
 
 
 class IntentClassifier:
@@ -52,11 +55,10 @@ class IntentClassifier:
 
         try:
             # 呼叫 LLM（直接傳遞 List[BaseMessage]）
+            logger.info('Invoking classifier LLM')
             response = self.llm.invoke(
                 final_messages, config={'callbacks': callbacks, 'run_name': 'IntentClassifier'}
             )
-            print(f'\n💡 分類器回應: {response.content}')
-
             # 提取並解析 JSON
             result = parse_llm_json_response(response.content)
 
@@ -69,21 +71,18 @@ class IntentClassifier:
             if result['next_action'] not in valid_actions:
                 raise ValueError(f'無效的分類結果: {result["next_action"]}')
 
+            logger.info(f'Classification result: {result.get("next_action")}')
             return result
 
         except json.JSONDecodeError as e:
-            print(f'\n⚠️  JSON 解析錯誤: {e}')
-            # print(f'原始回應: {response.content}')
-            # print(f'提取的 JSON: {json_text[:200] if "json_text" in locals() else "N/A"}')
+            logger.warning(f'JSON parsing error: {str(e)[:100]}')
             # 預設回傳 operator_support
             return {
                 'reasoning': 'JSON 解析失敗，預設為介面支援',
                 'next_action': 'operator_support',
             }
         except Exception as e:
-            print(f'\n❌ 分類器錯誤: {e}')
-            if 'response' in locals():
-                print(f'原始回應: {response.content}')
+            logger.exception('Classifier failed')
             # 預設回傳 operator_support
             return {
                 'reasoning': f'發生錯誤: {str(e)}',

@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -7,6 +9,8 @@ from apps.map.permissions import require_map_owner
 from .langgraph.essay import get_essay_langgraph_service
 from .langgraph.mindmap import get_langgraph_service
 from .serializers import ChatMessageSerializer
+
+logger = logging.getLogger(__name__)
 
 
 @api_view(['POST'])
@@ -63,6 +67,7 @@ def chat(request, chat_type):
         return Response({'success': True, 'message': result['message']})
 
     except Exception as e:
+        logger.exception(e)
         return Response(
             {'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
@@ -102,6 +107,7 @@ def get_chat_history(request, chat_type, map_id):
         return Response({'success': True, 'messages': result['messages']})
 
     except Exception as e:
+        logger.exception(e)
         return Response(
             {'success': False, 'messages': [], 'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,

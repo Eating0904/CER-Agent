@@ -2,6 +2,7 @@
 Feedback Agent - 處理節點編輯回饋的 LLM Agent
 """
 
+import logging
 from typing import Any, List
 
 from langchain_core.messages import BaseMessage, SystemMessage
@@ -10,6 +11,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from apps.common.utils.message_filter import filter_messages
 
 from .prompts import FEEDBACK_PROMPT
+
+logger = logging.getLogger(__name__)
 
 
 class FeedbackAgent:
@@ -54,5 +57,5 @@ class FeedbackAgent:
             return response.content
 
         except Exception as e:
-            print(f'❌ Feedback Agent 錯誤: {e}')
+            logger.exception('Feedback agent failed')
             return '抱歉，生成回饋時遇到問題'

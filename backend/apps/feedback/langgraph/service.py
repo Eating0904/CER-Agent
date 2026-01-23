@@ -2,6 +2,8 @@
 Feedback Service - 整合 LangGraph 的服務層
 """
 
+import logging
+
 from langfuse import Langfuse, propagate_attributes
 from langfuse.langchain import CallbackHandler
 
@@ -11,6 +13,8 @@ from config.settings import DATABASE_URL
 
 from ..models import NodeFeedback
 from .graph import FeedbackGraph
+
+logger = logging.getLogger(__name__)
 
 
 class FeedbackService:
@@ -45,25 +49,36 @@ class FeedbackService:
         Raises:
             Exception: 當 Map 不存在或 LLM 呼叫失敗時拋出
         """
+        logger.info(f'Generating feedback: map_id={map_id}, user_id={user_id}')
+        logger.debug(f'Alert title: {alert_title}')
+        logger.debug(f'Metadata: {metadata}')
+
         try:
             # 1. 從資料庫取得 Map 和相關的 Template
             try:
                 map_instance = Map.objects.select_related('template').get(id=map_id)
+                logger.debug(
+                    f'Map loaded for feedback: nodes={len(map_instance.nodes)}, edges={len(map_instance.edges)}, template_id={map_instance.template_id}'
+                )
             except Map.DoesNotExist:
+                logger.error(f'Map not found in generate_feedback: map_id={map_id}')
                 raise Exception(f'Map with id {map_id} does not exist')
 
             # 2. 簡化 map 資料（與 chatbot 相同處理）
             simplified_map = simplify_map_data(
                 {'nodes': map_instance.nodes, 'edges': map_instance.edges}
             )
+            logger.debug(f'Simplified map data: {len(str(simplified_map))} chars')
 
             # 3. 直接使用前端傳來的操作描述（作為 query）
             query = operation_details
+            logger.debug(f'Operation details: {query[:100]}...')
 
             # 4. 取得文章內容
             article_content = ''
             if map_instance.template:
                 article_content = map_instance.template.article_content
+                logger.debug(f'Article content: {article_content[:100]}...')
 
             # 5. 設定 thread_id 和 session_id
             thread_id = f'feedback-{map_id}'
@@ -111,10 +126,14 @@ class FeedbackService:
                         metadata={'operations': metadata},
                     )
 
+                    logger.info(
+                        f'Feedback saved: map_id={map_id}, feedback_id={NodeFeedback.objects.latest("id").id}'
+                    )
                     return feedback_response
 
         except Exception as e:
-            raise Exception(f'LLM feedback 生成失敗: {str(e)}')
+            logger.exception(f'Failed to generate feedback: map_id={map_id}')
+            return '抱歉，系統遇到了一些問題，請稍後再試。'
 
 
 # Singleton instance

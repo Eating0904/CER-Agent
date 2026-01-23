@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from rest_framework import permissions, status, viewsets
@@ -6,6 +8,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from .serializers import RegisterSerializer, UserSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class UserViewSet(viewsets.GenericViewSet):
@@ -24,9 +28,15 @@ class UserViewSet(viewsets.GenericViewSet):
     @action(detail=False, methods=['post'], url_path='register')
     def register(self, request: Request):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+            user = serializer.save()
+            logger.info(f'User registered: user_id={user.id}, username={user.username}')
+            return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger.exception(e)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'], url_path='me')
     def me(self, request: Request):

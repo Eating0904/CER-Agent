@@ -4,11 +4,14 @@ BaseAgent 抽象基類
 定義所有 agent 的共用介面和行為，提供 LLM 初始化和錯誤處理框架。
 """
 
+import logging
 from abc import ABC, abstractmethod
 from typing import Any, List
 
 from langchain_core.messages import BaseMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
+
+logger = logging.getLogger(__name__)
 
 
 class BaseAgent(ABC):
@@ -80,23 +83,27 @@ class BaseAgent(ABC):
         Returns:
             tuple: (處理後的回應文字, metadata 字典)
         """
+        agent_name = self.__class__.__name__
+        logger.info(f'{agent_name}: Processing {len(messages)} messages')
+
         try:
             # 準備訊息
             final_messages = self.prepare_messages(messages, **kwargs)
+            logger.info(f'{agent_name}: Messages prepared')
 
             # 呼叫 LLM
-            agent_name = self.__class__.__name__
             response = self.llm.invoke(
                 final_messages, config={'callbacks': callbacks, 'run_name': agent_name}
             )
+            logger.info(f'{agent_name}: LLM invoked')
 
             # 處理回應並提取 metadata
             response_text = self.process_response(response)
+            logger.info(f'{agent_name}: Response processed')
+
             metadata = self.extract_metadata(response)
 
             return response_text, metadata
 
         except Exception as e:
-            agent_name = self.__class__.__name__
-            print(f'❌ {agent_name} 錯誤: {e}')
-            return f'抱歉，我遇到了一些技術問題。錯誤訊息: {str(e)}', {}
+            raise

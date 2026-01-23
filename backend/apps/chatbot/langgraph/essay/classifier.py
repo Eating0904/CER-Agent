@@ -3,6 +3,7 @@ Essay Intent Classifier
 參考 mindmap classifier，使用 essay 專用的 prompt
 """
 
+import logging
 from typing import Any, List
 
 from langchain_core.messages import BaseMessage, SystemMessage
@@ -12,6 +13,8 @@ from apps.common.utils.json_parser import parse_llm_json_response
 from apps.common.utils.message_filter import filter_messages
 
 from .prompts import CLASSIFIER_PROMPT
+
+logger = logging.getLogger(__name__)
 
 
 class EssayIntentClassifier:
@@ -41,11 +44,10 @@ class EssayIntentClassifier:
         final_messages = [SystemMessage(content=self.system_prompt)] + filtered_messages
 
         try:
+            logger.info('Invoking essay classifier LLM')
             response = self.llm.invoke(
                 final_messages, config={'callbacks': callbacks, 'run_name': 'EssayIntentClassifier'}
             )
-            print(f'\n💡 Essay 分類器回應: {response.content}')
-
             result = parse_llm_json_response(response.content)
 
             if 'next_action' not in result:
@@ -55,12 +57,13 @@ class EssayIntentClassifier:
             if result['next_action'] not in valid_actions:
                 raise ValueError(f'無效的分類結果: {result["next_action"]}')
 
+            logger.info(f'Essay classification result: {result.get("next_action")}')
             return result
 
         except Exception as e:
-            print(f'\n❌ Essay 分類器錯誤: {e}')
+            logger.exception('Essay classifier failed')
             if 'response' in locals():
-                print(f'原始回應: {response.content}')
+                logger.debug(f'Raw response: {response.content[:200]}')
             return {
                 'reasoning': f'發生錯誤: {str(e)}',
                 'next_action': 'essay_support',

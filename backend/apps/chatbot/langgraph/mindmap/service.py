@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import Dict
 
 from langfuse import Langfuse, propagate_attributes
@@ -10,6 +11,8 @@ from config.settings import DATABASE_URL
 
 from .graph import ConversationGraph
 
+logger = logging.getLogger(__name__)
+
 
 class LangGraphService:
     def __init__(self):
@@ -17,22 +20,31 @@ class LangGraphService:
         self.langfuse = Langfuse()
 
     def process_user_message(self, user_input: str, map_id: int, user_id: str) -> Dict:
+        logger.info(f'Processing mindmap message: map_id={map_id}, user_id={user_id}')
+        logger.debug(f'User input: {user_input[:100]}...')
+
         try:
             # 1. 從 Map 取得相關資料
             try:
                 map_instance = Map.objects.select_related('template').get(id=map_id)
+                logger.debug(
+                    f'Map loaded: nodes={len(map_instance.nodes)}, edges={len(map_instance.edges)}, template_id={map_instance.template_id}'
+                )
             except Map.DoesNotExist:
+                logger.error(f'Map not found in process_user_message: map_id={map_id}')
                 raise ValueError(f'Map with id {map_id} does not exist')
 
             mind_map_data = {'nodes': map_instance.nodes, 'edges': map_instance.edges}
 
             # 2. 簡化心智圖資料
             simplified_map_data = simplify_map_data(mind_map_data)
+            logger.debug(f'Simplified map data: {len(str(simplified_map_data))} chars')
 
             # 3. 取得文章內容
             article_content = ''
             if map_instance.template:
                 article_content = map_instance.template.article_content
+                logger.debug(f'Article content: {article_content[:100]}...')
 
             # 4. 設定 thread_id 和 session_id
             thread_id = f'mindmap-{map_id}'
@@ -59,8 +71,6 @@ class LangGraphService:
                         thread_id=thread_id,
                         callbacks=[langfuse_handler],
                     )
-
-                    # print('LangGraph Result:', result)
 
                     # 7. 從 state['messages'] 取得最後回應
                     if result.get('messages'):
@@ -89,6 +99,7 @@ class LangGraphService:
                     )
 
             # 8. 回傳結果
+            logger.info(f'Mindmap message processed successfully: map_id={map_id}')
             return {
                 'success': True,
                 'message': response_content,
@@ -96,16 +107,10 @@ class LangGraphService:
             }
 
         except Exception as e:
-            error_info = self._classify_error(e)
-
+            logger.exception(f'Mindmap processing failed: map_id={map_id}')
             return {
                 'success': False,
-                'message': error_info['user_message'],
-                'error': {
-                    'type': error_info['error_type'],
-                    'detail': str(e),
-                    'user_actionable': error_info['user_actionable'],
-                },
+                'message': '抱歉，系統遇到了一些問題，請稍後再試。',
             }
 
     def get_conversation_history(self, map_id: int) -> Dict:
@@ -118,6 +123,8 @@ class LangGraphService:
         Returns:
             dict: 包含成功狀態和訊息陣列的字典
         """
+        logger.info(f'Getting conversation history: map_id={map_id}')
+
         try:
             thread_id = f'mindmap-{map_id}'
             config = {'configurable': {'thread_id': thread_id}}
@@ -143,8 +150,10 @@ class LangGraphService:
                             parsed_content = json.loads(msg.content)
                             if isinstance(parsed_content, dict) and 'query' in parsed_content:
                                 message_data['content'] = parsed_content['query']
-                        except (json.JSONDecodeError, ValueError):
-                            pass
+                        except (json.JSONDecodeError, ValueError) as e:
+                            logger.warning(
+                                f'Message content is not JSON, using raw content: {str(e)[:100]}'
+                            )
 
                     # 對於 assistant 訊息，從 additional_kwargs 取得 message_type
                     if role == 'assistant' and hasattr(msg, 'additional_kwargs'):
@@ -154,78 +163,16 @@ class LangGraphService:
 
                     messages.append(message_data)
 
+            logger.debug(f'Retrieved {len(messages)} messages')
+            logger.info(f'Conversation history retrieved: map_id={map_id}, count={len(messages)}')
             return {'success': True, 'messages': messages}
 
         except Exception as e:
-            error_info = self._classify_error(e)
-
+            logger.exception(f'Failed to get conversation history: map_id={map_id}')
             return {
                 'success': False,
                 'messages': [],
-                'error': {
-                    'type': error_info['error_type'],
-                    'detail': str(e),
-                    'user_actionable': error_info['user_actionable'],
-                },
             }
-
-    def _classify_error(self, exception: Exception) -> Dict:
-        """
-        分類錯誤並返回適當的錯誤資訊
-
-        Args:
-            exception: 捕獲的異常
-
-        Returns:
-            dict: 包含錯誤類型、使用者訊息和是否可操作的字典
-        """
-        error_message = str(exception)
-
-        # API Key 相關錯誤（使用者可能可以解決）
-        if 'API key' in error_message or 'GOOGLE_API_KEY' in error_message:
-            return {
-                'error_type': 'API_KEY_ERROR',
-                'user_message': '系統配置有誤，請聯繫管理員',
-                'user_actionable': False,
-            }
-
-        # 資料庫相關錯誤
-        if 'DoesNotExist' in error_message or 'database' in error_message.lower():
-            return {
-                'error_type': 'DATABASE_ERROR',
-                'user_message': '找不到相關資料，請確認地圖是否存在',
-                'user_actionable': True,
-            }
-
-        # API 限制或網路錯誤
-        if 'rate limit' in error_message.lower() or 'quota' in error_message.lower():
-            return {
-                'error_type': 'RATE_LIMIT_ERROR',
-                'user_message': '系統使用量過高，請稍後再試',
-                'user_actionable': True,
-            }
-
-        if 'timeout' in error_message.lower() or 'network' in error_message.lower():
-            return {
-                'error_type': 'NETWORK_ERROR',
-                'user_message': '網路連線有問題，請稍後再試',
-                'user_actionable': True,
-            }
-
-        # JSON 解析錯誤（系統問題）
-        if 'JSON' in error_message or 'json' in error_message:
-            return {
-                'error_type': 'JSON_PARSE_ERROR',
-                'user_message': '系統處理回應時發生錯誤，請稍後再試',
-                'user_actionable': False,
-            }
-
-        # 預設：未知錯誤
-        return {
-            'error_type': 'UNKNOWN_ERROR',
-            'user_message': '系統發生錯誤，請稍後再試或聯繫管理員',
-            'user_actionable': False,
-        }
 
 
 _langgraph_service = None

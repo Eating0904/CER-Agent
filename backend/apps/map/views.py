@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -7,6 +9,8 @@ from apps.mindMapTemplate.models import MindMapTemplate
 
 from .models import Map
 from .serializers import CreateMapFromTemplateSerializer, MapListSerializer, MapSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class MapViewSet(viewsets.ModelViewSet):
@@ -26,18 +30,23 @@ class MapViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def create_from_template(self, request):
         serializer = CreateMapFromTemplateSerializer(data=request.data)
-        if serializer.is_valid():
-            template_id = serializer.validated_data['template_id']
-            name = serializer.validated_data.get('name')
 
-            try:
-                template = MindMapTemplate.objects.get(id=template_id)
-            except MindMapTemplate.DoesNotExist:
-                return Response({'error': 'Template not found'}, status=status.HTTP_404_NOT_FOUND)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            if not name:
-                name = f'{template.name}'
+        template_id = serializer.validated_data['template_id']
+        name = serializer.validated_data.get('name')
 
+        try:
+            template = MindMapTemplate.objects.get(id=template_id)
+        except MindMapTemplate.DoesNotExist:
+            logger.error(f'Template not found: template_id={template_id}')
+            return Response({'error': 'Template not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if not name:
+            name = f'{template.name}'
+
+        try:
             initial_nodes = [
                 {
                     'id': 'c1',
@@ -104,6 +113,11 @@ class MapViewSet(viewsets.ModelViewSet):
             )
 
             map_serializer = MapSerializer(map_instance)
+            logger.info(
+                f'Map created from template: map_id={map_instance.id}, template_id={template_id}, user={request.user.id}'
+            )
             return Response(map_serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.exception(e)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

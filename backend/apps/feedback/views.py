@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,6 +10,8 @@ from apps.map.permissions import require_map_owner
 from .langgraph import get_feedback_service
 from .models import NodeFeedback
 from .serializers import CreateFeedbackSerializer, NodeFeedbackSerializer
+
+logger = logging.getLogger(__name__)
 
 
 @api_view(['POST'])
@@ -68,6 +72,7 @@ def create_feedback(request):
         )
 
     except Exception as e:
+        logger.exception(e)
         error_message = '生成回饋失敗，請稍後再試'
 
         return Response(

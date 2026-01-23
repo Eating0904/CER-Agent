@@ -4,6 +4,7 @@ CERCognitiveSupportAgent - CER 認知學習支援 Agent
 處理 CER 認知學習相關問題，協助學生克服繪製 CER 心智圖時遇到的技術性障礙。
 """
 
+import logging
 from typing import List
 
 from langchain_core.messages import BaseMessage, SystemMessage
@@ -12,6 +13,8 @@ from apps.common.utils.json_parser import parse_llm_json_response
 
 from ..prompts import CER_COGNITIVE_SUPPORT_PROMPT
 from .base import BaseAgent
+
+logger = logging.getLogger(__name__)
 
 
 class CERCognitiveSupportAgent(BaseAgent):
@@ -53,11 +56,11 @@ class CERCognitiveSupportAgent(BaseAgent):
         try:
             result = parse_llm_json_response(response.content)
             if 'final_response' not in result:
-                print(f'⚠️  回應中缺少 final_response 欄位，回傳原始內容')
+                logger.warning('Response missing final_response field, using raw content')
                 return response.content
             return result['final_response']
-        except Exception as json_error:
-            print(f'⚠️  JSON 解析失敗: {json_error}，回傳原始內容')
+        except Exception as e:
+            logger.warning(f'Failed to parse response: {str(e)[:100]}, using raw content')
             return response.content
 
     def extract_metadata(self, response) -> dict:
@@ -77,6 +80,6 @@ class CERCognitiveSupportAgent(BaseAgent):
                 'response_strategy': result.get('response_strategy', ''),
                 'strategy_detail': result.get('strategy_detail', ''),
             }
-        except Exception as json_error:
-            print(f'⚠️  Metadata 提取失敗: {json_error}')
+        except Exception as e:
+            logger.warning(f'Failed to extract metadata: {str(e)[:100]}')
             return {}

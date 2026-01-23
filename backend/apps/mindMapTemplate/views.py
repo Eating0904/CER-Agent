@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -10,6 +12,8 @@ from .serializers import (
     MindMapTemplateSerializer,
     TemplatePermissionSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class MindMapTemplateViewSet(viewsets.ModelViewSet):
@@ -78,20 +82,26 @@ class MindMapTemplateViewSet(viewsets.ModelViewSet):
         template = self.get_object()
         serializer = GrantPermissionSerializer(data=request.data)
 
-        if serializer.is_valid():
-            assistant_id = serializer.validated_data['assistant_id']
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            # 建立授權記錄
+        try:
+            assistant_id = serializer.validated_data['assistant_id']
             permission, created = TemplatePermission.objects.get_or_create(
                 template=template, assistant_id=assistant_id, defaults={'granted_by': request.user}
             )
 
             if created:
+                logger.info(
+                    f'Permission granted: template_id={template.id}, assistant_id={assistant_id}, granted_by={request.user.id}'
+                )
                 return Response({'message': '授權成功'}, status=status.HTTP_201_CREATED)
             else:
                 return Response({'message': '此助教已被授權'}, status=status.HTTP_200_OK)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.exception(e)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['delete'], url_path='revoke_permission/(?P<assistant_id>[^/.]+)')
     def revoke_permission(self, request, pk=None, assistant_id=None):
@@ -103,6 +113,16 @@ class MindMapTemplateViewSet(viewsets.ModelViewSet):
                 template=template, assistant_id=assistant_id
             )
             permission.delete()
+            logger.info(
+                f'Permission revoked: template_id={template.id}, assistant_id={assistant_id}, revoked_by={request.user.id}'
+            )
             return Response(status=status.HTTP_204_NO_CONTENT)
+
         except TemplatePermission.DoesNotExist:
+            logger.warning(
+                f'Permission not found: template_id={template.id}, assistant_id={assistant_id}'
+            )
             return Response({'error': '找不到此授權記錄'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.exception(e)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

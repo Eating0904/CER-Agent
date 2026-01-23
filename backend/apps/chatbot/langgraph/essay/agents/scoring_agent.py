@@ -1,6 +1,7 @@
 """Essay Scoring Agent - 文章評分"""
 
 import json
+import logging
 from typing import List
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
@@ -9,6 +10,8 @@ from apps.common.utils.json_parser import parse_llm_json_response
 
 from ..prompts.scoring_prompt import SCORING_PROMPT
 from .base import BaseAgent
+
+logger = logging.getLogger(__name__)
 
 
 class EssayScoringAgent(BaseAgent):
@@ -81,13 +84,13 @@ class EssayScoringAgent(BaseAgent):
             ]
             for key in required_keys:
                 if key not in result:
-                    print(f'⚠️  評分結果缺少 {key} 欄位，回傳原始內容')
+                    logger.warning(f'Scoring result missing {key} field, using raw content')
                     return response.content
 
             return json.dumps(result, ensure_ascii=False, indent=2)
 
-        except Exception as json_error:
-            print(f'⚠️  JSON 解析失敗: {json_error}，回傳原始內容')
+        except Exception as e:
+            logger.warning(f'Failed to parse scoring result: {str(e)[:100]}, using raw content')
             return response.content
 
     def extract_metadata(self, response) -> dict:
@@ -130,6 +133,6 @@ class EssayScoringAgent(BaseAgent):
                 'disposition_feedback': result['Disposition'].get('feedback', ''),
             }
 
-        except Exception as json_error:
-            print(f'⚠️  Metadata 提取失敗: {json_error}')
+        except Exception as e:
+            logger.warning(f'Failed to extract metadata: {str(e)[:100]}')
             return {}
