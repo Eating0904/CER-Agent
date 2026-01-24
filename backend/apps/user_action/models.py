@@ -1,6 +1,5 @@
 from django.db import models
 
-from apps.essay.models import Essay
 from apps.map.models import Map
 from apps.user.models import User
 
@@ -22,14 +21,6 @@ class UserAction(models.Model):
         blank=True,
         related_name='user_actions',
         help_text='關聯的 Map',
-    )
-    essay = models.ForeignKey(
-        Essay,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='user_actions',
-        help_text='關聯的 Essay',
     )
 
     # 額外詳細資料
