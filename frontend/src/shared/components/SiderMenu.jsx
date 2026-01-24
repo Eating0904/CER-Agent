@@ -18,6 +18,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LAYOUT_COLORS, NEUTRAL_COLORS } from '../../constants/colors';
 import { useGetMapsQuery } from '../../features/map/utils/mapApi';
 import { useGetMeQuery } from '../../features/user/userApi';
+import { useUserActionTracker } from '../../features/userAction/hooks';
 
 import { RenameMapModal } from './RenameMapModal';
 
@@ -30,6 +31,7 @@ export const SiderMenu = () => {
 
     const { data: currentUser } = useGetMeQuery();
     const { data: maps = [], isLoading, error } = useGetMapsQuery();
+    const { trackAction } = useUserActionTracker();
 
     useEffect(() => {
         if (error) {
@@ -70,6 +72,11 @@ export const SiderMenu = () => {
 
     const canManage = currentUser?.role && ['admin', 'teacher', 'assistant'].includes(currentUser.role);
 
+    const handleAddNewClick = () => {
+        trackAction('click_add_new_button');
+        navigate('/mind-map-template-list');
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             {canManage && (
@@ -87,7 +94,7 @@ export const SiderMenu = () => {
                 </Button>
             )}
             <Button
-                onClick={() => navigate('/mind-map-template-list')}
+                onClick={handleAddNewClick}
                 style={{
                     height: '40px',
                     padding: '8px 8px 8px 10px',
