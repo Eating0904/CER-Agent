@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { App } from 'antd';
 
 import { useSendChatMessageMutation } from '../../chat/chatApi';
+import { useUserActionTracker } from '../../userAction/hooks';
 
 /**
  * 訊息發送 hook
@@ -16,6 +17,7 @@ export const useMapSendMessage = (mapId, handleAutoSave) => {
     const { message } = App.useApp();
     const [isSending, setIsSending] = useState(false);
     const [sendChatMessage] = useSendChatMessageMutation();
+    const { trackAction } = useUserActionTracker();
 
     const handleSendMessage = useCallback(
         async (text) => {
@@ -23,6 +25,10 @@ export const useMapSendMessage = (mapId, handleAutoSave) => {
 
             try {
                 setIsSending(true);
+
+                // 立即記錄聊天行為
+                trackAction('chat_in_mindmap', {}, mapId ? parseInt(mapId, 10) : null);
+
                 // 1. 自動儲存 map（總是執行）
                 await handleAutoSave(null, 'before_chat');
 
@@ -41,7 +47,7 @@ export const useMapSendMessage = (mapId, handleAutoSave) => {
                 setIsSending(false);
             }
         },
-        [handleAutoSave, sendChatMessage, mapId],
+        [handleAutoSave, sendChatMessage, mapId, trackAction],
     );
 
     return { isSending, handleSendMessage };

@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from apps.map.permissions import require_map_owner
+from apps.user_action.models import UserAction
 
 from .langgraph.essay import get_essay_langgraph_service
 from .langgraph.mindmap import get_langgraph_service
@@ -63,6 +64,25 @@ def chat(request, chat_type):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+        # AI 成功回應後，記錄聊天行為
+        # 注意：前端已先記錄一次（無 trace_id），這裡記錄第二次以保存 trace_id
+        try:
+            action_type = 'chat_in_mindmap' if chat_type == 'mindmap' else 'chat_in_essay'
+            metadata = {}
+            
+            # 獲取 langfuse_trace_id
+            if 'trace_id' in result:
+                metadata['langfuse_trace_id'] = result['trace_id']
+            
+            UserAction.objects.create(
+                user=request.user,
+                action_type=action_type,
+                map_id=map_id,
+                metadata=metadata
+            )
+        except Exception as e:
+            logger.warning(f"Failed to record chat action with trace_id: {e}")
 
         return Response({'success': True, 'message': result['message']})
 

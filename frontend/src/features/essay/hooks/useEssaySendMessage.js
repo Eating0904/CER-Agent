@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { App } from 'antd';
 
 import { useSendEssayChatMessageMutation } from '../../chat/chatApi';
+import { useUserActionTracker } from '../../userAction/hooks';
 
 /**
  * Essay 訊息發送 hook
@@ -17,6 +18,7 @@ export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
     const { message } = App.useApp();
     const [isSending, setIsSending] = useState(false);
     const [sendChatMessage] = useSendEssayChatMessageMutation();
+    const { trackAction } = useUserActionTracker();
 
     const handleSendMessage = useCallback(
         async (text) => {
@@ -24,6 +26,10 @@ export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
 
             try {
                 setIsSending(true);
+
+                // 立即記錄聊天行為
+                trackAction('chat_in_essay', {}, mapId ? parseInt(mapId, 10) : null);
+
                 // 1. 自動儲存 essay（總是執行）
                 if (handleSave) {
                     await handleSave();
@@ -48,7 +54,7 @@ export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
                 setIsSending(false);
             }
         },
-        [handleSave, sendChatMessage, mapId, editorRef],
+        [handleSave, sendChatMessage, mapId, editorRef, trackAction],
     );
 
     return { isSending, handleSendMessage };

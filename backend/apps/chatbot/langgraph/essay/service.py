@@ -108,11 +108,15 @@ class EssayLangGraphService:
                         metadata=trace_metadata,
                     )
 
+                    # 獲取 trace_id
+                    trace_id = trace_span.trace_id
+
             logger.info(f'Essay message processed successfully: map_id={map_id}')
             return {
                 'success': True,
                 'message': response_content,
                 'classification': result.get('classification', {}),
+                'trace_id': trace_id,
             }
 
         except Exception as e:
