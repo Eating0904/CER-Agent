@@ -77,6 +77,16 @@ export const SiderMenu = () => {
         navigate('/mind-map-template-list');
     };
 
+    const handleMapClick = (map) => {
+        // 記錄切換 map 行為
+        trackAction('switch_map', {
+            from_map_id: currentMapId ? parseInt(currentMapId, 10) : null,
+            to_map_id: map.id,
+        }, map.id);
+
+        navigate(`/map?mapId=${map.id}`);
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             {canManage && (
@@ -122,7 +132,7 @@ export const SiderMenu = () => {
                     return (
                         <List.Item
                             key={map.id}
-                            onClick={() => navigate(`/map?mapId=${map.id}`)}
+                            onClick={() => handleMapClick(map)}
                             onMouseEnter={() => setHoveredMapId(map.id)}
                             onMouseLeave={() => setHoveredMapId(null)}
                             style={{
