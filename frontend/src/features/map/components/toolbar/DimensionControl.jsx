@@ -5,6 +5,7 @@ export const DimensionControl = ({
     label,
     value,
     onChange,
+    onBlur,
     onAuto,
     disabled,
     showAutoButton = true,
@@ -29,6 +30,7 @@ export const DimensionControl = ({
             placeholder={placeholder}
             disabled={disabled}
             onChange={onChange}
+            onBlur={onBlur}
             style={{ width: '100%' }}
             size="small"
             min={0}

@@ -14,8 +14,10 @@ import {
     Flex,
     Row,
 } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 
 import { DEFAULT_COLORS } from '../../../../constants/colors';
+import { useUserActionTracker } from '../../../userAction/hooks';
 import { useMapContext } from '../../hooks';
 
 import { ColorControl } from './ColorControl';
@@ -24,6 +26,9 @@ import { fontColorIcon } from './IconSvg';
 
 export const FontStyleEditor = () => {
     const { selectedNode, updateNodeStyle } = useMapContext();
+    const [searchParams] = useSearchParams();
+    const mapId = searchParams.get('mapId');
+    const { trackAction } = useUserActionTracker();
 
     const [color, setColor] = useState(DEFAULT_COLORS.fontColor);
     const [fontSize, setFontSize] = useState(null);
@@ -67,19 +72,35 @@ export const FontStyleEditor = () => {
                 color: colorValue,
             },
         });
+
+        // 記錄調整字體樣式
+        trackAction('adjust_font_style', {
+            node_id: selectedNode.id,
+            property_type: 'color',
+        }, mapId ? parseInt(mapId, 10) : null);
     };
 
     const handleFontSizeUpdate = (value) => {
         if (!selectedNode) return;
-
+        // 只更新本地 state，不更新樣式
         setFontSize(value);
+    };
 
+    const handleFontSizeBlur = () => {
+        if (!selectedNode) return;
+
+        // blur 時才更新樣式並記錄行為
         updateNodeStyle(selectedNode.id, {
             customFont: {
                 ...selectedNode.data.customFont,
-                fontSize: value ? `${value}px` : undefined,
+                fontSize: fontSize ? `${fontSize}px` : undefined,
             },
         });
+
+        trackAction('adjust_font_style', {
+            node_id: selectedNode.id,
+            property_type: 'fontSize',
+        }, mapId ? parseInt(mapId, 10) : null);
     };
 
     const handleFontWeightUpdate = (isBold) => {
@@ -93,6 +114,11 @@ export const FontStyleEditor = () => {
                 fontWeight: isBold ? 'bold' : 'normal',
             },
         });
+
+        trackAction('adjust_font_style', {
+            node_id: selectedNode.id,
+            property_type: 'fontWeight',
+        }, mapId ? parseInt(mapId, 10) : null);
     };
 
     const handleFontStyleUpdate = (isItalic) => {
@@ -106,6 +132,11 @@ export const FontStyleEditor = () => {
                 fontStyle: isItalic ? 'italic' : 'normal',
             },
         });
+
+        trackAction('adjust_font_style', {
+            node_id: selectedNode.id,
+            property_type: 'fontStyle',
+        }, mapId ? parseInt(mapId, 10) : null);
     };
 
     const handleTextDecorationUpdate = (isUnderline) => {
@@ -119,6 +150,11 @@ export const FontStyleEditor = () => {
                 textDecoration: isUnderline ? 'underline' : 'none',
             },
         });
+
+        trackAction('adjust_font_style', {
+            node_id: selectedNode.id,
+            property_type: 'textDecoration',
+        }, mapId ? parseInt(mapId, 10) : null);
     };
 
     const handleTextAlignUpdate = (value) => {
@@ -132,6 +168,11 @@ export const FontStyleEditor = () => {
                 textAlign: value,
             },
         });
+
+        trackAction('adjust_font_style', {
+            node_id: selectedNode.id,
+            property_type: 'textAlign',
+        }, mapId ? parseInt(mapId, 10) : null);
     };
 
     return (
@@ -144,6 +185,7 @@ export const FontStyleEditor = () => {
                             value={fontSize}
                             disabled={isDisabled}
                             onChange={handleFontSizeUpdate}
+                            onBlur={handleFontSizeBlur}
                             showAutoButton={false}
                         />
                         <ColorControl
