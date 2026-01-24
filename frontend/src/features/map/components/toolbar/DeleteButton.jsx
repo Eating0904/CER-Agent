@@ -1,7 +1,9 @@
 import { DeleteOutlined } from '@ant-design/icons';
 import { App, Button } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 
 import { BRAND_COLORS } from '../../../../constants/colors';
+import { useUserActionTracker } from '../../../userAction/hooks';
 import { useMapContext } from '../../hooks';
 
 export const DeleteButton = () => {
@@ -11,7 +13,11 @@ export const DeleteButton = () => {
         selectedEdgeId,
         deleteNode,
         deleteEdge,
+        selectedNode,
     } = useMapContext();
+    const [searchParams] = useSearchParams();
+    const mapId = searchParams.get('mapId');
+    const { trackAction } = useUserActionTracker();
 
     if (!selectedNodeId && !selectedEdgeId) {
         return null;
@@ -28,6 +34,12 @@ export const DeleteButton = () => {
                 okType: 'primary',
                 cancelText: 'Cancel',
                 onOk: () => {
+                    // 記錄刪除節點行為
+                    trackAction('delete_node', {
+                        node_id: selectedNodeId,
+                        node_type: selectedNode?.data?.type || '',
+                    }, mapId ? parseInt(mapId, 10) : null);
+
                     deleteNode(selectedNodeId);
                 },
             });
