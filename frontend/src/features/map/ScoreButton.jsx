@@ -2,12 +2,21 @@ import { useState } from 'react';
 
 import { StarFilled } from '@ant-design/icons';
 import { Button } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 
 import { BUTTON_COLORS, NEUTRAL_COLORS } from '../../constants/colors';
+import { useUserActionTracker } from '../userAction/hooks';
 
 export const ScoreButton = ({ onSendMessage, setIsChatOpen }) => {
     const [isScoreHovered, setIsScoreHovered] = useState(false);
+    const [searchParams] = useSearchParams();
+    const mapId = searchParams.get('mapId');
+    const { trackAction } = useUserActionTracker();
+
     const handleScore = async () => {
+        // 記錄點擊 Score 按鈕
+        trackAction('click_scoring_mindmap', {}, mapId ? parseInt(mapId, 10) : null);
+
         setIsChatOpen(true);
         await onSendMessage('[scoring]');
     };
