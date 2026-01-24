@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react';
 import { App, Input, Modal } from 'antd';
 
 import { useUpdateMapMutation } from '../../features/map/utils/mapApi';
+import { useUserActionTracker } from '../../features/userAction/hooks';
 
 export const RenameMapModal = ({ open, mapId, currentName, onClose, onSuccess }) => {
     const { message } = App.useApp();
     const [newMapName, setNewMapName] = useState(currentName || '');
     const [updateMap, { isLoading }] = useUpdateMapMutation();
+    const { trackAction } = useUserActionTracker();
 
     useEffect(() => {
         if (open && currentName) {
@@ -25,6 +27,12 @@ export const RenameMapModal = ({ open, mapId, currentName, onClose, onSuccess })
                 id: mapId,
                 name: newMapName.trim(),
             }).unwrap();
+
+            // 記錄重新命名 map 行為
+            await trackAction('rename_map', {
+                old_name: currentName,
+                new_name: newMapName.trim(),
+            }, mapId);
 
             message.success('Renamed successfully');
             setNewMapName('');
