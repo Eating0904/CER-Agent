@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
 
 import { App, Checkbox } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 
 import { DEFAULT_COLORS, NEUTRAL_COLORS } from '../../../../constants/colors';
+import { useUserActionTracker } from '../../../userAction/hooks';
 import { useMapContext } from '../../hooks';
 
 export const HandleEditor = () => {
     const { modal } = App.useApp();
     const { selectedNode, updateNodeStyle, edges, setEdges } = useMapContext();
+    const [searchParams] = useSearchParams();
+    const mapId = searchParams.get('mapId');
+    const { trackAction } = useUserActionTracker();
 
     const [handles, setHandles] = useState({
         topLeft: false,
@@ -53,6 +58,9 @@ export const HandleEditor = () => {
 
     // 更新連接點狀態
     const updateHandleState = (handleId) => {
+        const isCurrentlyChecked = handles[handleId];
+        const operation = isCurrentlyChecked ? 'uncheck' : 'check';
+
         const newHandles = {
             ...handles,
             [handleId]: !handles[handleId],
@@ -68,6 +76,13 @@ export const HandleEditor = () => {
         updateNodeStyle(selectedNode.id, {
             showDots,
         });
+
+        // 記錄調整 handle 行為
+        trackAction('adjust_handle', {
+            node_id: selectedNode.id,
+            handle_id: handleId,
+            operation,
+        }, mapId ? parseInt(mapId, 10) : null);
     };
 
     // 處理 checkbox 狀態改變
