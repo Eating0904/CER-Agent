@@ -30,6 +30,7 @@ export const useFeedbackRequest = (mapId, handleAutoSave) => {
             }
 
             return {
+                id: response.data.id,
                 feedback: response.data.feedback,
             };
         },

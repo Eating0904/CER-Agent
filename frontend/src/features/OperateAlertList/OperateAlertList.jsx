@@ -31,8 +31,11 @@ export const OperateAlertList = ({ alerts = [], onAskClick }) => (
                                     size="small"
                                     type="primary"
                                     style={{ marginLeft: '8px' }}
-                                    onClick={() => onAskClick(alert.operationDetails
-                                        || alert.message, alert.description)}
+                                    onClick={() => onAskClick(
+                                        alert.operationDetails || alert.message,
+                                        alert.description,
+                                        alert.feedbackId,
+                                    )}
                                 >
                                     Ask
                                 </Button>

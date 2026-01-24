@@ -26,6 +26,7 @@ import {
 } from '../features/map/hooks';
 import { useGetMapQuery } from '../features/map/utils';
 import { useGetMeQuery } from '../features/user/userApi';
+import { useUserActionTracker } from '../features/userAction/hooks';
 import { useHeaderContext } from '../shared/HeaderContext';
 
 import { ArticlePageContent } from './ArticlePageContent';
@@ -38,6 +39,7 @@ export const MapPage = () => {
     const view = searchParams.get('view') || 'article';
 
     const { setHeaderContent } = useHeaderContext();
+    const { trackAction } = useUserActionTracker();
 
     const { data: currentUser } = useGetMeQuery();
     const isFeedbackEnabled = currentUser?.lab?.group === 'active';
@@ -91,11 +93,22 @@ export const MapPage = () => {
 
     // 處理 Ask 按鈕點擊
     const handleAskClick = useCallback(
-        (message, description) => {
+        (message, description, feedbackId = null) => {
             setFeedbackData({ message, description });
             setIsChatOpen(true);
+
+            // 記錄點擊 Feedback Ask 按鈕
+            if (feedbackId) {
+                trackAction(
+                    'click_feedback_ask',
+                    {},
+                    mapId ? parseInt(mapId, 10) : null,
+                    null,
+                    feedbackId,
+                );
+            }
         },
-        [setFeedbackData, setIsChatOpen],
+        [setFeedbackData, setIsChatOpen, trackAction, mapId],
     );
 
     // 事件監聽（只有在 Feedback 啟用時才監聽）

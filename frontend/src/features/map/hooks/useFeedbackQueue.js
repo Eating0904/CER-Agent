@@ -82,6 +82,7 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
                 description: result.feedback,
                 status: 'success',
                 showAsk: true,
+                feedbackId: result?.id || null,
             });
 
             // 記錄 AI 主動介入顯示
