@@ -149,6 +149,8 @@ export const useMapNodes = (mapData) => {
         });
 
         setSelectedNodeId(newId);
+
+        return newId;
     }, []);
 
     const selectNode = useCallback((nodeId) => {
