@@ -11,6 +11,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 import { useCreateMapFromTemplateMutation } from '../map/utils';
+import { useUserActionTracker } from '../userAction/hooks';
 
 import { useGetMindMapTemplatesQuery } from './mindMapTemplateApi';
 
@@ -21,6 +22,7 @@ export const MindMapTemplateList = () => {
     const navigate = useNavigate();
     const { data: templates = [], isLoading, error } = useGetMindMapTemplatesQuery();
     const [createMapFromTemplate, { isLoading: isCreating }] = useCreateMapFromTemplateMutation();
+    const { trackAction } = useUserActionTracker();
 
     useEffect(() => {
         if (error) {
@@ -33,6 +35,12 @@ export const MindMapTemplateList = () => {
             const result = await createMapFromTemplate({
                 template_id: template.id,
             }).unwrap();
+
+            // 記錄新增 map 行為
+            await trackAction('create_map', {
+                template_id: template.id,
+                map_name: result.name,
+            }, result.id);
 
             message.success('Mind map created successfully');
             navigate(`/map?mapId=${result.id}`);
