@@ -10,6 +10,8 @@ import {
 } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { useUserActionTracker } from '../userAction/hooks';
+
 import { CardTemplate } from './CardTemplate';
 import { useLoginMutation } from './userApi';
 
@@ -20,12 +22,17 @@ export const LoginCard = () => {
 
     const navigate = useNavigate();
     const [login, { isLoading }] = useLoginMutation();
+    const { trackAction } = useUserActionTracker();
 
     const handleSubmit = async (values) => {
         setErrorMessage('');
 
         try {
             await login(values).unwrap();
+
+            // 記錄登入行為
+            await trackAction('login');
+
             navigate('/');
         }
         catch {
