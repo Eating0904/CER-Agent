@@ -5,7 +5,7 @@ import { buildOperationDetails } from '../../OperateAlertList/utils/buildOperati
 import { useFeedbackRequest } from './useFeedbackRequest';
 import { useMapAlerts } from './useMapAlerts';
 
-const MAX_COUNT = 10;
+const MAX_COUNT = 2;
 const DELAY_MS = 60000;
 
 /**
