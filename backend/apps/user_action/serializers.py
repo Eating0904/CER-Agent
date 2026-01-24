@@ -54,6 +54,7 @@ class UserActionSerializer(serializers.ModelSerializer):
             'adjust_font_style',
             'adjust_node_style',
             'adjust_handle',
+            'add_edge',
             'delete_edge',
             'manual_save_map',
             'auto_save_map',

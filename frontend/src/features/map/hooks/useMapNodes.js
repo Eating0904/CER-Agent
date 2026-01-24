@@ -152,6 +152,17 @@ export const useMapNodes = (mapData) => {
                 const sourceNode = nds.find((n) => n.id === params.source);
                 const targetNode = nds.find((n) => n.id === params.target);
 
+                // 記錄建立 edge 的追蹤
+                trackAction(
+                    'add_edge',
+                    {
+                        edge_id: newEdges[newEdges.length - 1].id,
+                        node1: params.source,
+                        node2: params.target,
+                    },
+                    mapId ? parseInt(mapId, 10) : null,
+                );
+
                 mapEventEmitter.emit(EDGE_CONNECTED, {
                     action: 'connect',
                     connected_nodes: [params.source, params.target],
@@ -165,7 +176,7 @@ export const useMapNodes = (mapData) => {
                 return nds;
             });
         },
-        [],
+        [trackAction, mapId],
     );
 
     const addNode = useCallback((nodeType = 'C') => {
