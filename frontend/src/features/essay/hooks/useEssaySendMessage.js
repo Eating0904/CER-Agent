@@ -27,8 +27,8 @@ export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
             try {
                 setIsSending(true);
 
-                // 立即記錄聊天行為
-                trackAction('chat_in_essay', {}, mapId ? parseInt(mapId, 10) : null);
+                // 立即記錄聊天行為並獲取 action_id
+                const { actionId } = await trackAction('chat_in_essay', {}, mapId ? parseInt(mapId, 10) : null);
 
                 // 1. 自動儲存 essay（總是執行）
                 if (handleSave) {
@@ -38,11 +38,12 @@ export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
                 // 2. 提取純文字內容
                 const essayPlainText = editorRef?.current?.getText() || '';
 
-                // 3. 發送訊息（包含純文字）
+                // 3. 發送訊息
                 await sendChatMessage({
                     message: text,
                     mapId,
                     essayPlainText,
+                    userActionId: actionId,
                 }).unwrap();
             }
             catch (err) {
@@ -54,7 +55,7 @@ export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
                 setIsSending(false);
             }
         },
-        [handleSave, sendChatMessage, mapId, editorRef, trackAction],
+        [handleSave, sendChatMessage, mapId, editorRef, trackAction, message],
     );
 
     return { isSending, handleSendMessage };

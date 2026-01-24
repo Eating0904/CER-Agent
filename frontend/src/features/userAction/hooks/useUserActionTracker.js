@@ -12,16 +12,19 @@ export const useUserActionTracker = () => {
     const trackAction = useCallback(
         async (actionType, metadata = {}, mapId = null, essayId = null, feedbackId = null) => {
             try {
-                await recordAction({
+                const result = await recordAction({
                     action_type: actionType,
                     map_id: mapId,
                     essay_id: essayId,
                     feedback_id: feedbackId,
                     metadata,
                 }).unwrap();
+
+                return { actionId: result?.id };
             }
             catch (error) {
                 console.error('Failed to track user action:', error);
+                return { actionId: null };
             }
         },
         [recordAction],

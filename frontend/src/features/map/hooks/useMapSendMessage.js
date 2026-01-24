@@ -26,8 +26,8 @@ export const useMapSendMessage = (mapId, handleAutoSave) => {
             try {
                 setIsSending(true);
 
-                // 立即記錄聊天行為
-                trackAction('chat_in_mindmap', {}, mapId ? parseInt(mapId, 10) : null);
+                // 立即記錄聊天行為並獲取 action_id
+                const { actionId } = await trackAction('chat_in_mindmap', {}, mapId ? parseInt(mapId, 10) : null);
 
                 // 1. 自動儲存 map（總是執行）
                 await handleAutoSave(null, 'before_chat');
@@ -36,6 +36,7 @@ export const useMapSendMessage = (mapId, handleAutoSave) => {
                 await sendChatMessage({
                     message: text,
                     mapId,
+                    userActionId: actionId,
                 }).unwrap();
             }
             catch (err) {
@@ -47,7 +48,7 @@ export const useMapSendMessage = (mapId, handleAutoSave) => {
                 setIsSending(false);
             }
         },
-        [handleAutoSave, sendChatMessage, mapId, trackAction],
+        [handleAutoSave, sendChatMessage, mapId, trackAction, message],
     );
 
     return { isSending, handleSendMessage };

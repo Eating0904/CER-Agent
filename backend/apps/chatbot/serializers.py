@@ -8,3 +8,4 @@ class ChatMessageSerializer(serializers.Serializer):
         child=serializers.DictField(), required=False, default=list
     )
     essay_plain_text = serializers.CharField(required=False, allow_blank=True, default='')
+    user_action_id = serializers.IntegerField(required=False, allow_null=True, default=None)

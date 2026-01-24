@@ -3,12 +3,13 @@ import baseApi from '../../api/baseApi';
 const chatApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         sendChatMessage: build.mutation({
-            query: ({ message, mapId }) => ({
+            query: ({ message, mapId, userActionId }) => ({
                 url: 'chatbot/mindmap/chat/',
                 method: 'POST',
                 body: {
                     message,
                     map_id: mapId,
+                    user_action_id: userActionId,
                 },
             }),
             async onQueryStarted({ message, mapId }, { dispatch, queryFulfilled }) {
@@ -55,13 +56,14 @@ const chatApi = baseApi.injectEndpoints({
         }),
         // ===== Essay Chat =====
         sendEssayChatMessage: build.mutation({
-            query: ({ message, mapId, essayPlainText }) => ({
+            query: ({ message, mapId, essayPlainText, userActionId }) => ({
                 url: 'chatbot/essay/chat/',
                 method: 'POST',
                 body: {
                     message,
                     map_id: mapId,
                     essay_plain_text: essayPlainText,
+                    user_action_id: userActionId,
                 },
             }),
             async onQueryStarted({ message, mapId }, { dispatch, queryFulfilled }) {
