@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 
 import { Col, Flex, Row } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 
 import { DEFAULT_COLORS } from '../../../../constants/colors';
+import { useUserActionTracker } from '../../../userAction/hooks';
 import { useMapContext } from '../../hooks';
 
 import { ColorControl } from './ColorControl';
@@ -11,6 +13,9 @@ import { backgroundColorIcon, borderColorIcon } from './IconSvg';
 
 export const NodeStyleEditor = () => {
     const { selectedNode, updateNodeStyle } = useMapContext();
+    const [searchParams] = useSearchParams();
+    const mapId = searchParams.get('mapId');
+    const { trackAction } = useUserActionTracker();
 
     const [width, setWidth] = useState(null);
     const [height, setHeight] = useState(null);
@@ -42,16 +47,47 @@ export const NodeStyleEditor = () => {
     const handleDimensionUpdate = (field, value) => {
         if (!selectedNode) return;
 
+        // 只更新本地 state
         if (field === 'width') setWidth(value);
         if (field === 'height') setHeight(value);
+    };
 
+    const handleDimensionBlur = (field) => {
+        if (!selectedNode) return;
+
+        const value = field === 'width' ? width : height;
         const processedValue = (value === null || value === undefined) ? 'auto' : `${value}px`;
+
         updateNodeStyle(selectedNode.id, {
             customSize: {
                 ...selectedNode.data.customSize,
                 [field]: processedValue,
             },
         });
+
+        trackAction('adjust_node_style', {
+            node_id: selectedNode.id,
+            property_type: field,
+        }, mapId ? parseInt(mapId, 10) : null);
+    };
+
+    const handleDimensionAuto = (field) => {
+        if (!selectedNode) return;
+
+        if (field === 'width') setWidth(null);
+        if (field === 'height') setHeight(null);
+
+        updateNodeStyle(selectedNode.id, {
+            customSize: {
+                ...selectedNode.data.customSize,
+                [field]: 'auto',
+            },
+        });
+
+        trackAction('adjust_node_style', {
+            node_id: selectedNode.id,
+            property_type: field,
+        }, mapId ? parseInt(mapId, 10) : null);
     };
 
     const handleColorUpdate = (field, colorValue) => {
@@ -66,6 +102,11 @@ export const NodeStyleEditor = () => {
                 [field]: colorValue,
             },
         });
+
+        trackAction('adjust_node_style', {
+            node_id: selectedNode.id,
+            property_type: field,
+        }, mapId ? parseInt(mapId, 10) : null);
     };
 
     return (
@@ -79,7 +120,8 @@ export const NodeStyleEditor = () => {
                             value={width}
                             disabled={isDisabled}
                             onChange={(val) => handleDimensionUpdate('width', val)}
-                            onAuto={() => handleDimensionUpdate('width', null)}
+                            onBlur={() => handleDimensionBlur('width')}
+                            onAuto={() => handleDimensionAuto('width')}
                         />
                         <DimensionControl
                             label="H:"
@@ -87,7 +129,8 @@ export const NodeStyleEditor = () => {
                             value={height}
                             disabled={isDisabled}
                             onChange={(val) => handleDimensionUpdate('height', val)}
-                            onAuto={() => handleDimensionUpdate('height', null)}
+                            onBlur={() => handleDimensionBlur('height')}
+                            onAuto={() => handleDimensionAuto('height')}
                         />
 
                     </Flex>
