@@ -1,11 +1,14 @@
 import { useCallback, useRef } from 'react';
 
+import { useSearchParams } from 'react-router-dom';
+
 import { buildOperationDetails } from '../../OperateAlertList/utils/buildOperationDetails';
+import { useUserActionTracker } from '../../userAction/hooks';
 
 import { useFeedbackRequest } from './useFeedbackRequest';
 import { useMapAlerts } from './useMapAlerts';
 
-const MAX_COUNT = 2;
+const MAX_COUNT = 5;
 const DELAY_MS = 60000;
 
 /**
@@ -23,11 +26,14 @@ const DELAY_MS = 60000;
 export const useFeedbackQueue = (mapId, handleAutoSave) => {
     const queueRef = useRef([]);
     const timerRef = useRef(null);
+    const [searchParams] = useSearchParams();
+    const mapIdFromParams = searchParams.get('mapId');
+    const { trackAction } = useUserActionTracker();
 
     const { alerts, setAlerts, addAlert, updateAlert } = useMapAlerts();
     const { sendFeedback } = useFeedbackRequest(mapId, handleAutoSave);
 
-    const processBatch = useCallback(async () => {
+    const processBatch = useCallback(async (reasoning) => {
         if (queueRef.current.length === 0) return;
 
         const metadata = [...queueRef.current];
@@ -77,6 +83,18 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
                 status: 'success',
                 showAsk: true,
             });
+
+            // 記錄 AI 主動介入顯示
+            trackAction(
+                'ai_feedback_shown',
+                {
+                    operation_count: operationCount,
+                    reasoning,
+                },
+                mapIdFromParams ? parseInt(mapIdFromParams, 10) : null,
+                null,
+                result?.id || null,
+            );
         }
         catch (err) {
             updateAlert(alertId, {
@@ -86,24 +104,24 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
             });
             console.error('Failed to generate feedback:', err);
         }
-    }, [addAlert, updateAlert, sendFeedback]);
+    }, [addAlert, updateAlert, sendFeedback, mapIdFromParams, trackAction]);
 
     const addOperation = useCallback(
         (operation) => {
             queueRef.current.push(operation);
 
-            // 條件 1: 數量超過限制，立即發送
+            // 條件 1: 數量超過限制，立即發送（累積操作觸發）
             if (queueRef.current.length >= MAX_COUNT) {
-                processBatch();
+                processBatch('accumulated_operations');
                 return;
             }
 
-            // 條件 2: 重置計時器（Debounce）
+            // 條件 2: 重置計時器（Debounce）（閒置超時觸發）
             if (timerRef.current) {
                 clearTimeout(timerRef.current);
             }
             timerRef.current = setTimeout(() => {
-                processBatch();
+                processBatch('idle_timeout');
             }, DELAY_MS);
         },
         [processBatch],
