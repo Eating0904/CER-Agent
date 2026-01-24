@@ -5,6 +5,7 @@ import { App, Button } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
 import { BUTTON_COLORS, NEUTRAL_COLORS } from '../../constants/colors';
+import { useUserActionTracker } from '../userAction/hooks';
 
 import { useMapContext } from './hooks';
 import { useUpdateMapMutation } from './utils';
@@ -16,6 +17,7 @@ export const MapSaveButton = () => {
     const { nodes, edges, selectNode, selectEdge } = useMapContext();
     const [updateMap, { isLoading }] = useUpdateMapMutation();
     const [isSaveHovered, setIsSaveHovered] = useState(false);
+    const { trackAction } = useUserActionTracker();
 
     const handleSave = async () => {
         selectNode(null);
@@ -27,6 +29,12 @@ export const MapSaveButton = () => {
                 edges,
             }).unwrap();
             message.success('map已成功保存');
+
+            // 記錄手動儲存心智圖
+            trackAction('manual_save_map', {
+                nodes_count: nodes.length,
+                edges_count: edges.length,
+            }, mapId ? parseInt(mapId, 10) : null);
         }
         catch (error) {
             message.error('保存失敗，請稍後再試', error);
