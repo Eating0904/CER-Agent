@@ -9,7 +9,7 @@ import { useMapContext } from '../../hooks';
 
 export const HandleEditor = () => {
     const { modal } = App.useApp();
-    const { selectedNode, updateNodeStyle, edges, setEdges } = useMapContext();
+    const { selectedNode, updateNodeStyle, edges, deleteEdge } = useMapContext();
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
     const { trackAction } = useUserActionTracker();
@@ -58,9 +58,6 @@ export const HandleEditor = () => {
 
     // 更新連接點狀態
     const updateHandleState = (handleId) => {
-        const isCurrentlyChecked = handles[handleId];
-        const operation = isCurrentlyChecked ? 'uncheck' : 'check';
-
         const newHandles = {
             ...handles,
             [handleId]: !handles[handleId],
@@ -76,13 +73,6 @@ export const HandleEditor = () => {
         updateNodeStyle(selectedNode.id, {
             showDots,
         });
-
-        // 記錄調整 handle 行為
-        trackAction('adjust_handle', {
-            node_id: selectedNode.id,
-            handle_id: handleId,
-            operation,
-        }, mapId ? parseInt(mapId, 10) : null);
     };
 
     // 處理 checkbox 狀態改變
@@ -91,6 +81,7 @@ export const HandleEditor = () => {
 
         const isCurrentlyChecked = handles[handleId];
         const willBeUnchecked = isCurrentlyChecked;
+        const operation = willBeUnchecked ? 'uncheck' : 'check';
 
         // 如果要取消勾選，檢查是否有 edge 連接
         if (willBeUnchecked) {
@@ -104,14 +95,23 @@ export const HandleEditor = () => {
                     okType: 'primary',
                     cancelText: 'Cancel',
                     onOk: () => {
-                        // 使用者確認，刪除 edges 並更新連接點
-                        const edgeIdsToRemove = connectedEdges.map((edge) => edge.id);
-                        const updatedEdges = edges.filter(
-                            (edge) => !edgeIdsToRemove.includes(edge.id),
+                        // 1. 先記錄 adjust_handle
+                        trackAction(
+                            'adjust_handle',
+                            {
+                                node_id: selectedNode.id,
+                                handle_id: handleId,
+                                operation,
+                            },
+                            mapId ? parseInt(mapId, 10) : null,
                         );
-                        setEdges(updatedEdges);
 
-                        // 更新連接點狀態
+                        // 2. 調用 deleteEdge 刪除並記錄
+                        connectedEdges.forEach((edge) => {
+                            deleteEdge(edge.id, 'handle_unchecked');
+                        });
+
+                        // 3. 更新連接點狀態
                         updateHandleState(handleId);
                     },
                 });
@@ -119,7 +119,16 @@ export const HandleEditor = () => {
             }
         }
 
-        // 沒有連接的 edge，直接更新
+        // 沒有連接的 edge，直接更新並記錄
+        trackAction(
+            'adjust_handle',
+            {
+                node_id: selectedNode.id,
+                handle_id: handleId,
+                operation,
+            },
+            mapId ? parseInt(mapId, 10) : null,
+        );
         updateHandleState(handleId);
     };
 
