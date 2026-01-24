@@ -18,7 +18,7 @@ export const useEssayAutoSave = (mapId, essayContent) => {
 
     const handleAutoSave = useCallback(async () => {
         if (!mapId) {
-            console.warn('Essay AutoSave: mapId is required');
+            console.error('Essay AutoSave: mapId is required');
             return;
         }
 

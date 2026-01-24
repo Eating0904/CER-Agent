@@ -53,6 +53,7 @@ export default [
             indent: ['error', 4, { SwitchCase: 1 }],
             'linebreak-style': 'off',
             'no-param-reassign': ['error', { props: false }],
+            'no-console': ['warn', { allow: ['error'] }],
             'object-curly-newline': [
                 'error',
                 {
