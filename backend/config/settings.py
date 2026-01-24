@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'command',
     'apps.health',
     'apps.user',
+    'apps.lab',
     'apps.mindMapTemplate',
     'apps.map',
     'apps.chatbot',

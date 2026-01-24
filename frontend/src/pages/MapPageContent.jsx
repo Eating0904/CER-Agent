@@ -40,10 +40,12 @@ export const MapPageContent = ({
             <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <ToolBlock />
                 <Row style={{ flex: 1, minHeight: 0 }}>
-                    <Col span={3} style={{ height: '100%', overflowY: 'auto' }}>
-                        <OperateAlertList alerts={alerts} onAskClick={handleAskClick} />
-                    </Col>
-                    <Col span={21} style={{ height: '100%', position: 'relative' }}>
+                    {handleAskClick && (
+                        <Col span={3} style={{ height: '100%', overflowY: 'auto' }}>
+                            <OperateAlertList alerts={alerts} onAskClick={handleAskClick} />
+                        </Col>
+                    )}
+                    <Col span={handleAskClick ? 21 : 24} style={{ height: '100%', position: 'relative' }}>
                         <BaseMap />
                         <div
                             style={{

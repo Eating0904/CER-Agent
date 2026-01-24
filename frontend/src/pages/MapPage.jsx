@@ -25,6 +25,7 @@ import {
     useMapSendMessage,
 } from '../features/map/hooks';
 import { useGetMapQuery } from '../features/map/utils';
+import { useGetMeQuery } from '../features/user/userApi';
 import { useHeaderContext } from '../shared/HeaderContext';
 
 import { ArticlePageContent } from './ArticlePageContent';
@@ -37,6 +38,9 @@ export const MapPage = () => {
     const view = searchParams.get('view') || 'article';
 
     const { setHeaderContent } = useHeaderContext();
+
+    const { data: currentUser } = useGetMeQuery();
+    const isFeedbackEnabled = currentUser?.lab?.group === 'active';
 
     // 設定 Header 內容為 ViewSwitcher
     useEffect(() => {
@@ -55,7 +59,9 @@ export const MapPage = () => {
     const mapContext = useMapNodes(mapData);
 
     const handleMapAutoSave = useMapAutoSave(mapId, mapContext.nodes, mapContext.edges);
-    const { addOperation, alerts, setAlerts } = useFeedbackQueue(mapId, handleMapAutoSave);
+
+    const feedbackQueue = useFeedbackQueue(mapId, handleMapAutoSave);
+    const { addOperation, alerts, setAlerts } = feedbackQueue;
 
     const { isChatOpen, setIsChatOpen } = useChatState();
     const { feedbackData, setFeedbackData, handleCloseFeedback } = useFeedback();
@@ -92,8 +98,8 @@ export const MapPage = () => {
         [setFeedbackData, setIsChatOpen],
     );
 
-    // 事件監聽
-    useMapEventNotifier(addOperation);
+    // 事件監聽（只有在 Feedback 啟用時才監聽）
+    useMapEventNotifier(isFeedbackEnabled ? addOperation : null);
 
     // 清理 alerts（當 mapId 改變）
     useEffect(() => {
@@ -227,12 +233,12 @@ export const MapPage = () => {
             <MapPageContent
                 key={mapId}
                 mapContext={mapContext}
-                alerts={alerts}
-                handleAskClick={handleAskClick}
+                alerts={isFeedbackEnabled ? alerts : []}
+                handleAskClick={isFeedbackEnabled ? handleAskClick : null}
                 handleSendMessage={handleSendMessage}
                 setIsChatOpen={setIsChatOpen}
                 isChatOpen={isChatOpen}
-                feedbackData={feedbackData}
+                feedbackData={isFeedbackEnabled ? feedbackData : null}
                 handleCloseFeedback={handleCloseFeedback}
                 isSending={isMapSending}
             />

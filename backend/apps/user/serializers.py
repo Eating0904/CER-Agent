@@ -2,11 +2,15 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
+from apps.lab.serializers import LabSerializer
+
 
 class UserSerializer(serializers.ModelSerializer):
+    lab = LabSerializer(read_only=True)
+
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username', 'email', 'role']
+        fields = ['id', 'username', 'email', 'role', 'lab']
         read_only_fields = ['id']
 
 
