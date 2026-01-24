@@ -7,6 +7,8 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.user_action.models import UserAction
+
 from .serializers import RegisterSerializer, UserSerializer
 
 logger = logging.getLogger(__name__)
@@ -33,6 +35,10 @@ class UserViewSet(viewsets.GenericViewSet):
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
             logger.info(f'User registered: user_id={user.id}, username={user.username}')
+
+            # 記錄註冊行為
+            UserAction.objects.create(user=user, action_type='register', metadata={})
+
             return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
         except Exception as e:
             logger.exception(e)
