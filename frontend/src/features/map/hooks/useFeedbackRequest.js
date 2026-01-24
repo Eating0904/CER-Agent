@@ -16,7 +16,7 @@ export const useFeedbackRequest = (mapId, handleAutoSave) => {
 
     const sendFeedback = useCallback(
         async (metadata, alertTitle, operationDetails, edgesToSave = null) => {
-            await handleAutoSave(edgesToSave);
+            await handleAutoSave(edgesToSave, 'before_feedback');
 
             const response = await createFeedback({
                 mapId: parseInt(mapId, 10),

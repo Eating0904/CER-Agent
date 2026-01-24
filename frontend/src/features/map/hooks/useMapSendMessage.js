@@ -24,7 +24,7 @@ export const useMapSendMessage = (mapId, handleAutoSave) => {
             try {
                 setIsSending(true);
                 // 1. 自動儲存 map（總是執行）
-                await handleAutoSave();
+                await handleAutoSave(null, 'before_chat');
 
                 // 2. 發送訊息
                 await sendChatMessage({

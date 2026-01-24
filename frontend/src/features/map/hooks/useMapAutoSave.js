@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 import { App } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 
+import { useUserActionTracker } from '../../userAction/hooks';
 import { useUpdateMapMutation } from '../utils';
 
 /**
@@ -16,6 +18,9 @@ import { useUpdateMapMutation } from '../utils';
 export const useMapAutoSave = (mapId, nodes, edges) => {
     const { message } = App.useApp();
     const [updateMap] = useUpdateMapMutation();
+    const [searchParams] = useSearchParams();
+    const mapIdFromParams = searchParams.get('mapId');
+    const { trackAction } = useUserActionTracker();
     const nodesRef = useRef(nodes);
     const edgesRef = useRef(edges);
 
@@ -25,9 +30,10 @@ export const useMapAutoSave = (mapId, nodes, edges) => {
     }, [nodes, edges]);
 
     const handleAutoSave = useCallback(
-        async (overrideEdges = null) => {
+        async (overrideEdges = null, triggerReason = null) => {
             // overrideEdges: 用於處理 React 狀態異步更新的時序問題
             // 當連接節點時，事件可能在 edges 狀態更新前發送，需要手動傳入最新的 edges
+            // triggerReason: 觸發自動儲存的原因 (before_chat / before_feedback)
             const edgesToSave = overrideEdges || edgesRef.current;
 
             try {
@@ -37,13 +43,22 @@ export const useMapAutoSave = (mapId, nodes, edges) => {
                     edges: edgesToSave,
                 }).unwrap();
                 message.info('map has been auto-saved');
+
+                // 記錄自動儲存行為
+                if (triggerReason) {
+                    trackAction('auto_save_map', {
+                        nodes_count: nodesRef.current.length,
+                        edges_count: edgesToSave.length,
+                        trigger_reason: triggerReason,
+                    }, mapIdFromParams ? parseInt(mapIdFromParams, 10) : null);
+                }
             }
             catch (err) {
                 message.warning('Auto-save failed');
                 console.error('自動儲存錯誤:', err);
             }
         },
-        [mapId, updateMap, message],
+        [mapId, updateMap, message, mapIdFromParams, trackAction],
     );
 
     return handleAutoSave;
