@@ -40,21 +40,19 @@ export const InitiativeFeedback = ({ message, description, onClose }) => {
             </div>
             <Divider style={{ margin: '4px 0' }} />
             <div style={{ fontWeight: 'bold' }}>
-                [Operate]
+                Your Operations:
             </div>
             <div style={{ color: '#333', marginBottom: '8px' }}>
                 {message}
             </div>
             <div style={{ fontWeight: 'bold' }}>
-                [Feedback]
+                Feedback from Assistant:
             </div>
             <div style={{ color: '#333', marginBottom: '8px' }}>
                 {description}
             </div>
-            <div style={{ fontWeight: 'bold' }}>
-                [Question]
-            </div>
-            <div style={{ width: '100%', color: '#666', fontStyle: 'italic' }}>
+            <Divider style={{ margin: '4px 0' }} />
+            <div style={{ fontStyle: 'italic', color: '#ff0000' }}>
                 Please type in your question about this feedback below.
             </div>
         </div>

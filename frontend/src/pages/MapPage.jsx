@@ -69,7 +69,7 @@ export const MapPage = () => {
             if (!text.trim()) return;
 
             const messageToSend = feedbackData
-                ? `[Operate]\\n${feedbackData.message}\\n[Feedback]\\n${feedbackData.description}\\n[Question]\\n${text}`
+                ? `Student Operations:\n${feedbackData.message}\nFeedback from Assistant:\n${feedbackData.description}\nStudent Question:\n${text}`
                 : text;
 
             // 立即關閉 feedback
