@@ -128,7 +128,7 @@ const MobileToolbarContent = ({
   </>
 )
 
-export function SimpleEditor({ content, onChange, editorRef }) {
+export function SimpleEditor({ content, onChange, editorRef, onFocus, onBlur }) {
   const isMobile = useIsBreakpoint()
   const { height } = useWindowSize()
   const [mobileView, setMobileView] = useState("main")
@@ -172,6 +172,12 @@ export function SimpleEditor({ content, onChange, editorRef }) {
     content,
     onUpdate: ({ editor: e }) => {
       onChange?.(e.getHTML())
+    },
+    onFocus: ({ editor: e, event }) => {
+      onFocus?.({ editor: e, event })
+    },
+    onBlur: ({ editor: e, event }) => {
+      onBlur?.({ editor: e, event })
     },
   })
 
