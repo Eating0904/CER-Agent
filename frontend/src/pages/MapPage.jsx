@@ -222,6 +222,7 @@ export const MapPage = () => {
                     isSending={isEssaySending}
                     editorRef={editorRef}
                     mapContext={mapContext}
+                    essayId={essayData?.essay?.id}
                 />
             </div>
         );

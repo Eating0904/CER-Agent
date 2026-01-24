@@ -5,6 +5,7 @@ import { App, Button, Tooltip } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
 import { BUTTON_COLORS, NEUTRAL_COLORS } from '../../constants/colors';
+import { useUserActionTracker } from '../userAction/hooks';
 
 import { useUpdateEssayMutation } from './essayApi';
 
@@ -13,12 +14,14 @@ export const EssaySaveButton = ({
     disabled = false,
     onSendMessage,
     setIsChatOpen,
+    essayId = null,
 }) => {
     const { message } = App.useApp();
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
     const [updateEssay, { isLoading }] = useUpdateEssayMutation();
     const [isSaveHovered, setIsSaveHovered] = useState(false);
+    const { trackAction } = useUserActionTracker();
 
     const handleSave = async () => {
         if (disabled) return;
@@ -29,6 +32,14 @@ export const EssaySaveButton = ({
                 content: essayContent,
             }).unwrap();
             message.success('Essay saved successfully');
+
+            // 記錄點擊 Save 按鈕觸發評分
+            trackAction(
+                'click_save_essay_with_scoring',
+                {},
+                mapId ? parseInt(mapId, 10) : null,
+                essayId ? parseInt(essayId, 10) : null,
+            );
 
             // 2. 開啟聊天室
             setIsChatOpen(true);

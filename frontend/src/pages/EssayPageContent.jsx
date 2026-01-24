@@ -21,6 +21,7 @@ export const EssayPageContent = ({
     editorRef,
     mapContext,
     isEssayValid = true,
+    essayId = null,
 }) => (
     <>
         <div style={{ height: '100%', display: 'flex' }}>
@@ -65,6 +66,7 @@ export const EssayPageContent = ({
                             disabled={!isEssayValid}
                             onSendMessage={handleSendMessage}
                             setIsChatOpen={setIsChatOpen}
+                            essayId={essayId}
                         />
                     </div>
                 </div>
