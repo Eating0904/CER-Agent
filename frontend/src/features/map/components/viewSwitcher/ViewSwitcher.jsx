@@ -1,12 +1,21 @@
 import { Button, Space } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
+import { useUserActionTracker } from '../../../userAction/hooks';
+
 export const ViewSwitcher = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const currentView = searchParams.get('view') || 'article';
     const mapId = searchParams.get('mapId');
+    const { trackAction } = useUserActionTracker();
 
     const handleViewChange = (view) => {
+        // 記錄視圖切換行為
+        trackAction('switch_view', {
+            from_view: currentView,
+            to_view: view,
+        }, mapId ? parseInt(mapId, 10) : null);
+
         const newParams = new URLSearchParams();
         newParams.set('mapId', mapId);
         newParams.set('view', view);
