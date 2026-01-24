@@ -52,6 +52,38 @@ export const MapPage = () => {
         return () => setHeaderContent(null);
     }, [setHeaderContent]);
 
+    // 頁面瀏覽追蹤
+    useEffect(() => {
+        const startTime = Date.now();
+
+        // 記錄頁面停留開始
+        trackAction('page_view_start', { view }, mapId ? parseInt(mapId, 10) : null);
+
+        // 頁面離開時記錄停留時間
+        const handleBeforeUnload = () => {
+            const duration = Math.floor((Date.now() - startTime) / 1000);
+            // 使用 sendBeacon 確保在頁面關閉前發送
+            navigator.sendBeacon(
+                '/api/user-action/',
+                JSON.stringify({
+                    action_type: 'page_view_end',
+                    map_id: mapId ? parseInt(mapId, 10) : null,
+                    metadata: { view, duration },
+                }),
+            );
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            // 組件卸載時記錄
+            const duration = Math.floor((Date.now() - startTime) / 1000);
+            trackAction('page_view_end', { view, duration }, mapId ? parseInt(mapId, 10) : null);
+
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [view, mapId, trackAction]);
+
     // ==================== MindMap 相關邏輯 ====================
     const {
         data: mapData,
