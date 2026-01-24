@@ -162,14 +162,34 @@ export const Chat = ({
                         }
                     >
                         {isLoading && (
-                            <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-                                Loading messages...
-                            </div>
+                            <Message
+                                model={{
+                                    message: '',
+                                    sender: 'System',
+                                    direction: 'incoming',
+                                }}
+                            >
+                                <Message.CustomContent>
+                                    <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                                        Loading messages...
+                                    </div>
+                                </Message.CustomContent>
+                            </Message>
                         )}
                         {error && (
-                            <div style={{ textAlign: 'center', padding: '20px', color: '#ff4d4f' }}>
-                                Failed to load chat history
-                            </div>
+                            <Message
+                                model={{
+                                    message: '',
+                                    sender: 'System',
+                                    direction: 'incoming',
+                                }}
+                            >
+                                <Message.CustomContent>
+                                    <div style={{ textAlign: 'center', padding: '20px', color: '#ff4d4f' }}>
+                                        Failed to load chat history
+                                    </div>
+                                </Message.CustomContent>
+                            </Message>
                         )}
                         {!isLoading && !error && messages.map((msg) => {
                             const isScoringMessage = msg.messageType === 'cer_scoring' || msg.messageType === 'essay_scoring';
