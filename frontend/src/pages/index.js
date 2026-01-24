@@ -1,3 +1,4 @@
+export * from './ArticlePageContent';
 export * from './LoginPage';
 export * from './MapPage';
 export * from './MindMapTemplateListPage';

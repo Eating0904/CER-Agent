@@ -27,13 +27,14 @@ import {
 import { useGetMapQuery } from '../features/map/utils';
 import { useHeaderContext } from '../shared/HeaderContext';
 
+import { ArticlePageContent } from './ArticlePageContent';
 import { EssayPageContent } from './EssayPageContent';
 import { MapPageContent } from './MapPageContent';
 
 export const MapPage = () => {
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
-    const view = searchParams.get('view') || 'mindmap';
+    const view = searchParams.get('view') || 'article';
 
     const { setHeaderContent } = useHeaderContext();
 
@@ -153,8 +154,24 @@ export const MapPage = () => {
     }
 
     // 根據 view 決定使用哪個 loading 和 error
-    const isLoading = view === 'essay' ? (isEssayLoading || isMapLoading) : isMapLoading;
-    const error = view === 'essay' ? (essayError || mapError) : mapError;
+    let isLoading;
+    let error;
+
+    if (view === 'article') {
+        // Article 視圖只需要 mapData
+        isLoading = isMapLoading;
+        error = mapError;
+    }
+    else if (view === 'essay') {
+        // Essay 視圖需要 mapData 和 essayData
+        isLoading = isEssayLoading || isMapLoading;
+        error = essayError || mapError;
+    }
+    else {
+        // MindMap 視圖只需要 mapData
+        isLoading = isMapLoading;
+        error = mapError;
+    }
 
     if (isLoading) {
         return (
@@ -176,6 +193,15 @@ export const MapPage = () => {
     }
 
     // 根據 view 參數決定顯示的內容
+    if (view === 'article') {
+        const articleContent = mapData?.template?.article_content || '';
+        return (
+            <div style={{ height: '100%', width: '100%' }}>
+                <ArticlePageContent articleContent={articleContent} />
+            </div>
+        );
+    }
+
     if (view === 'essay') {
         return (
             <div style={{ height: '100%', width: '100%' }}>

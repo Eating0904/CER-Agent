@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 
 export const ViewSwitcher = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const currentView = searchParams.get('view') || 'mindmap';
+    const currentView = searchParams.get('view') || 'article';
     const mapId = searchParams.get('mapId');
 
     const handleViewChange = (view) => {
@@ -15,6 +15,12 @@ export const ViewSwitcher = () => {
 
     return (
         <Space.Compact>
+            <Button
+                type={currentView === 'article' ? 'primary' : 'default'}
+                onClick={() => handleViewChange('article')}
+            >
+                Article
+            </Button>
             <Button
                 type={currentView === 'mindmap' ? 'primary' : 'default'}
                 onClick={() => handleViewChange('mindmap')}

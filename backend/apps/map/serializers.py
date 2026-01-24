@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from apps.mindMapTemplate.serializers import MindMapTemplateSerializer
+
 from .models import Map
 
 
@@ -14,6 +16,8 @@ class MapListSerializer(serializers.ModelSerializer):
 
 class MapSerializer(serializers.ModelSerializer):
     """完整序列化器，用於詳細頁面"""
+
+    template = MindMapTemplateSerializer(read_only=True)
 
     class Meta:
         model = Map
