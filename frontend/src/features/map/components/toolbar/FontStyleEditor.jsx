@@ -72,8 +72,12 @@ export const FontStyleEditor = () => {
                 color: colorValue,
             },
         });
+    };
 
-        // 記錄調整字體樣式
+    const handleColorBlur = () => {
+        if (!selectedNode) return;
+
+        // 只在 blur 時記錄
         trackAction('adjust_font_style', {
             node_id: selectedNode.id,
             property_type: 'color',
@@ -195,7 +199,7 @@ export const FontStyleEditor = () => {
                             color={color}
                             disabled={isDisabled}
                             onChange={handleColorUpdate}
-                            onBlur={handleColorUpdate}
+                            onBlur={handleColorBlur}
                         />
                     </Flex>
                 </Col>

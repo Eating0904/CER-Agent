@@ -102,7 +102,12 @@ export const NodeStyleEditor = () => {
                 [field]: colorValue,
             },
         });
+    };
 
+    const handleColorBlur = (field) => {
+        if (!selectedNode) return;
+
+        // 只在 blur 時記錄
         trackAction('adjust_node_style', {
             node_id: selectedNode.id,
             property_type: field,
@@ -143,7 +148,7 @@ export const NodeStyleEditor = () => {
                             color={backgroundColor}
                             disabled={isDisabled}
                             onChange={(val) => handleColorUpdate('backgroundColor', val)}
-                            onBlur={(val) => handleColorUpdate('backgroundColor', val, true)}
+                            onBlur={() => handleColorBlur('backgroundColor')}
                         />
                         <ColorControl
                             icon={borderColorIcon}
@@ -151,7 +156,7 @@ export const NodeStyleEditor = () => {
                             color={borderColor}
                             disabled={isDisabled}
                             onChange={(val) => handleColorUpdate('borderColor', val)}
-                            onBlur={(val) => handleColorUpdate('borderColor', val, true)}
+                            onBlur={() => handleColorBlur('borderColor')}
                         />
                     </Flex>
                 </Col>
