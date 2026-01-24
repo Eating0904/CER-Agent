@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from apps.essay.models import Essay
-from apps.feedback.models import NodeFeedback
 from apps.map.models import Map
 
 from .models import UserAction
@@ -16,12 +15,6 @@ class UserActionSerializer(serializers.ModelSerializer):
     essay_id = serializers.PrimaryKeyRelatedField(
         queryset=Essay.objects.all(), source='essay', required=False, allow_null=True
     )
-    feedback_id = serializers.PrimaryKeyRelatedField(
-        queryset=NodeFeedback.objects.all(),
-        source='feedback',
-        required=False,
-        allow_null=True,
-    )
 
     class Meta:
         model = UserAction
@@ -32,7 +25,6 @@ class UserActionSerializer(serializers.ModelSerializer):
             'timestamp',
             'map_id',
             'essay_id',
-            'feedback_id',
             'metadata',
         ]
         read_only_fields = ['id', 'user', 'timestamp']

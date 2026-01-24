@@ -133,10 +133,8 @@ export const MapPage = () => {
             if (feedbackId) {
                 trackAction(
                     'click_feedback_ask',
-                    {},
+                    { feedback_id: feedbackId },
                     mapId ? parseInt(mapId, 10) : null,
-                    null,
-                    feedbackId,
                 );
             }
         },
