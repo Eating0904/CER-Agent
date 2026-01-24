@@ -158,9 +158,9 @@ export const MapPage = () => {
 
     if (isLoading) {
         return (
-            <div style={{ textAlign: 'center', padding: '50px' }}>
-                <Spin size="large" tip="載入中..." />
-            </div>
+            <Spin size="large" tip="Loading...">
+                <div style={{ textAlign: 'center', padding: '50px' }} />
+            </Spin>
         );
     }
 

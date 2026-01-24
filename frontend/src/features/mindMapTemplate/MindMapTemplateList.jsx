@@ -45,9 +45,9 @@ export const MindMapTemplateList = () => {
 
     if (isLoading || isCreating) {
         return (
-            <div style={{ textAlign: 'center', padding: '50px' }}>
-                <Spin size="large" tip={isCreating ? '建立地圖中...' : '載入中...'} />
-            </div>
+            <Spin size="large" tip={isCreating ? 'Creating Map...' : 'Loading...'}>
+                <div style={{ textAlign: 'center', padding: '50px' }} />
+            </Spin>
         );
     }
 
