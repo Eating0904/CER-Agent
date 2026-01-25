@@ -1,7 +1,10 @@
 import logging
 
 from django.db import OperationalError, connections
+from langchain_core.messages import HumanMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langfuse import Langfuse
+from langfuse.langchain import CallbackHandler
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -48,3 +51,44 @@ class HealthViewSet(ViewSet):
             return Response({'status': 'ok', 'dependencies': checks}, status=200)
         else:
             return Response({'status': 'error', 'dependencies': checks}, status=503)
+
+    @action(detail=False, methods=['get'])
+    def llm(self, request):
+        # Check LLM
+        llm_status = 'ok'
+        trace_id = None
+        llm_response = None
+
+        try:
+            langfuse = Langfuse()
+            llm = ChatGoogleGenerativeAI(model='gemini-2.5-pro', temperature=0)
+
+            with langfuse.start_as_current_observation(
+                name='health_check', as_type='trace', metadata={'type': 'health'}
+            ) as trace:
+                langfuse_handler = CallbackHandler()
+                message = HumanMessage(content='Health Check. Reply with only "OK".')
+                trace.update(input='Health Check. Reply with only "OK".')
+                llm_response = llm.invoke([message], config={'callbacks': [langfuse_handler]})
+                trace.update(output=llm_response.content)
+                trace_id = trace.trace_id
+
+            if not trace_id:
+                logger.error('LLM health check: Failed to get trace_id')
+                llm_status = 'error'
+
+        except Exception as e:
+            logger.error(f'LLM health check error: {e}')
+            llm_status = 'error'
+
+        if llm_status == 'ok':
+            return Response(
+                {
+                    'status': 'ok',
+                    'trace_id': trace_id,
+                    'response': llm_response.content,
+                },
+                status=200,
+            )
+        else:
+            return Response({'status': 'error'}, status=503)
