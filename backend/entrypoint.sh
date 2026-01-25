@@ -9,6 +9,9 @@ fi
 # migrate
 python manage.py migrate --noinput
 
+# collectstatic
+python manage.py collectstatic --noinput
+
 # run
 gunicorn --access-logfile - \
     --workers 4 \
