@@ -207,21 +207,39 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file_main': {
-            'level': 'INFO',
+        'default': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': LOG_DIR / 'django_main.log',
-            'maxBytes': 1024 * 1024 * 10,
-            'backupCount': 10,
+            'filename': LOG_DIR / 'default.log',
+            'maxBytes': 1024 * 1024 * 3,
+            'backupCount': 300,
             'formatter': 'verbose',
             'encoding': 'utf-8',
         },
         'file_error': {
             'level': 'ERROR',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': LOG_DIR / 'django_error.log',
-            'maxBytes': 1024 * 1024 * 10,
-            'backupCount': 10,
+            'filename': LOG_DIR / 'file_error.log',
+            'maxBytes': 1024 * 1024 * 3,
+            'backupCount': 300,
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+        'db': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIR / 'db.log',
+            'maxBytes': 1024 * 1024 * 3,
+            'backupCount': 300,
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+        'django': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIR / 'django.log',
+            'maxBytes': 1024 * 1024 * 3,
+            'backupCount': 300,
             'formatter': 'verbose',
             'encoding': 'utf-8',
         },
@@ -233,22 +251,22 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['file_main', 'file_error', 'console'],
-            'level': 'INFO',
+            'handlers': ['django', 'file_error', 'console'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': False,
+        },
+        'django.db': {
+            'handlers': ['db'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+        },
+        'django.db.backends': {
+            'handlers': ['db', 'console', 'file_error'],
+            'level': 'ERROR',
             'propagate': False,
         },
         '': {
-            'handlers': ['file_main', 'file_error', 'console'],
-            'level': 'INFO',
-        },
-        'django.db': {
-            'handlers': ['file_main'],
-            'level': 'INFO',
-        },
-        'django.db.backends': {
-            'handlers': ['console', 'file_error'],
-            'level': 'ERROR',
-            'propagate': False,
+            'handlers': ['default', 'file_error', 'console'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
         },
     },
 }
