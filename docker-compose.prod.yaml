@@ -1,0 +1,11 @@
+services:
+  cloudflared:
+    container_name: ${CLOUDFLARED_CONTAINER_NAME?CLOUDFLARED_CONTAINER_NAME is required}
+    image: cloudflare/cloudflared:latest
+    restart: always
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN?CLOUDFLARE_TUNNEL_TOKEN is required}
+    command: tunnel run
+    networks:
+      - default
+      - langfuse_net

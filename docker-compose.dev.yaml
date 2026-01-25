@@ -1,0 +1,12 @@
+services:
+  frontend:
+    ports:
+      - ${FRONTEND_PORT?FRONTEND_PORT is required}:80
+
+  backend:
+    ports:
+      - ${BACKEND_PORT?BACKEND_PORT is required}:8000
+
+  postgres:
+    ports:
+      - ${POSTGRES_PORT?POSTGRES_PORT is required}:5432
