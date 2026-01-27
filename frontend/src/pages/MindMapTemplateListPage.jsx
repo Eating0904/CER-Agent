@@ -6,7 +6,7 @@ const { Title } = Typography;
 
 export const MindMapTemplateListPage = () => (
     <>
-        <Title level={2} style={{ margin: '10px' }}>Mind Map List</Title>
+        <Title level={2} style={{ margin: '10px' }}>Task List</Title>
         <Row>
             <Col span={3} />
             <Col span={18}>

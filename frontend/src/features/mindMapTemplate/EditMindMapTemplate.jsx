@@ -54,11 +54,11 @@ export const EditMindMapTemplate = ({
 
             if (isEdit && initialValues?.id) {
                 await updateTemplate({ id: initialValues.id, ...payload }).unwrap();
-                message.success('Mind map template updated successfully!');
+                message.success('Task updated successfully!');
             }
             else {
                 await createTemplate(payload).unwrap();
-                message.success('Mind map template created successfully!');
+                message.success('Task created successfully!');
             }
 
             form.resetFields();
@@ -70,8 +70,8 @@ export const EditMindMapTemplate = ({
             }
         }
         catch (error) {
-            message.error('Failed to save mind map template.');
-            console.error('Failed to save template:', error);
+            message.error('Failed to save task.');
+            console.error('Failed to save task:', error);
         }
     };
 
@@ -100,7 +100,7 @@ export const EditMindMapTemplate = ({
             )}
 
             <Modal
-                title={isEdit ? 'Edit Mind Map Template' : 'Add Mind Map Template'}
+                title={isEdit ? 'Edit Task' : 'Add Task'}
                 open={open}
                 onOk={handleOk}
                 onCancel={handleCancel}
@@ -116,12 +116,12 @@ export const EditMindMapTemplate = ({
                 >
                     <Form.Item
                         name="name"
-                        label="Mind Map Name"
+                        label="Task Name"
                         rules={[
-                            { required: true, message: 'Please enter the mind map name!' },
+                            { required: true, message: 'Please enter the task name!' },
                         ]}
                     >
-                        <Input placeholder="Please enter the mind map name..." />
+                        <Input placeholder="Please enter the task name..." />
                     </Form.Item>
 
                     <Form.Item

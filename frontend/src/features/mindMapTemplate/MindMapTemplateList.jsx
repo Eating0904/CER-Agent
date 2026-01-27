@@ -26,7 +26,7 @@ export const MindMapTemplateList = () => {
 
     useEffect(() => {
         if (error) {
-            console.error('Failed to load mind map templates:', error);
+            console.error('Failed to load tasks:', error);
         }
     }, [error]);
 
@@ -42,18 +42,18 @@ export const MindMapTemplateList = () => {
                 map_name: result.name,
             }, result.id);
 
-            message.success('Mind map created successfully');
+            message.success('Task created successfully');
             navigate(`/map?mapId=${result.id}`);
         }
         catch (err) {
             message.error('Operation failed');
-            console.error('Failed to create mind map:', err);
+            console.error('Failed to create task:', err);
         }
     };
 
     if (isLoading || isCreating) {
         return (
-            <Spin size="large" tip={isCreating ? 'Creating Map...' : 'Loading...'}>
+            <Spin size="large" tip={isCreating ? 'Creating Task...' : 'Loading...'}>
                 <div style={{ textAlign: 'center', padding: '50px' }} />
             </Spin>
         );
@@ -63,7 +63,7 @@ export const MindMapTemplateList = () => {
         return (
             <Alert
                 message="Error"
-                description="Failed to load mind map templates. Please try again later."
+                description="Failed to load tasks. Please try again later."
                 type="error"
                 showIcon
             />

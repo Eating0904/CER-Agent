@@ -43,7 +43,7 @@ export const MindMapTemplateManagement = () => {
 
     useEffect(() => {
         if (error) {
-            console.error('Failed to load my mind map templates:', error);
+            console.error('Failed to load my tasks:', error);
         }
     }, [error]);
 
@@ -62,7 +62,7 @@ export const MindMapTemplateManagement = () => {
 
     const handleDelete = (templateId, templateName) => {
         Modal.confirm({
-            title: 'Delete Mind Map Template',
+            title: 'Delete Task',
             content: `Are you sure you want to delete "${templateName}"?`,
             okText: 'Delete',
             okType: 'danger',
@@ -70,11 +70,11 @@ export const MindMapTemplateManagement = () => {
             onOk: async () => {
                 try {
                     await deleteTemplate(templateId).unwrap();
-                    message.success('Mind map template deleted successfully!');
+                    message.success('Task deleted successfully!');
                 }
                 catch (err) {
-                    message.error('Failed to delete mind map template.');
-                    console.error('Failed to delete template:', err);
+                    message.error('Failed to delete task.');
+                    console.error('Failed to delete task:', err);
                 }
             },
         });
@@ -107,7 +107,7 @@ export const MindMapTemplateManagement = () => {
         return (
             <Alert
                 message="Error"
-                description="Failed to load mind map templates. Please try again later."
+                description="Failed to load tasks. Please try again later."
                 type="error"
                 showIcon
             />

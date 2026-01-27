@@ -38,7 +38,7 @@ export const ManageAssistants = ({ open, onClose, template }) => {
 
     useEffect(() => {
         if (error) {
-            console.error('Failed to load template assistants:', error);
+            console.error('Failed to load task assistants:', error);
         }
     }, [error]);
 
