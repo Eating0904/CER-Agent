@@ -28,7 +28,7 @@ export const MapSaveButton = () => {
                 nodes,
                 edges,
             }).unwrap();
-            message.success('map已成功保存');
+            message.success('Map saved successfully');
 
             // 記錄手動儲存心智圖
             trackAction('manual_save_map', {
@@ -37,7 +37,7 @@ export const MapSaveButton = () => {
             }, mapId ? parseInt(mapId, 10) : null);
         }
         catch (error) {
-            message.error('保存失敗，請稍後再試', error);
+            message.error('Save failed, please try again later', error);
         }
         finally {
             // pass

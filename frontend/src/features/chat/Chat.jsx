@@ -99,9 +99,10 @@ export const Chat = ({
             await onSendMessage(textToSend);
         }
         catch (err) {
-            console.error('發送失敗:', err);
+            console.error('Failed to send:', err);
             // 如果發送失敗，將內容放回輸入框
             setInputValue(inputValue);
+            throw err;
         }
     };
 

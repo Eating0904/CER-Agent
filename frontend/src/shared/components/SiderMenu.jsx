@@ -50,8 +50,8 @@ export const SiderMenu = () => {
     if (error) {
         return (
             <Alert
-                message="載入失敗"
-                description="無法載入地圖列表"
+                message="Failed to load"
+                description="Unable to load map list"
                 type="error"
                 showIcon
                 style={{ margin: '20px' }}

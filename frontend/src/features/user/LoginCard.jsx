@@ -36,7 +36,7 @@ export const LoginCard = () => {
             navigate('/');
         }
         catch {
-            const errorMsg = '帳號或密碼錯誤';
+            const errorMsg = 'Invalid username or password';
             setErrorMessage(errorMsg);
         }
     };
@@ -47,7 +47,7 @@ export const LoginCard = () => {
                 level={2}
                 style={{ textAlign: 'center', marginBottom: 24 }}
             >
-                登入
+                Login
             </Title>
 
             {errorMessage && (
@@ -69,21 +69,21 @@ export const LoginCard = () => {
             >
                 <Form.Item
                     name="username"
-                    rules={[{ required: true, message: '請輸入帳號!' }]}
+                    rules={[{ required: true, message: 'Please enter your username!' }]}
                 >
                     <Input
                         prefix={<UserOutlined />}
-                        placeholder="帳號"
+                        placeholder="Username"
                     />
                 </Form.Item>
 
                 <Form.Item
                     name="password"
-                    rules={[{ required: true, message: '請輸入密碼' }]}
+                    rules={[{ required: true, message: 'Please enter your password!' }]}
                 >
                     <Input.Password
                         prefix={<LockOutlined />}
-                        placeholder="密碼"
+                        placeholder="Password"
                     />
                 </Form.Item>
 
@@ -94,14 +94,14 @@ export const LoginCard = () => {
                         loading={isLoading}
                         style={{ width: '100%' }}
                     >
-                        登入
+                        Login
                     </Button>
                 </Form.Item>
             </Form>
 
             <div style={{ textAlign: 'center' }}>
                 <Text>
-                    沒有帳號？<Link to="/register">註冊</Link>
+                    No Account？<Link to="/register">Register</Link>
                 </Text>
             </div>
         </CardTemplate>

@@ -194,8 +194,8 @@ export const MapPage = () => {
     if (!mapId) {
         return (
             <Alert
-                message="錯誤"
-                description="未找到地圖 ID"
+                message="Error"
+                description="Map ID not found"
                 type="error"
                 showIcon
             />
@@ -233,8 +233,8 @@ export const MapPage = () => {
     if (error) {
         return (
             <Alert
-                message="錯誤"
-                description="載入失敗，請稍後再試"
+                message="Error"
+                description="Failed to load, please try again later"
                 type="error"
                 showIcon
             />

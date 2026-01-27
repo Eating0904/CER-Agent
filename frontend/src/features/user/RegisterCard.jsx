@@ -64,7 +64,7 @@ export const RegisterCard = () => {
                 level={2}
                 style={{ textAlign: 'center', marginBottom: 24 }}
             >
-                註冊帳號
+                Register Account
             </Title>
 
             {errorMessage && (
@@ -86,37 +86,37 @@ export const RegisterCard = () => {
             >
                 <Form.Item
                     name="username"
-                    rules={[{ required: true, message: '請輸入帳號!' }]}
+                    rules={[{ required: true, message: 'Please enter your username!' }]}
                 >
                     <Input
                         prefix={<UserOutlined />}
-                        placeholder="帳號"
+                        placeholder="Username"
                     />
                 </Form.Item>
 
                 <Form.Item
                     name="email"
                     rules={[
-                        { required: true, message: '請輸入信箱!' },
-                        { type: 'email', message: '請輸入有效的信箱!' },
+                        { required: true, message: 'Please enter your email!' },
+                        { type: 'email', message: 'Please enter a valid email!' },
                     ]}
                 >
                     <Input
                         prefix={<MailOutlined />}
-                        placeholder="信箱"
+                        placeholder="Email"
                     />
                 </Form.Item>
 
                 <Form.Item
                     name="password"
                     rules={[
-                        { required: true, message: '請輸入密碼!' },
-                        { min: 6, message: '密碼至少為6個字符!' },
+                        { required: true, message: 'Please enter your password!' },
+                        { min: 6, message: 'Password must be at least 6 characters!' },
                     ]}
                 >
                     <Input.Password
                         prefix={<LockOutlined />}
-                        placeholder="密碼"
+                        placeholder="Password"
                     />
                 </Form.Item>
 
@@ -127,14 +127,14 @@ export const RegisterCard = () => {
                         loading={isLoading}
                         style={{ width: '100%' }}
                     >
-                        註冊
+                        Register
                     </Button>
                 </Form.Item>
             </Form>
 
             <div style={{ textAlign: 'center' }}>
                 <Text>
-                    已有帳號？<Link to="/login">登入</Link>
+                    Already have an account?<Link to="/login">Login</Link>
                 </Text>
             </div>
         </CardTemplate>
