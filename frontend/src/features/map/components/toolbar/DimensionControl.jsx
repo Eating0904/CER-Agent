@@ -15,7 +15,7 @@ export const DimensionControl = ({
         {label && (
             <span
                 style={{
-                    width: '14px',
+                    width: '18px',
                     flexShrink: 0,
                     textAlign: 'right',
                     display: 'inline-block',
