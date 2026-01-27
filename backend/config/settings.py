@@ -252,7 +252,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['django', 'file_error', 'console'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
+            'level': 'INFO',
             'propagate': False,
         },
         'django.db': {
