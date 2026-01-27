@@ -33,7 +33,7 @@ export const useEssayAutoSave = (mapId, essayContent) => {
                 content: essayContent,
             }).unwrap();
 
-            message.info('essay has been auto-saved');
+            message.info('Essay has been auto-saved');
 
             // 記錄自動儲存行為
             trackAction(
@@ -48,7 +48,7 @@ export const useEssayAutoSave = (mapId, essayContent) => {
         }
         catch (error) {
             message.warning('Auto-save failed');
-            console.error('Essay 自動儲存失敗:', error);
+            console.error('Failed to auto-save essay:', error);
             throw error;
         }
     }, [mapId, essayContent, updateEssay, message, mapIdFromParams, trackAction]);

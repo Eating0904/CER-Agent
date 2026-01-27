@@ -51,7 +51,7 @@ export const SiderMenu = () => {
         return (
             <Alert
                 message="Failed to load"
-                description="Unable to load map list"
+                description="Unable to load mind map list"
                 type="error"
                 showIcon
                 style={{ margin: '20px' }}

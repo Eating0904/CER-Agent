@@ -28,7 +28,7 @@ export const MapSaveButton = () => {
                 nodes,
                 edges,
             }).unwrap();
-            message.success('Map saved successfully');
+            message.success('Mind map saved successfully');
 
             // 記錄手動儲存心智圖
             trackAction('manual_save_map', {

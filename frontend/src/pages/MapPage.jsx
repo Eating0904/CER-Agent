@@ -195,7 +195,7 @@ export const MapPage = () => {
         return (
             <Alert
                 message="Error"
-                description="Map ID not found"
+                description="Mind map ID not found"
                 type="error"
                 showIcon
             />

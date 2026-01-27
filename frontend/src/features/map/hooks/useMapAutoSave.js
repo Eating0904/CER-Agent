@@ -42,7 +42,7 @@ export const useMapAutoSave = (mapId, nodes, edges) => {
                     nodes: nodesRef.current,
                     edges: edgesToSave,
                 }).unwrap();
-                message.info('map has been auto-saved');
+                message.info('Mind map has been auto-saved');
 
                 // 記錄自動儲存行為
                 if (triggerReason) {
@@ -55,7 +55,7 @@ export const useMapAutoSave = (mapId, nodes, edges) => {
             }
             catch (err) {
                 message.warning('Auto-save failed');
-                console.error('自動儲存錯誤:', err);
+                console.error('Failed to auto-save mind map:', err);
             }
         },
         [mapId, updateMap, message, mapIdFromParams, trackAction],
