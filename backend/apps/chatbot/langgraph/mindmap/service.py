@@ -114,7 +114,7 @@ class LangGraphService:
             logger.exception(f'Mindmap processing failed: map_id={map_id}')
             return {
                 'success': False,
-                'message': '抱歉，系統遇到了一些問題，請稍後再試。',
+                'message': 'Sorry, an error occurred while processing your request.',
             }
 
     def get_conversation_history(self, map_id: int) -> Dict:

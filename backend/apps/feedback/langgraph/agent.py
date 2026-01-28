@@ -58,4 +58,4 @@ class FeedbackAgent:
 
         except Exception as e:
             logger.exception('Feedback agent failed')
-            return '抱歉，生成回饋時遇到問題'
+            return 'Sorry, I am unable to provide feedback at this time.'

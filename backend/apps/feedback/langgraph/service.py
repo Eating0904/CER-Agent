@@ -133,7 +133,7 @@ class FeedbackService:
 
         except Exception as e:
             logger.exception(f'Failed to generate feedback: map_id={map_id}')
-            return '抱歉，系統遇到了一些問題，請稍後再試。'
+            return 'Sorry, I am unable to provide feedback at this time.'
 
 
 # Singleton instance

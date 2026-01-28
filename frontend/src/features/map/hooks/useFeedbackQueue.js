@@ -44,7 +44,7 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
         }
 
         const operationCount = metadata.length;
-        const alertTitle = `完成了 ${operationCount} 個操作`;
+        const alertTitle = `Completed ${operationCount} actions.`;
         const operationDetails = buildOperationDetails(metadata);
 
         // 找出最後一個有 newEdges 的 connect 操作（最新的 edges）
@@ -98,7 +98,7 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
         }
         catch (err) {
             updateAlert(alertId, {
-                description: err.data?.error || err.message || '生成回饋失敗',
+                description: err.data?.error || err.message || 'failed to generate feedback',
                 status: 'error',
                 showAsk: false,
             });
