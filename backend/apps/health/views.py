@@ -61,7 +61,7 @@ class HealthViewSet(ViewSet):
 
         try:
             langfuse = Langfuse()
-            llm = ChatGoogleGenerativeAI(model='gemini-2.5-pro', temperature=0)
+            llm = ChatGoogleGenerativeAI(model='gemini-3-flash-preview', temperature=0)
 
             with langfuse.start_as_current_observation(
                 name='health_check', as_type='trace', metadata={'type': 'health'}
