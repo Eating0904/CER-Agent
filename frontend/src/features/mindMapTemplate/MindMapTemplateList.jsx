@@ -7,6 +7,7 @@ import {
     Col,
     Row,
     Spin,
+    Tag,
 } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
@@ -90,7 +91,18 @@ export const MindMapTemplateList = () => {
                     >
                         <Meta
                             title={<div className="card-title">{template.name}</div>}
-                            description={<div className="card-description">{template.issue_topic}</div>}
+                            description={(
+                                <>
+                                    <div className="card-description">{template.issue_topic}</div>
+                                    {template.created_by && (
+                                        <div>
+                                            <Tag color="blue">
+                                                Creator: {template.created_by.username}
+                                            </Tag>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         />
                     </Card>
                 </Col>
