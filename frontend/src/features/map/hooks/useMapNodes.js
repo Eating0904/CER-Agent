@@ -37,8 +37,7 @@ export const useMapNodes = (mapData) => {
     useEffect(() => {
         const prevNodeId = prevSelectedNodeIdRef.current;
 
-        // 比較前一個選取的節點內容是否有變更
-        // TODO: 差異的幅度需要再討論
+        // 當選取的節點變化時，檢查前一個節點是否有編輯
         if (prevNodeId && prevNodeId !== selectedNodeId) {
             if (editingNodeSnapshot.current) {
                 const prevNode = nodes.find((n) => n.id === prevNodeId);
@@ -52,13 +51,15 @@ export const useMapNodes = (mapData) => {
                     });
                 }
             }
+        }
 
-            // 更新 snapshot
-            const currentNode = nodes.find((n) => n.id === selectedNodeId);
-            if (currentNode) {
-                editingNodeSnapshot.current = {
-                    content: currentNode.data.content,
-                };
+        // 只在選取的節點「變化」時建立快照，避免編輯過程中被覆蓋
+        if (selectedNodeId !== prevNodeId) {
+            if (selectedNodeId) {
+                const currentNode = nodes.find((n) => n.id === selectedNodeId);
+                if (currentNode) {
+                    editingNodeSnapshot.current = { content: currentNode.data.content };
+                }
             }
             else {
                 editingNodeSnapshot.current = null;
@@ -67,17 +68,6 @@ export const useMapNodes = (mapData) => {
 
         // 更新 ref
         prevSelectedNodeIdRef.current = selectedNodeId;
-
-        // 建立目前選取節點的快照
-        if (selectedNodeId) {
-            const currentNode = nodes.find((n) => n.id === selectedNodeId);
-            if (currentNode) {
-                editingNodeSnapshot.current = { content: currentNode.data.content };
-            }
-        }
-        else {
-            editingNodeSnapshot.current = null;
-        }
     }, [selectedNodeId, nodes]);
 
     // 定義 deleteEdge
