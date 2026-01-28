@@ -138,35 +138,31 @@ export const useMapNodes = (mapData) => {
                 return newEdges;
             });
 
-            setNodes((nds) => {
-                const sourceNode = nds.find((n) => n.id === params.source);
-                const targetNode = nds.find((n) => n.id === params.target);
+            // 直接從 nodes 取得節點資訊，不透過 setNodes
+            const sourceNode = nodes.find((n) => n.id === params.source);
+            const targetNode = nodes.find((n) => n.id === params.target);
 
-                // 記錄建立 edge 的追蹤
-                trackAction(
-                    'add_edge',
-                    {
-                        edge_id: newEdges[newEdges.length - 1].id,
-                        node1: params.source,
-                        node2: params.target,
-                    },
-                    mapId ? parseInt(mapId, 10) : null,
-                );
+            trackAction(
+                'add_edge',
+                {
+                    edge_id: newEdges[newEdges.length - 1].id,
+                    node1: params.source,
+                    node2: params.target,
+                },
+                mapId ? parseInt(mapId, 10) : null,
+            );
 
-                mapEventEmitter.emit(EDGE_CONNECTED, {
-                    action: 'connect',
-                    connected_nodes: [params.source, params.target],
-                    nodes_content: {
-                        [params.source]: sourceNode?.data?.content || '',
-                        [params.target]: targetNode?.data?.content || '',
-                    },
-                    newEdges,
-                });
-
-                return nds;
+            mapEventEmitter.emit(EDGE_CONNECTED, {
+                action: 'connect',
+                connected_nodes: [params.source, params.target],
+                nodes_content: {
+                    [params.source]: sourceNode?.data?.content || '',
+                    [params.target]: targetNode?.data?.content || '',
+                },
+                newEdges,
             });
         },
-        [trackAction, mapId],
+        [nodes, trackAction, mapId],
     );
 
     const addNode = useCallback((nodeType = 'C') => {
