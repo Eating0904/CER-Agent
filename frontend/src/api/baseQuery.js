@@ -49,32 +49,49 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
         return baseQuery(args, api, extraOptions);
     }
 
-    const release = await mutex.acquire();
-
-    try {
-        const refresh = getRefreshToken();
-        if (!isAuthenticated() && refresh) {
-            const result = await handleRefreshToken(refresh, api);
-            if (!result.success) {
-                return { error: result.error };
+    // 檢查是否需要先 refresh token（token 過期但有 refresh token）
+    const refresh = getRefreshToken();
+    if (!isAuthenticated() && refresh) {
+        const release = await mutex.acquire();
+        try {
+            // 可能在等待 mutex 期間被其他請求 refresh 了
+            if (!isAuthenticated()) {
+                const result = await handleRefreshToken(refresh, api);
+                if (!result.success) {
+                    return { error: result.error };
+                }
             }
         }
+        finally {
+            release();
+        }
+    }
 
-        let result = await baseQuery(args, api, extraOptions);
+    // 正常請求
+    let result = await baseQuery(args, api, extraOptions);
 
-        if (result.error?.status === 401 && refresh) {
-            const refreshResult = await handleRefreshToken(refresh, api);
-
-            if (refreshResult.success) {
-                result = await baseQuery(args, api, extraOptions);
+    // 如果遇到 401，嘗試 refresh 後重試
+    if (result.error?.status === 401 && refresh) {
+        const release = await mutex.acquire();
+        try {
+            // 先嘗試再次請求
+            const retryResult = await baseQuery(args, api, extraOptions);
+            if (retryResult.error?.status === 401) {
+                const refreshResult = await handleRefreshToken(refresh, api);
+                if (refreshResult.success) {
+                    result = await baseQuery(args, api, extraOptions);
+                }
+            }
+            else {
+                result = retryResult;
             }
         }
+        finally {
+            release();
+        }
+    }
 
-        return result;
-    }
-    finally {
-        release();
-    }
+    return result;
 };
 
 export default baseQueryWithReauth;
