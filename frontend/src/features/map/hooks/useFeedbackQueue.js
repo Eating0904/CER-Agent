@@ -8,8 +8,7 @@ import { useUserActionTracker } from '../../userAction/hooks';
 import { useFeedbackRequest } from './useFeedbackRequest';
 import { useMapAlerts } from './useMapAlerts';
 
-const MAX_COUNT = 5;
-const DELAY_MS = 60000;
+const DELAY_MS = 5000;
 
 /**
  * Feedback 隊列 Hook (整合版)
@@ -111,13 +110,7 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
         (operation) => {
             queueRef.current.push(operation);
 
-            // 條件 1: 數量超過限制，立即發送（累積操作觸發）
-            if (queueRef.current.length >= MAX_COUNT) {
-                processBatch('accumulated_operations');
-                return;
-            }
-
-            // 條件 2: 重置計時器（Debounce）（閒置超時觸發）
+            // 重置計時器（Debounce）：閒置超時觸發
             if (timerRef.current) {
                 clearTimeout(timerRef.current);
             }
