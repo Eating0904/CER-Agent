@@ -31,7 +31,7 @@ export const LoginCard = () => {
             await login(values).unwrap();
 
             // 記錄登入行為
-            await trackAction('login');
+            await trackAction('login', {});
 
             navigate('/');
         }
