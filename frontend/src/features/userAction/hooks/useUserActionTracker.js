@@ -10,11 +10,12 @@ export const useUserActionTracker = () => {
     const [recordAction] = useRecordActionMutation();
 
     const trackAction = useCallback(
-        async (actionType, metadata = {}, mapId = null) => {
+        async (actionType, metadata = {}, mapId = null, essayId = null) => {
             try {
                 const result = await recordAction({
                     action_type: actionType,
                     map_id: mapId,
+                    essay_id: essayId,
                     metadata,
                 }).unwrap();
 

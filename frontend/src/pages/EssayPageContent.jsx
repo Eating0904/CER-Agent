@@ -52,6 +52,7 @@ export const EssayPageContent = ({
                         setEssayContent={setEssayContent}
                         editorRef={editorRef}
                         disabled={isReadOnly}
+                        essayId={essayId}
                     />
 
                     {!isReadOnly && (

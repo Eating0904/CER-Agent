@@ -5,7 +5,13 @@ import { useSearchParams } from 'react-router-dom';
 import { SimpleEditor } from '../../tiptap-ui/tiptap-templates/simple/simple-editor';
 import { useUserActionTracker } from '../userAction/hooks';
 
-export const EssayEditor = ({ essayContent, setEssayContent, editorRef, disabled = false }) => {
+export const EssayEditor = ({
+    essayContent,
+    setEssayContent,
+    editorRef,
+    disabled = false,
+    essayId = null,
+}) => {
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
     const { trackAction } = useUserActionTracker();
@@ -13,13 +19,23 @@ export const EssayEditor = ({ essayContent, setEssayContent, editorRef, disabled
 
     const handleFocus = () => {
         startTimeRef.current = Date.now();
-        trackAction('essay_edit_start', {}, mapId ? parseInt(mapId, 10) : null);
+        trackAction(
+            'essay_edit_start',
+            {},
+            mapId ? parseInt(mapId, 10) : null,
+            essayId ? parseInt(essayId, 10) : null,
+        );
     };
 
     const handleBlur = () => {
         if (startTimeRef.current) {
             const duration = Math.floor((Date.now() - startTimeRef.current) / 1000);
-            trackAction('essay_edit_end', { duration }, mapId ? parseInt(mapId, 10) : null);
+            trackAction(
+                'essay_edit_end',
+                { duration },
+                mapId ? parseInt(mapId, 10) : null,
+                essayId ? parseInt(essayId, 10) : null,
+            );
             startTimeRef.current = null;
         }
     };

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from apps.essay.models import Essay
 from apps.map.models import Map
 
 from .models import UserAction
@@ -12,6 +13,10 @@ class UserActionSerializer(serializers.ModelSerializer):
         queryset=Map.objects.all(), source='map', required=False, allow_null=True
     )
 
+    essay_id = serializers.PrimaryKeyRelatedField(
+        queryset=Essay.objects.all(), source='essay', required=False, allow_null=True
+    )
+
     class Meta:
         model = UserAction
         fields = [
@@ -20,6 +25,7 @@ class UserActionSerializer(serializers.ModelSerializer):
             'action_type',
             'timestamp',
             'map_id',
+            'essay_id',
             'metadata',
         ]
         read_only_fields = ['id', 'user', 'timestamp']

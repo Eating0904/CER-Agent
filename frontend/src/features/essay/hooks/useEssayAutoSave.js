@@ -14,14 +14,14 @@ import { useUpdateEssayMutation } from '../essayApi';
  * @param {string} essayContent - Essay 內容
  * @returns {Function} handleAutoSave - 自動儲存函數
  */
-export const useEssayAutoSave = (mapId, essayContent) => {
+export const useEssayAutoSave = (mapId, essayContent, essayId = null) => {
     const { message } = App.useApp();
     const [updateEssay] = useUpdateEssayMutation();
     const [searchParams] = useSearchParams();
     const mapIdFromParams = searchParams.get('mapId');
     const { trackAction } = useUserActionTracker();
 
-    const handleAutoSave = useCallback(async (triggerReason = 'before_chat', essayId = null) => {
+    const handleAutoSave = useCallback(async (triggerReason = 'before_chat') => {
         if (!mapId) {
             console.error('Essay AutoSave: mapId is required');
             return;
@@ -51,7 +51,7 @@ export const useEssayAutoSave = (mapId, essayContent) => {
             console.error('Failed to auto-save essay:', error);
             throw error;
         }
-    }, [mapId, essayContent, updateEssay, message, mapIdFromParams, trackAction]);
+    }, [mapId, essayContent, updateEssay, message, mapIdFromParams, trackAction, essayId]);
 
     return handleAutoSave;
 };

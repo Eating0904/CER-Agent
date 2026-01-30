@@ -14,7 +14,7 @@ import { useUserActionTracker } from '../../userAction/hooks';
  * @param {Object} editorRef - Editor instance ref (for getText())
  * @returns {Object} { isSending, handleSendMessage }
  */
-export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
+export const useEssaySendMessage = (mapId, handleSave, editorRef, essayId = null) => {
     const { message } = App.useApp();
     const [isSending, setIsSending] = useState(false);
     const [sendChatMessage] = useSendEssayChatMessageMutation();
@@ -28,7 +28,12 @@ export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
                 setIsSending(true);
 
                 // 立即記錄聊天行為並獲取 action_id
-                const { actionId } = await trackAction('chat_in_essay', {}, mapId ? parseInt(mapId, 10) : null);
+                const { actionId } = await trackAction(
+                    'chat_in_essay',
+                    {},
+                    mapId ? parseInt(mapId, 10) : null,
+                    essayId ? parseInt(essayId, 10) : null,
+                );
 
                 // 1. 自動儲存 essay（總是執行）
                 if (handleSave) {
@@ -55,7 +60,7 @@ export const useEssaySendMessage = (mapId, handleSave, editorRef) => {
                 setIsSending(false);
             }
         },
-        [handleSave, sendChatMessage, mapId, editorRef, trackAction, message],
+        [handleSave, sendChatMessage, mapId, editorRef, trackAction, message, essayId],
     );
 
     return { isSending, handleSendMessage };

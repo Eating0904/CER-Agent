@@ -183,12 +183,12 @@ export const MapPage = () => {
     }, [handleEssayChange]);
 
     const editorRef = useRef(null);
-    const handleEssayAutoSave = useEssayAutoSave(mapId, essayContent);
+    const handleEssayAutoSave = useEssayAutoSave(mapId, essayContent, essayData?.essay?.id);
 
     const {
         isSending: isEssaySending,
         handleSendMessage: sendEssayMessage,
-    } = useEssaySendMessage(mapId, handleEssayAutoSave, editorRef);
+    } = useEssaySendMessage(mapId, handleEssayAutoSave, editorRef, essayData?.essay?.id);
 
     // ==================== 渲染邏輯 ====================
     if (!mapId) {

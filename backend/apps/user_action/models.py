@@ -23,6 +23,15 @@ class UserAction(models.Model):
         help_text='關聯的 Map',
     )
 
+    essay = models.ForeignKey(
+        'essay.Essay',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='user_actions',
+        help_text='關聯的 Essay',
+    )
+
     # 額外詳細資料
     metadata = models.JSONField(default=dict, blank=True, help_text='額外的詳細資料（JSON 格式）')
 
@@ -33,6 +42,7 @@ class UserAction(models.Model):
             models.Index(fields=['user', '-timestamp']),
             models.Index(fields=['action_type']),
             models.Index(fields=['map']),
+            models.Index(fields=['essay']),
         ]
 
     def __str__(self):
