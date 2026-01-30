@@ -4,10 +4,13 @@ import { PlusOutlined } from '@ant-design/icons';
 import {
     App,
     Button,
+    DatePicker,
     Form,
     Input,
     Modal,
+    Space,
 } from 'antd';
+import dayjs from 'dayjs';
 
 import {
     useCreateMindMapTemplateMutation,
@@ -33,7 +36,11 @@ export const EditMindMapTemplate = ({
 
     useEffect(() => {
         if (open && initialValues) {
-            form.setFieldsValue(initialValues);
+            form.setFieldsValue({
+                ...initialValues,
+                startDate: initialValues.startDate ? dayjs(initialValues.startDate) : null,
+                endDate: initialValues.endDate ? dayjs(initialValues.endDate) : null,
+            });
         }
     }, [open, initialValues, form]);
 
@@ -44,12 +51,14 @@ export const EditMindMapTemplate = ({
     const handleOk = async () => {
         try {
             const values = await form.validateFields();
-            const { name, issueTopic, articleContent } = values;
+            const { name, issueTopic, articleContent, startDate, endDate } = values;
 
             const payload = {
                 name,
                 issue_topic: issueTopic,
                 article_content: articleContent,
+                start_date: startDate ? startDate.toISOString() : null,
+                end_date: endDate ? endDate.toISOString() : null,
             };
 
             if (isEdit && initialValues?.id) {
@@ -147,6 +156,37 @@ export const EditMindMapTemplate = ({
                             style={{ resize: 'none' }}
                         />
                     </Form.Item>
+                    <Space size="large">
+                        <Form.Item
+                            name="startDate"
+                            label="Start Date"
+                            rules={[
+                                { required: true, message: 'Please select the start date!' },
+                            ]}
+                        >
+                            <DatePicker
+                                showTime
+                                format="YYYY-MM-DD HH:mm:ss"
+                                placeholder="Select start date and time"
+                                style={{ width: '100%' }}
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="endDate"
+                            label="End Date"
+                            rules={[
+                                { required: true, message: 'Please select the end date!' },
+                            ]}
+                        >
+                            <DatePicker
+                                showTime
+                                format="YYYY-MM-DD HH:mm:ss"
+                                placeholder="Select end date and time"
+                                style={{ width: '100%' }}
+                            />
+                        </Form.Item>
+                    </Space>
                 </Form>
             </Modal>
         </>

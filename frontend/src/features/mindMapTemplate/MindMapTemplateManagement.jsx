@@ -17,6 +17,7 @@ import {
     Tag,
 } from 'antd';
 
+import { formatDeadline } from '../../utils/templateDeadlineUtils';
 import { useGetMeQuery } from '../user/userApi';
 
 import { EditMindMapTemplate } from './EditMindMapTemplate';
@@ -55,6 +56,8 @@ export const MindMapTemplateManagement = () => {
                 name: template.name,
                 issueTopic: template.issue_topic,
                 articleContent: template.article_content,
+                startDate: template.start_date,
+                endDate: template.end_date,
             });
             setIsEditModalOpen(true);
         }
@@ -185,13 +188,24 @@ export const MindMapTemplateManagement = () => {
                                 description={(
                                     <>
                                         <div className="card-description">{template.issue_topic}</div>
-                                        {template.created_by && (
-                                            <div>
+                                        <div style={{ marginTop: '8px' }}>
+                                            {template.created_by && (
                                                 <Tag color="blue">
                                                     Creator: {template.created_by.username}
                                                 </Tag>
-                                            </div>
-                                        )}
+                                            )}
+                                        </div>
+                                        <div style={{ marginTop: '8px', fontSize: '12px' }}>
+                                            <Tag color={template.is_within_deadline ? 'green' : 'error'}>
+                                                {
+                                                    formatDeadline(
+                                                        template.start_date,
+                                                        template.end_date,
+                                                    )
+                                                }
+                                            </Tag>
+
+                                        </div>
                                     </>
                                 )}
                             />

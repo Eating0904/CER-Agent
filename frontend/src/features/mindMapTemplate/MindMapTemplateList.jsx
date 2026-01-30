@@ -8,9 +8,11 @@ import {
     Row,
     Spin,
     Tag,
+    Tooltip,
 } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
+import { formatDeadline } from '../../utils/templateDeadlineUtils';
 import { useCreateMapFromTemplateMutation } from '../map/utils';
 import { useUserActionTracker } from '../userAction/hooks';
 
@@ -32,6 +34,11 @@ export const MindMapTemplateList = () => {
     }, [error]);
 
     const handleClick = async (template) => {
+        if (!template.is_within_deadline) {
+            message.warning('This task is not available');
+            return;
+        }
+
         try {
             const result = await createMapFromTemplate({
                 template_id: template.id,
@@ -73,11 +80,12 @@ export const MindMapTemplateList = () => {
 
     return (
         <Row gutter={[16, 16]} justify="start">
-            {templates.map((template) => (
-                <Col xs={24} sm={12} md={12} lg={6} xl={6} key={template.id} style={{ display: 'flex' }}>
+            {templates.map((template) => {
+                const isActive = template.is_within_deadline;
+                const cardContent = (
                     <Card
                         className="mind-map-card"
-                        hoverable
+                        hoverable={isActive}
                         cover={(
                             <div
                                 className="image-container"
@@ -86,27 +94,49 @@ export const MindMapTemplateList = () => {
                                 }}
                             />
                         )}
-                        onClick={() => handleClick(template)}
-                        style={{ width: '100%', border: '1px solid #d9d9d9' }}
+                        onClick={isActive ? () => handleClick(template) : undefined}
+                        style={{
+                            width: '100%',
+                            border: '1px solid #d9d9d9',
+                            opacity: isActive ? 1 : 0.4,
+                            cursor: isActive ? 'pointer' : 'not-allowed',
+                        }}
                     >
                         <Meta
                             title={<div className="card-title">{template.name}</div>}
                             description={(
                                 <>
                                     <div className="card-description">{template.issue_topic}</div>
-                                    {template.created_by && (
-                                        <div>
+                                    <div style={{ marginTop: '8px' }}>
+                                        {template.created_by && (
                                             <Tag color="blue">
                                                 Creator: {template.created_by.username}
                                             </Tag>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
+                                    <div style={{ marginTop: '8px', fontSize: '12px' }}>
+                                        <Tag color={isActive ? 'green' : 'error'}>
+                                            {formatDeadline(template.start_date, template.end_date)}
+                                        </Tag>
+                                    </div>
                                 </>
                             )}
                         />
                     </Card>
-                </Col>
-            ))}
+                );
+
+                return (
+                    <Col xs={24} sm={12} md={12} lg={6} xl={6} key={template.id} style={{ display: 'flex' }}>
+                        {!isActive ? (
+                            <Tooltip title="Not available">
+                                {cardContent}
+                            </Tooltip>
+                        ) : (
+                            cardContent
+                        )}
+                    </Col>
+                );
+            })}
         </Row>
     );
 };
