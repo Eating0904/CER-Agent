@@ -12,6 +12,7 @@ import { useUpdateEssayMutation } from '../essayApi';
  *
  * @param {string} mapId - 地圖 ID
  * @param {string} essayContent - Essay 內容
+ * @param {string} essayId - Essay ID
  * @returns {Function} handleAutoSave - 自動儲存函數
  */
 export const useEssayAutoSave = (mapId, essayContent, essayId = null) => {
@@ -39,7 +40,6 @@ export const useEssayAutoSave = (mapId, essayContent, essayId = null) => {
             trackAction(
                 'auto_save_essay',
                 {
-                    content_length: essayContent.length,
                     trigger_reason: triggerReason,
                 },
                 mapIdFromParams ? parseInt(mapIdFromParams, 10) : null,
