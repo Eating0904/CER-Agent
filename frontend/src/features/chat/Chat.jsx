@@ -32,6 +32,7 @@ export const Chat = ({
     isSending,
     chatType = 'mindmap',
     isEssayValid = true,
+    isReadOnly = false,
 }) => {
     const { message } = App.useApp();
     const [inputValue, setInputValue] = useState('');
@@ -218,14 +219,16 @@ export const Chat = ({
                             );
                         })}
                     </MessageList>
-                    <MessageInput
-                        placeholder="Input message..."
-                        value={inputValue}
-                        onChange={setInputValue}
-                        onSend={handleSend}
-                        onPaste={handlePaste}
-                        attachButton={false}
-                    />
+                    {!isReadOnly && (
+                        <MessageInput
+                            placeholder="Input message..."
+                            value={inputValue}
+                            onChange={setInputValue}
+                            onSend={handleSend}
+                            onPaste={handlePaste}
+                            attachButton={false}
+                        />
+                    )}
                 </ChatContainer>
             </MainContainer>
 

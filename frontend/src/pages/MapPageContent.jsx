@@ -34,11 +34,12 @@ export const MapPageContent = ({
     feedbackData,
     handleCloseFeedback,
     isSending,
+    isReadOnly = false,
 }) => (
     <>
         <MapProvider value={mapContext}>
             <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <ToolBlock />
+                {!isReadOnly && <ToolBlock />}
                 <Row style={{ flex: 1, minHeight: 0 }}>
                     {handleAskClick && (
                         <Col span={3} style={{ height: '100%', overflowY: 'auto' }}>
@@ -46,23 +47,25 @@ export const MapPageContent = ({
                         </Col>
                     )}
                     <Col span={handleAskClick ? 21 : 24} style={{ height: '100%', position: 'relative' }}>
-                        <BaseMap />
-                        <div
-                            style={{
-                                position: 'absolute',
-                                top: '16px',
-                                right: '16px',
-                                zIndex: 10,
-                            }}
-                        >
-                            <Space>
-                                <MapSaveButton />
-                                <ScoreButton
-                                    onSendMessage={handleSendMessage}
-                                    setIsChatOpen={setIsChatOpen}
-                                />
-                            </Space>
-                        </div>
+                        <BaseMap readOnly={isReadOnly} />
+                        {!isReadOnly && (
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: '16px',
+                                    right: '16px',
+                                    zIndex: 10,
+                                }}
+                            >
+                                <Space>
+                                    <MapSaveButton />
+                                    <ScoreButton
+                                        onSendMessage={handleSendMessage}
+                                        setIsChatOpen={setIsChatOpen}
+                                    />
+                                </Space>
+                            </div>
+                        )}
                     </Col>
                 </Row>
             </div>
@@ -74,6 +77,7 @@ export const MapPageContent = ({
             onCloseFeedback={handleCloseFeedback}
             onSendMessage={handleSendMessage}
             isSending={isSending}
+            isReadOnly={isReadOnly}
         />
         <FloatingChatButton
             isChatOpen={isChatOpen}

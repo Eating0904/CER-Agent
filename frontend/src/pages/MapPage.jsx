@@ -241,6 +241,8 @@ export const MapPage = () => {
         );
     }
 
+    const isReadOnly = mapData?.template?.is_within_deadline === false;
+
     // 根據 view 參數決定顯示的內容
     if (view === 'article') {
         const articleContent = mapData?.template?.article_content || '';
@@ -266,6 +268,7 @@ export const MapPage = () => {
                     editorRef={editorRef}
                     mapContext={mapContext}
                     essayId={essayData?.essay?.id}
+                    isReadOnly={isReadOnly}
                 />
             </div>
         );
@@ -285,6 +288,7 @@ export const MapPage = () => {
                 feedbackData={isFeedbackEnabled ? feedbackData : null}
                 handleCloseFeedback={handleCloseFeedback}
                 isSending={isMapSending}
+                isReadOnly={isReadOnly}
             />
         </div>
     );

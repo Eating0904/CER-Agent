@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { SimpleEditor } from '../../tiptap-ui/tiptap-templates/simple/simple-editor';
 import { useUserActionTracker } from '../userAction/hooks';
 
-export const EssayEditor = ({ essayContent, setEssayContent, editorRef }) => {
+export const EssayEditor = ({ essayContent, setEssayContent, editorRef, disabled = false }) => {
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
     const { trackAction } = useUserActionTracker();
@@ -42,6 +42,7 @@ export const EssayEditor = ({ essayContent, setEssayContent, editorRef }) => {
                     editorRef={editorRef}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
+                    editable={!disabled}
                 />
             </div>
         </div>

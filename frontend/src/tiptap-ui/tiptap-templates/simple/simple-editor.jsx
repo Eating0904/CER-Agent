@@ -128,7 +128,7 @@ const MobileToolbarContent = ({
   </>
 )
 
-export function SimpleEditor({ content, onChange, editorRef, onFocus, onBlur }) {
+export function SimpleEditor({ content, onChange, editorRef, onFocus, onBlur, editable = true }) {
   const isMobile = useIsBreakpoint()
   const { height } = useWindowSize()
   const [mobileView, setMobileView] = useState("main")
@@ -136,6 +136,7 @@ export function SimpleEditor({ content, onChange, editorRef, onFocus, onBlur }) 
 
   const editor = useEditor({
     immediatelyRender: false,
+    editable,
     editorProps: {
       attributes: {
         autocomplete: "off",
@@ -207,25 +208,27 @@ export function SimpleEditor({ content, onChange, editorRef, onFocus, onBlur }) 
   return (
     <div className="simple-editor-wrapper">
       <EditorContext.Provider value={{ editor }}>
-        <Toolbar
-          ref={toolbarRef}
-          style={{
-            ...(isMobile
-              ? {
-                  bottom: `calc(100% - ${height - rect.y}px)`,
-                }
-              : {}),
-          }}>
-          {mobileView === "main" ? (
-            <MainToolbarContent
-              onHighlighterClick={() => setMobileView("highlighter")}
-              isMobile={isMobile} />
-          ) : (
-            <MobileToolbarContent
-              type={mobileView === "highlighter" ? "highlighter" : null}
-              onBack={() => setMobileView("main")} />
-          )}
-        </Toolbar>
+        {editable && (
+          <Toolbar
+            ref={toolbarRef}
+            style={{
+              ...(isMobile
+                ? {
+                    bottom: `calc(100% - ${height - rect.y}px)`,
+                  }
+                : {}),
+            }}>
+            {mobileView === "main" ? (
+              <MainToolbarContent
+                onHighlighterClick={() => setMobileView("highlighter")}
+                isMobile={isMobile} />
+            ) : (
+              <MobileToolbarContent
+                type={mobileView === "highlighter" ? "highlighter" : null}
+                onBack={() => setMobileView("main")} />
+            )}
+          </Toolbar>
+        )}
 
         <EditorContent editor={editor} role="presentation" className="simple-editor-content" />
       </EditorContext.Provider>
