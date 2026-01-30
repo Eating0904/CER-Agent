@@ -62,6 +62,7 @@ export const MapPageContent = ({
                                     <ScoreButton
                                         onSendMessage={handleSendMessage}
                                         setIsChatOpen={setIsChatOpen}
+                                        isSending={isSending}
                                     />
                                 </Space>
                             </div>

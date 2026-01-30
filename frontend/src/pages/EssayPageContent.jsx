@@ -71,6 +71,7 @@ export const EssayPageContent = ({
                                 onSendMessage={handleSendMessage}
                                 setIsChatOpen={setIsChatOpen}
                                 essayId={essayId}
+                                isSending={isSending}
                             />
                         </div>
                     )}
