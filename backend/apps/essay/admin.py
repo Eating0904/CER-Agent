@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from django.contrib import admin
 from django.utils.html import format_html
 
@@ -34,7 +35,11 @@ class EssayAdmin(admin.ModelAdmin):
     template_name.short_description = 'Template name'
 
     def word_count(self, obj):
-        return len(obj.content) if obj.content else 0
+        if not obj.content:
+            return 0
+        soup = BeautifulSoup(obj.content, 'html.parser')
+        plain_text = soup.get_text()
+        return len(plain_text)
 
     word_count.short_description = '字數'
 
