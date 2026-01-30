@@ -34,19 +34,19 @@ export const EssaySaveButton = ({
             }).unwrap();
             message.success('Essay saved successfully');
 
-            // 2. 檢查是否有訊息正在處理中
-            if (isSending) {
-                message.info('Scoring skipped. Please wait for the current response to finish.');
-                return;
-            }
-
-            // 3. 記錄點擊 Save 按鈕觸發評分
+            // 2. 記錄點擊 Save 按鈕（無論是否執行評分都要記錄）
             trackAction(
-                'click_save_essay_with_scoring',
+                'manual_save_essay',
                 {},
                 mapId ? parseInt(mapId, 10) : null,
                 essayId ? parseInt(essayId, 10) : null,
             );
+
+            // 3. 檢查是否有訊息正在處理中
+            if (isSending) {
+                message.info('Scoring skipped. Please wait for the current response to finish.');
+                return;
+            }
 
             // 4. 開啟聊天室
             setIsChatOpen(true);
