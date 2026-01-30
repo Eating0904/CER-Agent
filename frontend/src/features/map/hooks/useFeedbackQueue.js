@@ -32,7 +32,7 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
     const { alerts, setAlerts, addAlert, updateAlert } = useMapAlerts();
     const { sendFeedback } = useFeedbackRequest(mapId, handleAutoSave);
 
-    const processBatch = useCallback(async (reasoning) => {
+    const processBatch = useCallback(async () => {
         if (queueRef.current.length === 0) return;
 
         const metadata = [...queueRef.current];
@@ -89,11 +89,9 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
                 'ai_feedback_shown',
                 {
                     operation_count: operationCount,
-                    reasoning,
+                    feedback_id: result?.id || null,
                 },
                 mapIdFromParams ? parseInt(mapIdFromParams, 10) : null,
-                null,
-                result?.id || null,
             );
         }
         catch (err) {
@@ -115,7 +113,7 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
                 clearTimeout(timerRef.current);
             }
             timerRef.current = setTimeout(() => {
-                processBatch('idle_timeout');
+                processBatch();
             }, DELAY_MS);
         },
         [processBatch],
