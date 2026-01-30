@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 
 from apps.common.utils.admin_helpers import format_json_field
