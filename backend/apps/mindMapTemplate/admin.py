@@ -12,7 +12,15 @@ class TemplatePermissionInline(admin.TabularInline):
 
 @admin.register(MindMapTemplate)
 class MindMapTemplateAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'created_by', 'maps_count', 'created_at')
+    list_display = (
+        'id',
+        'name',
+        'created_by',
+        'start_date',
+        'end_date',
+        'maps_count',
+        'created_at',
+    )
     list_filter = ['name', 'created_at']
     search_fields = ('name', 'created_by__username')
     ordering = ('-created_at',)
@@ -26,6 +34,7 @@ class MindMapTemplateAdmin(admin.ModelAdmin):
     fieldsets = (
         ('基本資訊', {'fields': ('name', 'created_by')}),
         ('內容資訊', {'fields': ('issue_topic', 'article_content')}),
+        ('期限資訊', {'fields': ('start_date', 'end_date')}),
         ('時間資訊', {'fields': ('created_at', 'updated_at')}),
     )
 

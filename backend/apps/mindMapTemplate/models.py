@@ -13,6 +13,8 @@ class MindMapTemplate(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    start_date = models.DateTimeField(null=True, blank=True, help_text='Task opening date and time')
+    end_date = models.DateTimeField(null=True, blank=True, help_text='Task closing date and time')
 
     class Meta:
         db_table = 'mind_map_template'

@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from apps.common.utils.deadline_checker import check_template_deadline
 from apps.mindMapTemplate.models import MindMapTemplate
 
 from .models import Map
@@ -42,6 +43,15 @@ class MapViewSet(viewsets.ModelViewSet):
         except MindMapTemplate.DoesNotExist:
             logger.error(f'Template not found: template_id={template_id}')
             return Response({'error': 'Template not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # 檢查期限
+        if not check_template_deadline(template):
+            logger.warning(
+                f'Template not available: template_id={template_id}, user={request.user.id}'
+            )
+            return Response(
+                {'error': 'This task is not available'}, status=status.HTTP_403_FORBIDDEN
+            )
 
         if not name:
             name = f'{template.name}'
@@ -121,3 +131,18 @@ class MapViewSet(viewsets.ModelViewSet):
         except Exception as e:
             logger.exception(e)
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def partial_update(self, request, *args, **kwargs):
+        """更新 map 之前檢查期限"""
+        instance = self.get_object()
+
+        if instance.template and not check_template_deadline(instance.template):
+            logger.warning(
+                f'Template expired, cannot update map: map_id={instance.id}, user={request.user.id}'
+            )
+            return Response(
+                {'error': 'This task has expired and cannot be edited'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return super().partial_update(request, *args, **kwargs)

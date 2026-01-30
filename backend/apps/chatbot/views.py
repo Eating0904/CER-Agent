@@ -4,6 +4,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from apps.common.utils.deadline_checker import check_template_deadline
+from apps.map.models import Map
 from apps.map.permissions import require_map_owner
 from apps.user_action.models import UserAction
 
@@ -32,6 +34,24 @@ def chat(request, chat_type):
         message = serializer.validated_data['message']
         map_id = serializer.validated_data['map_id']
         essay_plain_text = serializer.validated_data.get('essay_plain_text', '')
+
+        # 取得 map 並檢查期限
+        try:
+            map_instance = Map.objects.get(id=map_id, user=request.user)
+            if map_instance.template and not check_template_deadline(map_instance.template):
+                logger.warning(
+                    f'Template expired, cannot use chat: map_id={map_id}, user={request.user.id}'
+                )
+                return Response(
+                    {'success': False, 'error': 'This task has expired and chat is not available'},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+        except Map.DoesNotExist:
+            logger.error(f'Map not found: map_id={map_id}, user={request.user.id}')
+            return Response(
+                {'success': False, 'error': 'Map not found'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         # 根據 chat_type 選擇對應的 service
         if chat_type == 'mindmap':

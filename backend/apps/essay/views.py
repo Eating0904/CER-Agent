@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from apps.common.utils.deadline_checker import check_template_deadline
 from apps.map.models import Map
 from apps.map.permissions import require_map_owner
 
@@ -38,6 +39,16 @@ def essay_detail(request, map_id):
 
     elif request.method == 'PUT':
         try:
+            # 檢查期限
+            if map_instance.template and not check_template_deadline(map_instance.template):
+                logger.warning(
+                    f'Template expired, cannot update essay: map_id={map_id}, user={request.user.id}'
+                )
+                return Response(
+                    {'success': False, 'error': 'This task has expired and cannot be edited'},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
             essay, created = Essay.objects.get_or_create(
                 map=map_instance, defaults={'user': request.user}
             )

@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from apps.common.utils.deadline_checker import check_template_deadline
+
 from .models import MindMapTemplate, TemplatePermission
 
 User = get_user_model()
@@ -17,6 +19,7 @@ class UserBasicSerializer(serializers.ModelSerializer):
 class MindMapTemplateSerializer(serializers.ModelSerializer):
     created_by = UserBasicSerializer(read_only=True)
     can_manage_permissions = serializers.SerializerMethodField()
+    is_within_deadline = serializers.SerializerMethodField()
 
     class Meta:
         model = MindMapTemplate
@@ -28,7 +31,10 @@ class MindMapTemplateSerializer(serializers.ModelSerializer):
             'created_by',
             'created_at',
             'updated_at',
+            'start_date',
+            'end_date',
             'can_manage_permissions',
+            'is_within_deadline',
         ]
         read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']
 
@@ -40,6 +46,9 @@ class MindMapTemplateSerializer(serializers.ModelSerializer):
 
         user = request.user
         return user.role == 'admin' or obj.created_by == user
+
+    def get_is_within_deadline(self, obj):
+        return check_template_deadline(obj)
 
 
 class TemplatePermissionSerializer(serializers.ModelSerializer):
