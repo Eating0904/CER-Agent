@@ -38,3 +38,7 @@ pip-delete-this-directory.txt
 logs/
 *.log
 *.log.*
+
+# Seeder
+seeder/**/*/*.env
+seeder/**/*/*.env.prod

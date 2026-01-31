@@ -1,0 +1,25 @@
+LABS = [
+    # Active Users
+    {'username': 'teacherA', 'group': 'active'},
+    {'username': 'teacherB', 'group': 'active'},
+    {'username': 'teacherC', 'group': 'active'},
+    {'username': 'teacherD', 'group': 'active'},
+    {'username': 'teacherE', 'group': 'active'},
+    {'username': 'assistantA', 'group': 'active'},
+    {'username': 'assistantB', 'group': 'active'},
+    {'username': 'assistantC', 'group': 'active'},
+    {'username': 'assistantD', 'group': 'active'},
+    {'username': 'studentA', 'group': 'active'},
+    {'username': 'studentB', 'group': 'active'},
+    {'username': 'studentC', 'group': 'active'},
+    {'username': 'studentD', 'group': 'active'},
+    {'username': 'studentE', 'group': 'active'},
+    {'username': 'studentF', 'group': 'active'},
+    # Passive Users
+    {'username': 'studentG', 'group': 'passive'},
+    {'username': 'studentH', 'group': 'passive'},
+    {'username': 'studentI', 'group': 'passive'},
+    {'username': 'studentJ', 'group': 'passive'},
+    {'username': 'studentK', 'group': 'passive'},
+    {'username': 'studentL', 'group': 'passive'},
+]
