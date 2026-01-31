@@ -188,7 +188,13 @@ export const MapPage = () => {
     const {
         isSending: isEssaySending,
         handleSendMessage: sendEssayMessage,
-    } = useEssaySendMessage(mapId, handleEssayAutoSave, editorRef, essayData?.essay?.id);
+    } = useEssaySendMessage(
+        mapId,
+        handleEssayAutoSave,
+        editorRef,
+        essayData?.essay?.id,
+        handleMapAutoSave,
+    );
 
     // ==================== 渲染邏輯 ====================
     if (!mapId) {
