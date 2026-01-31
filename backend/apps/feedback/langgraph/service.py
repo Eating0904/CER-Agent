@@ -9,7 +9,6 @@ from langfuse.langchain import CallbackHandler
 
 from apps.common.utils.map_data_utils import simplify_map_data
 from apps.map.models import Map
-from config.settings import DATABASE_URL
 
 from ..models import NodeFeedback
 from .graph import FeedbackGraph
@@ -22,7 +21,7 @@ class FeedbackService:
 
     def __init__(self):
         """初始化 Feedback Service"""
-        self.graph = FeedbackGraph(DATABASE_URL)
+        self.graph = FeedbackGraph()
         self.langfuse = Langfuse()
 
     def generate_feedback(
