@@ -18,7 +18,7 @@ class EssayScoringAgent(BaseAgent):
     """Essay 評分 Agent"""
 
     def __init__(self):
-        super().__init__(temperature=0.3)
+        super().__init__(temperature=0.5)
         self.prompt_template = SCORING_PROMPT
 
     def prepare_messages(

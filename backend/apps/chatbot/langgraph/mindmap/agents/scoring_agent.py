@@ -23,7 +23,7 @@ class ScoringAgent(BaseAgent):
 
     def __init__(self):
         """初始化 ScoringAgent"""
-        super().__init__(temperature=0.3)
+        super().__init__(temperature=0.5)
         self.prompt_template = SCORING_PROMPT
 
     def prepare_messages(

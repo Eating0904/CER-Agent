@@ -19,7 +19,7 @@ class OperatorSupportAgent(BaseAgent):
 
     def __init__(self):
         """初始化 OperatorSupportAgent"""
-        super().__init__(temperature=0.7)
+        super().__init__(temperature=0.3)
         self.system_prompt = OPERATOR_SUPPORT_PROMPT
 
     def prepare_messages(self, messages: List[BaseMessage], **kwargs) -> List[BaseMessage]:

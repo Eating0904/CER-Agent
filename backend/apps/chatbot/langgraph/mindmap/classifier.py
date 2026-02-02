@@ -29,7 +29,7 @@ class IntentClassifier:
         # API key 會自動從環境變數 GOOGLE_API_KEY 讀取
         self.llm = ChatGoogleGenerativeAI(
             model='gemini-2.5-pro',
-            temperature=0.1,  # 降低隨機性，使分類更穩定
+            temperature=0.3,
         )
 
         # 使用預定義的 prompt

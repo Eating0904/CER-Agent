@@ -23,7 +23,7 @@ class EssayIntentClassifier:
     def __init__(self):
         self.llm = ChatGoogleGenerativeAI(
             model='gemini-2.5-pro',
-            temperature=0.1,
+            temperature=0.3,
         )
         self.system_prompt = CLASSIFIER_PROMPT
 
