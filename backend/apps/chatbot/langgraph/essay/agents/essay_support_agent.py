@@ -92,6 +92,7 @@ class EssaySupportAgent(BaseAgent):
             return {
                 'reasoning': result.get('reasoning', ''),
                 'response_strategy': result.get('response_strategy', ''),
+                'strategy_detail': result.get('strategy_detail', ''),
             }
         except Exception as e:
             logger.warning(f'Failed to extract metadata: {str(e)[:100]}')
