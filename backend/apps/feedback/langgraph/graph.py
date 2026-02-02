@@ -30,13 +30,13 @@ class FeedbackGraph:
         callbacks = config.get('callbacks', [])
         article_content = state.get('article_content', '')
 
-        response = self.agent.process(
+        response, metadata = self.agent.process(
             state['messages'],
-            article_content=article_content,
             callbacks=callbacks,
+            article_content=article_content,
         )
 
-        return {'messages': [AIMessage(content=response)]}
+        return {'messages': [AIMessage(content=response, additional_kwargs={'metadata': metadata})]}
 
     def _build_graph(self):
         """建立 Graph 結構"""

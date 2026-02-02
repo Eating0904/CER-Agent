@@ -106,23 +106,32 @@ class FeedbackService:
                         callbacks=[langfuse_handler],
                     )
 
-                    # 8. 取得最後的回應
+                    # 8. 取得最後的回應和 metadata
                     if result.get('messages'):
-                        feedback_response = result['messages'][-1].content.strip()
+                        last_message = result['messages'][-1]
+                        feedback_response = last_message.content.strip()
+                        agent_metadata = last_message.additional_kwargs.get('metadata', {})
                     else:
                         feedback_response = '無法生成回饋'
+                        agent_metadata = {}
 
-                    # 更新 Trace Output
-                    trace_span.update_trace(output=feedback_response)
+                    # 更新 Trace Output 和 Metadata
+                    trace_span.update_trace(
+                        output=feedback_response,
+                        metadata=agent_metadata,
+                    )
 
-                    # 9. 儲存到資料庫
+                    # 9. 儲存到資料庫（合併 metadata）
                     NodeFeedback.objects.create(
                         user_id=user_id,
                         map=map_instance,
                         alert_title=alert_title,
                         operation_details=operation_details,
                         feedback=feedback_response,
-                        metadata={'operations': metadata},
+                        metadata={
+                            'operations': metadata,
+                            **agent_metadata,  # 加入 reasoning, response_strategy, strategy_detail
+                        },
                     )
 
                     logger.info(

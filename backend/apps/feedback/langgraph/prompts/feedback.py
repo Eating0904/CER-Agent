@@ -107,7 +107,14 @@ PROMPT_TEMPLATE = """
             - `nodes_content`：被斷開連結的兩個 Node 內容清單
 
 # Output Format
-直接給出簡短的純文字回饋，不需要其他說明，並且確保字數在 30 字以內。
+請**嚴格**以 JSON 格式輸出，不要包含任何 Markdown 標記或額外文字:
+
+{{
+    "reasoning": "簡短說明判斷依據，包含對操作行為與 `mind_map_data` 的觀察以及選擇該教學目標的原因。",
+    "response_strategy": "教學目標 A | 教學目標 B | 教學目標 C",
+    "strategy_detail": "具體使用的策略名稱，例如:模組填空法：情境公式。",
+    "final_response": "最終要給學生的回饋內容，請確保不超過 30 字。"
+}}
 """
 
 FEEDBACK_PROMPT = PromptTemplate(
