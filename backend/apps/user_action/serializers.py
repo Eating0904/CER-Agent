@@ -33,7 +33,6 @@ class UserActionSerializer(serializers.ModelSerializer):
     def validate_action_type(self, value):
         """驗證 action_type 是否合法"""
         valid_action_types = [
-            'register',
             'login',
             'click_add_new_button',
             'create_map',

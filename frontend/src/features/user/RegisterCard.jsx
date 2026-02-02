@@ -14,8 +14,6 @@ import {
 } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useUserActionTracker } from '../userAction/hooks';
-
 import { CardTemplate } from './CardTemplate';
 import { useRegisterMutation } from './userApi';
 
@@ -26,7 +24,6 @@ export const RegisterCard = () => {
 
     const navigate = useNavigate();
     const [register, { isLoading }] = useRegisterMutation();
-    const { trackAction } = useUserActionTracker();
 
     const handleSubmit = async (values) => {
         setErrorMessage('');
@@ -35,8 +32,6 @@ export const RegisterCard = () => {
             const { username, email, password } = values;
             await register({ username, email, password }).unwrap();
 
-            // 記錄註冊行為
-            await trackAction('register', {});
             navigate('/login');
         }
         catch (err) {
