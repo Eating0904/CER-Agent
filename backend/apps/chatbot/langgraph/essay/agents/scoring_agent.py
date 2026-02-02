@@ -119,16 +119,22 @@ class EssayScoringAgent(BaseAgent):
                     return {}
 
             return {
+                'interpretation_coverage': result['Interpretation'].get('coverage', ''),
                 'interpretation_score': result['Interpretation'].get('score', ''),
                 'interpretation_feedback': result['Interpretation'].get('feedback', ''),
+                'analysis_coverage': result['Analysis'].get('coverage', ''),
                 'analysis_score': result['Analysis'].get('score', ''),
                 'analysis_feedback': result['Analysis'].get('feedback', ''),
+                'evaluation_coverage': result['Evaluation'].get('coverage', ''),
                 'evaluation_score': result['Evaluation'].get('score', ''),
                 'evaluation_feedback': result['Evaluation'].get('feedback', ''),
+                'inference_coverage': result['Inference'].get('coverage', ''),
                 'inference_score': result['Inference'].get('score', ''),
                 'inference_feedback': result['Inference'].get('feedback', ''),
+                'explanation_coverage': result['Explanation'].get('coverage', ''),
                 'explanation_score': result['Explanation'].get('score', ''),
                 'explanation_feedback': result['Explanation'].get('feedback', ''),
+                'disposition_coverage': result['Disposition'].get('coverage', ''),
                 'disposition_score': result['Disposition'].get('score', ''),
                 'disposition_feedback': result['Disposition'].get('feedback', ''),
             }
