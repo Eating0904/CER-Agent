@@ -14,7 +14,8 @@ python manage.py collectstatic --noinput
 
 # run
 gunicorn --access-logfile - \
-    --workers 4 \
+    --workers 12 \
+    --threads 10 \
     --bind 0.0.0.0:8000 \
-    -k uvicorn.workers.UvicornWorker \
-    config.asgi:application
+    --worker-class gthread \
+    config.wsgi:application
