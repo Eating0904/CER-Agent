@@ -53,8 +53,8 @@ import { useIsBreakpoint } from "@/tiptap-ui/hooks/use-is-breakpoint"
 import { useWindowSize } from "@/tiptap-ui/hooks/use-window-size"
 import { useCursorVisibility } from "@/tiptap-ui/hooks/use-cursor-visibility"
 
-// --- Components ---
-import { ThemeToggle } from "@/tiptap-ui/tiptap-templates/simple/theme-toggle"
+// ThemeToggle 已移除，如需加回自動偵測主題功能，取消下行註解
+// import { ThemeToggle } from "@/tiptap-ui/tiptap-templates/simple/theme-toggle"
 
 // --- Styles ---
 import "@/tiptap-ui/tiptap-templates/simple/simple-editor.scss"
@@ -98,10 +98,7 @@ const MainToolbarContent = ({
         <TextAlignButton align="right" />
       </ToolbarGroup>
       <Spacer />
-      {isMobile && <ToolbarSeparator />}
-      <ToolbarGroup>
-        <ThemeToggle />
-      </ToolbarGroup>
+      {/* ThemeToggle 已移除，強制使用 Light Mode */}
     </>
   );
 }
