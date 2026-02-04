@@ -1,20 +1,5 @@
 CER_DEFINITION = """
-## **主張 (Claim)**：
-- 定義：針對探究問題提出的核心結論，必須具備完整的**情境 (Context)** 與**變因 (Variables)**。
-- 特質：不僅僅是表達立場，還要清楚界定在什麼條件下、針對什麼對象的結論。
-- 關鍵字特徵：包含具體的對象、變因以及判斷性詞彙（如：在...情況下、導致、呈現...關係）。
-
-## **證據 (Evidence)**：
-- 定義：用來支持主張的**數據與客觀事實**。
-- 特質：必須能展示以下其中一種特性，並包含正確的**單位 (Units)**：
-    1. **趨勢 (Trend over time)**：隨時間的變化（如：逐年上升）。
-    2. **差異 (Difference)**：不同群體或對象間的比較。
-    3. **關係 (Relationship)**：變數之間的關聯性。
-- 關鍵字特徵：數字、百分比、年份、單位、比較級詞彙（比...多、隨著...增加）。
-
-## **推論 (Reasoning)**：
-- 定義：解釋證據數據如何證明主張的**詳細邏輯**。
-- 特質：不能只是**表面** 的說明，必須提供**詳細** 的解釋，說明該數據趨勢、差異與關係為何能導出該結論。
-- 關鍵字特徵：因為...所以...、這數據顯示了...、這證實了...的原理。
-
+- **主張 (Claim)定義**：A statement that requires support from external sources (i.e., evidence).
+- **證據 (Evidence)定義**：The measurable outcome(s) used to support the claim.
+- **推論 (Reasoning)定義**：The explicit link between the claim and the evidence that describes how the evidence is relevant to the claim, and why it makes the claim believable.
 """
