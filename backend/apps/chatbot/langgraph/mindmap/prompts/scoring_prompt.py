@@ -291,23 +291,28 @@ edges:
 以下內容為學生正在閱讀的文章內容：
 {article_content}
 
+# 回應語言選擇
+請根據學生 mindmap 中大部分 Node content 的語言來決定你提供 feedback 的語言：
+- 若大部分為中文，請以中文回覆。
+- 若大部分為英文，請以英文回覆。
+
 # Output Format
 請**嚴格**以 JSON 格式輸出，不要包含任何 Markdown 標記或額外文字:
 
 {{
    "Claim": {{
         "coverage": '[數值]%',
-        "score": '[數值]分',
+        "score": '[數值]',
         "feedback": "[1至2句話，精準說明哪裡做得好，哪裡不足]"
    }},
     "Evidence": {{
         "coverage": '[數值]%',
-        "score": '[數值]分',
+        "score": '[數值]',
         "feedback": "[1至2句話，精準說明哪裡做得好，哪裡不足]"
     }},
     "Reasoning": {{
         "coverage": '[數值]%',
-        "score": '[數值]分',
+        "score": '[數值]',
         "feedback": "[1至2句話，精準說明哪裡做得好，哪裡不足]"
     }}
 }}
