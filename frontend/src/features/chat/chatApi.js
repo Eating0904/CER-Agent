@@ -14,11 +14,10 @@ const chatApi = baseApi.injectEndpoints({
             }),
             async onQueryStarted({ message, mapId }, { dispatch, queryFulfilled }) {
                 // 1. 立即更新快取，加入使用者訊息
-                const patchResult = dispatch(
+                dispatch(
                     chatApi.util.updateQueryData('getChatHistory', mapId, (draft) => {
-                        // 在現有訊息列表中加入新的使用者訊息
                         draft.messages.push({
-                            id: draft.messages.length,
+                            id: `temp-user-${Date.now()}`,
                             role: 'user',
                             content: message,
                         });
@@ -27,15 +26,24 @@ const chatApi = baseApi.injectEndpoints({
 
                 try {
                     // 2. 等待真實的 API 回應
-                    await queryFulfilled;
-                    // 3. API 成功後，重新抓取完整資料（包含 AI 回應）
+                    const { data } = await queryFulfilled;
+                    // 3. API 成功後，直接將 AI response 更新到 cache（不用 refetch）
+                    if (data?.success && data?.message) {
+                        dispatch(
+                            chatApi.util.updateQueryData('getChatHistory', mapId, (draft) => {
+                                draft.messages.push({
+                                    id: `ai-${Date.now()}`,
+                                    role: 'assistant',
+                                    content: data.message,
+                                });
+                            }),
+                        );
+                    }
                 }
                 catch {
-                    // 4. 如果失敗，撤銷樂觀更新
-                    patchResult.undo();
+                    // 4. 如果失敗，不需要撤銷（user message 已發送，只是 AI 沒回應）
                 }
             },
-            invalidatesTags: (result, error, { mapId }) => [{ type: 'ChatHistory', id: mapId }],
         }),
         getChatHistory: build.query({
             query: (mapId) => ({
@@ -52,9 +60,16 @@ const chatApi = baseApi.injectEndpoints({
                     content,
                 },
             }),
-            invalidatesTags: (result, error, { mapId }) => [{ type: 'ChatHistory', id: mapId }],
+            async onQueryStarted({ mapId }, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(chatApi.util.invalidateTags([{ type: 'ChatHistory', id: mapId }]));
+                }
+                catch {
+                    // 儲存失敗時不需要額外處理
+                }
+            },
         }),
-        // ===== Essay Chat =====
         sendEssayChatMessage: build.mutation({
             query: ({ message, mapId, essayPlainText, userActionId }) => ({
                 url: 'chatbot/essay/chat/',
@@ -67,10 +82,11 @@ const chatApi = baseApi.injectEndpoints({
                 },
             }),
             async onQueryStarted({ message, mapId }, { dispatch, queryFulfilled }) {
-                const patchResult = dispatch(
+                // 1. 立即更新快取，加入使用者訊息
+                dispatch(
                     chatApi.util.updateQueryData('getEssayChatHistory', mapId, (draft) => {
                         draft.messages.push({
-                            id: draft.messages.length,
+                            id: `temp-user-${Date.now()}`,
                             role: 'user',
                             content: message,
                         });
@@ -78,13 +94,25 @@ const chatApi = baseApi.injectEndpoints({
                 );
 
                 try {
-                    await queryFulfilled;
+                    // 2. 等待真實的 API 回應
+                    const { data } = await queryFulfilled;
+                    // 3. API 成功後，直接將 AI response 更新到 cache（不用 refetch）
+                    if (data?.success && data?.message) {
+                        dispatch(
+                            chatApi.util.updateQueryData('getEssayChatHistory', mapId, (draft) => {
+                                draft.messages.push({
+                                    id: `ai-${Date.now()}`,
+                                    role: 'assistant',
+                                    content: data.message,
+                                });
+                            }),
+                        );
+                    }
                 }
                 catch {
-                    patchResult.undo();
+                    // 4. 如果失敗，不需要撤銷（user message 已發送，只是 AI 沒回應）
                 }
             },
-            invalidatesTags: (result, error, { mapId }) => [{ type: 'EssayChatHistory', id: mapId }],
         }),
         getEssayChatHistory: build.query({
             query: (mapId) => ({
