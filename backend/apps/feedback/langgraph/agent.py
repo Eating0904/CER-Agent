@@ -22,7 +22,7 @@ class FeedbackAgent:
     def __init__(self):
         """初始化 Feedback Agent"""
         self.llm = ChatGoogleGenerativeAI(
-            model='gemini-2.5-pro',
+            model='gemini-3-flash-preview',
             temperature=0.5,
         )
         self.prompt_template = FEEDBACK_PROMPT
