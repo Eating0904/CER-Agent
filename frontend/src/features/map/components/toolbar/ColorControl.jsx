@@ -1,7 +1,4 @@
-import { useState } from 'react';
-
-import { Flex, Input, Popover } from 'antd';
-import { TwitterPicker } from 'react-color';
+import { ColorPicker, Flex, Input } from 'antd';
 
 import { DEFAULT_COLORS, NEUTRAL_COLORS } from '../../../../constants/colors';
 
@@ -14,10 +11,15 @@ export const ColorControl = ({
     disabled,
     placeholder,
 }) => {
-    const [pickerVisible, setPickerVisible] = useState(false);
+    const handlePickerChange = (value) => {
+        const hexColor = value.toHexString();
+        onChange(hexColor);
+    };
 
-    const handlePickerChange = (c) => {
-        onChange(c.hex);
+    const handleOpenChange = (open) => {
+        if (!open && onBlur) {
+            onBlur(color);
+        }
     };
 
     return (
@@ -25,23 +27,16 @@ export const ColorControl = ({
             {icon || label}
             <Input
                 value={color}
-                onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
                 disabled={disabled}
-                onBlur={(e) => onBlur && onBlur(e.target.value)}
                 size="small"
                 suffix={(
-                    <Popover
-                        content={(
-                            <TwitterPicker
-                                color={color}
-                                onChange={handlePickerChange}
-                                triangle="hide"
-                            />
-                        )}
-                        trigger="click"
-                        open={pickerVisible && !disabled}
-                        onOpenChange={(visible) => !disabled && setPickerVisible(visible)}
+                    <ColorPicker
+                        value={color || NEUTRAL_COLORS.white}
+                        onChange={handlePickerChange}
+                        onOpenChange={handleOpenChange}
+                        disabled={disabled}
+                        size="small"
                     >
                         <div
                             style={{
@@ -53,7 +48,7 @@ export const ColorControl = ({
                                 cursor: disabled ? 'not-allowed' : 'pointer',
                             }}
                         />
-                    </Popover>
+                    </ColorPicker>
                 )}
             />
         </Flex>
