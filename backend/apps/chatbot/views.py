@@ -98,7 +98,13 @@ def chat(request, chat_type):
             except Exception as e:
                 logger.warning(f'Failed to update user action with trace_id: {e}')
 
-        return Response({'success': True, 'message': result['message']})
+        return Response(
+            {
+                'success': True,
+                'message': result['message'],
+                'message_type': result.get('message_type'),
+            }
+        )
 
     except Exception as e:
         logger.exception(e)

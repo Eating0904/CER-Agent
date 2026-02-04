@@ -35,6 +35,7 @@ const chatApi = baseApi.injectEndpoints({
                                     id: `ai-${Date.now()}`,
                                     role: 'assistant',
                                     content: data.message,
+                                    message_type: data.message_type || null,
                                 });
                             }),
                         );
@@ -104,6 +105,7 @@ const chatApi = baseApi.injectEndpoints({
                                     id: `ai-${Date.now()}`,
                                     role: 'assistant',
                                     content: data.message,
+                                    message_type: data.message_type || null,
                                 });
                             }),
                         );

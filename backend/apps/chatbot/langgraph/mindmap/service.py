@@ -76,8 +76,13 @@ class LangGraphService:
                     if result.get('messages'):
                         last_message = result['messages'][-1]
                         response_content = last_message.content
+                        # 從 additional_kwargs 取得 message_type
+                        message_type = getattr(last_message, 'additional_kwargs', {}).get(
+                            'message_type', None
+                        )
                     else:
                         response_content = '系統無法產生回應'
+                        message_type = None
 
                     # 更新 Trace Output
                     trace_metadata = {
@@ -106,6 +111,7 @@ class LangGraphService:
             return {
                 'success': True,
                 'message': response_content,
+                'message_type': message_type,
                 'classification': result.get('classification', {}),
                 'trace_id': trace_id,
             }
