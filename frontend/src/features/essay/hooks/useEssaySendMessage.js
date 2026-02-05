@@ -24,7 +24,9 @@ export const useEssaySendMessage = (
     handleMapAutoSave = null,
 ) => {
     const { message } = App.useApp();
-    const [isSending, setIsSending] = useState(false);
+    // 使用 Set 追蹤所有正在發送訊息的 mapId
+    // 這樣可以支援同時在多個 map 發送訊息的情況
+    const [sendingMapIds, setSendingMapIds] = useState(new Set());
     const [sendChatMessage] = useSendEssayChatMessageMutation();
     const { trackAction } = useUserActionTracker();
 
@@ -33,7 +35,8 @@ export const useEssaySendMessage = (
             if (!text.trim()) return;
 
             try {
-                setIsSending(true);
+                // 加入當前 mapId 到發送中集合
+                setSendingMapIds((prev) => new Set(prev).add(mapId));
 
                 // 立即記錄聊天行為並獲取 action_id
                 const { actionId } = await trackAction(
@@ -70,7 +73,12 @@ export const useEssaySendMessage = (
                 throw err;
             }
             finally {
-                setIsSending(false);
+                // 從發送中集合移除當前 mapId
+                setSendingMapIds((prev) => {
+                    const next = new Set(prev);
+                    next.delete(mapId);
+                    return next;
+                });
             }
         },
         [
@@ -84,6 +92,9 @@ export const useEssaySendMessage = (
             handleMapAutoSave,
         ],
     );
+
+    // 檢查當前 mapId 是否在發送中集合中
+    const isSending = sendingMapIds.has(mapId);
 
     return { isSending, handleSendMessage };
 };

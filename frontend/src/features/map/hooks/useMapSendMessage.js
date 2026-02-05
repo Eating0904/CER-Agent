@@ -15,7 +15,9 @@ import { useUserActionTracker } from '../../userAction/hooks';
  */
 export const useMapSendMessage = (mapId, handleAutoSave) => {
     const { message } = App.useApp();
-    const [isSending, setIsSending] = useState(false);
+    // 使用 Set 追蹤所有正在發送訊息的 mapId
+    // 這樣可以支援同時在多個 map 發送訊息的情況
+    const [sendingMapIds, setSendingMapIds] = useState(new Set());
     const [sendChatMessage] = useSendChatMessageMutation();
     const { trackAction } = useUserActionTracker();
 
@@ -24,7 +26,8 @@ export const useMapSendMessage = (mapId, handleAutoSave) => {
             if (!text.trim()) return;
 
             try {
-                setIsSending(true);
+                // 加入當前 mapId 到發送中集合
+                setSendingMapIds((prev) => new Set(prev).add(mapId));
 
                 // 立即記錄聊天行為並獲取 action_id
                 const { actionId } = await trackAction('chat_in_mindmap', {}, mapId ? parseInt(mapId, 10) : null);
@@ -45,11 +48,19 @@ export const useMapSendMessage = (mapId, handleAutoSave) => {
                 throw err; // 讓呼叫者知道失敗
             }
             finally {
-                setIsSending(false);
+                // 從發送中集合移除當前 mapId
+                setSendingMapIds((prev) => {
+                    const next = new Set(prev);
+                    next.delete(mapId);
+                    return next;
+                });
             }
         },
         [handleAutoSave, sendChatMessage, mapId, trackAction, message],
     );
+
+    // 檢查當前 mapId 是否在發送中集合中
+    const isSending = sendingMapIds.has(mapId);
 
     return { isSending, handleSendMessage };
 };
