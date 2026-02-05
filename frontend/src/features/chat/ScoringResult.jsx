@@ -29,7 +29,8 @@ export const ScoringResult = ({ data, chatType = 'mindmap' }) => {
 
         // 驗證 essay 資料結構
         const hasValidEssayData = essayItems.every(
-            (item) => scoringData?.[item.key]?.score && scoringData?.[item.key]?.feedback,
+            (item) => scoringData?.[item.key]?.score != null
+                    && scoringData?.[item.key]?.feedback,
         );
 
         if (!hasValidEssayData) {
@@ -53,7 +54,8 @@ export const ScoringResult = ({ data, chatType = 'mindmap' }) => {
 
         // 驗證 mindmap 資料結構
         const hasValidMindmapData = mindmapItems.every(
-            (item) => scoringData?.[item.key]?.score && scoringData?.[item.key]?.feedback,
+            (item) => scoringData?.[item.key]?.score != null
+                    && scoringData?.[item.key]?.feedback,
         );
 
         if (!hasValidMindmapData) {
