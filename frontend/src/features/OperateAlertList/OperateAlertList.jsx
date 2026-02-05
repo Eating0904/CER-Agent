@@ -46,7 +46,7 @@ export const OperateAlertList = ({ alerts = [], onAskClick }) => (
                         isLoading ? (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Spin size="small" />
-                                <span>正在生成回饋...</span>
+                                <span>Generating feedback...</span>
                             </div>
                         ) : (
                             alert.description
