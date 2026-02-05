@@ -20,7 +20,7 @@ export const HeaderComponent = () => {
                 alignItems: 'center',
                 height: '40px',
                 flexShrink: 0,
-                padding: '4px 0px 0px 8px',
+                padding: '4px 8px 0px 8px',
                 backgroundColor: NEUTRAL_COLORS.white,
             }}
         >

@@ -44,14 +44,6 @@ export const MapPage = () => {
     const { data: currentUser } = useGetMeQuery();
     const isFeedbackEnabled = currentUser?.lab?.group === 'active';
 
-    // 設定 Header 內容為 ViewSwitcher
-    useEffect(() => {
-        setHeaderContent(<ViewSwitcher />);
-
-        // 清理函數：當組件卸載時清空 Header 內容
-        return () => setHeaderContent(null);
-    }, [setHeaderContent]);
-
     // 頁面瀏覽追蹤
     useEffect(() => {
         const startTime = Date.now();
@@ -91,6 +83,15 @@ export const MapPage = () => {
         error: mapError,
     } = useGetMapQuery(mapId, { skip: !mapId });
     const mapContext = useMapNodes(mapData);
+
+    // 設定 Header 內容為 ViewSwitcher
+    useEffect(() => {
+        const taskName = mapData?.template?.name;
+        setHeaderContent(<ViewSwitcher taskName={taskName} />);
+
+        // 清理函數：當組件卸載時清空 Header 內容
+        return () => setHeaderContent(null);
+    }, [setHeaderContent, mapData]);
 
     const handleMapAutoSave = useMapAutoSave(mapId, mapContext.nodes, mapContext.edges);
 
