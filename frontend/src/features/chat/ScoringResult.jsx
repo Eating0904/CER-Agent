@@ -86,13 +86,16 @@ export const ScoringResult = ({ data, chatType = 'mindmap' }) => {
                 >
                     <Space direction="vertical" size="small" style={{ width: '100%' }}>
                         <div>
-                            <Text strong>分數：</Text>
-                            <Text style={{ fontSize: '16px', color: '#5B00AE' }}>
+                            <Text strong>Score: </Text>
+                            <Text style={{ fontSize: '16px', color: '#5B00AE', fontWeight: 'bold' }}>
                                 {item.data.score}
+                            </Text>
+                            <Text style={{ fontSize: '12px', color: '#000000', marginLeft: 4 }}>
+                                / {chatType === 'mindmap' ? '5' : '6'}
                             </Text>
                         </div>
                         <div>
-                            <Text strong>回饋：</Text>
+                            <Text strong>Feedback: </Text>
                             <Paragraph style={{ marginBottom: 0, marginTop: 4 }}>
                                 {item.data.feedback}
                             </Paragraph>
