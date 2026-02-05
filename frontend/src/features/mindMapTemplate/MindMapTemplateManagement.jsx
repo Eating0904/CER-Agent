@@ -17,6 +17,7 @@ import {
     Tag,
 } from 'antd';
 
+import taskImage from '../../assets/images/task.png';
 import { formatDeadline } from '../../utils/templateDeadlineUtils';
 import { useGetMeQuery } from '../user/userApi';
 
@@ -131,7 +132,7 @@ export const MindMapTemplateManagement = () => {
                                 <div
                                     className="image-container"
                                     style={{
-                                        backgroundImage: 'url(https://www.shutterstock.com/image-vector/mind-map-template-round-strokes-260nw-2589169071.jpg)',
+                                        backgroundImage: `url(${taskImage})`,
                                     }}
                                 />
                             )}

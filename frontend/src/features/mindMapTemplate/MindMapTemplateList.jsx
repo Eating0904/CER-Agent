@@ -12,11 +12,14 @@ import {
 } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
+import taskImage from '../../assets/images/task.png';
 import { formatDeadline } from '../../utils/templateDeadlineUtils';
 import { useCreateMapFromTemplateMutation } from '../map/utils';
 import { useUserActionTracker } from '../userAction/hooks';
 
 import { useGetMindMapTemplatesQuery } from './mindMapTemplateApi';
+
+import './MindMapTemplateManagement.css';
 
 const { Meta } = Card;
 
@@ -90,7 +93,7 @@ export const MindMapTemplateList = () => {
                             <div
                                 className="image-container"
                                 style={{
-                                    backgroundImage: 'url(https://www.shutterstock.com/image-vector/mind-map-template-round-strokes-260nw-2589169071.jpg)',
+                                    backgroundImage: `url(${taskImage})`,
                                 }}
                             />
                         )}
