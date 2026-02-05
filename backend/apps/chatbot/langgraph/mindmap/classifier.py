@@ -76,15 +76,15 @@ class IntentClassifier:
 
         except json.JSONDecodeError as e:
             logger.warning(f'JSON parsing error: {str(e)[:100]}')
-            # 預設回傳 operator_support
+            # 預設回傳 cer_cognitive_support
             return {
-                'reasoning': 'JSON 解析失敗，預設為介面支援',
-                'next_action': 'operator_support',
+                'reasoning': 'JSON 解析失敗，預設為 cer_cognitive_support',
+                'next_action': 'cer_cognitive_support',
             }
         except Exception as e:
             logger.exception('Classifier failed')
-            # 預設回傳 operator_support
+            # 預設回傳 cer_cognitive_support
             return {
                 'reasoning': f'發生錯誤: {str(e)}',
-                'next_action': 'operator_support',
+                'next_action': 'cer_cognitive_support',
             }
