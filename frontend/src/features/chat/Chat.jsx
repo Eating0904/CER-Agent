@@ -14,7 +14,8 @@ import {
 import { App, Button } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
-import robotImage from '../../assets/images/robot.png';
+import robotEssayImage from '../../assets/images/robot-essay.png';
+import robotMindmapImage from '../../assets/images/robot-mindmap.png';
 
 import { useGetChatHistoryQuery, useGetEssayChatHistoryQuery } from './chatApi';
 import { InitiativeFeedback } from './InitiativeFeedback';
@@ -146,7 +147,7 @@ export const Chat = ({
             >
                 <ChatContainer>
                     <ConversationHeader>
-                        <ConversationHeader.Content userName="Assistant" />
+                        <ConversationHeader.Content userName={`Assistant - ${chatType === 'essay' ? 'Essay' : 'Mind Map'}`} />
                         <ConversationHeader.Actions>
                             <Button
                                 type="text"
@@ -208,7 +209,10 @@ export const Chat = ({
                                     avatarPosition="tl"
                                 >
                                     {msg.direction === 'incoming' && (
-                                        <Avatar src={robotImage} name="AI" />
+                                        <Avatar
+                                            src={chatType === 'essay' ? robotEssayImage : robotMindmapImage}
+                                            name="AI"
+                                        />
                                     )}
                                     {isScoringMessage && (
                                         <Message.CustomContent>
