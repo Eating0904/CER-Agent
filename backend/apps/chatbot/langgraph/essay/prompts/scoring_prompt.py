@@ -45,38 +45,41 @@ PROMPT_TEMPLATE = """
 - nodes 為節點清單，清單中每筆資料皆有 id 以及 content，id 的開頭可辨別節點類型，c 表示主張 (Claim)、e 表示證據 (Evidence)、r 表示推論 (Reasoning)，content 則為該節點 (Node) 的內容。
 - edges 為連線清單，清單中每筆資料皆有 node1 以及 node2，代表其之間有連線、互相有關連性，但是不具備方向性。
 
+# 回應語言選擇
+請使用**英文**回覆以下的評分報告。
+
 # Output Format
 請**嚴格**以 JSON 格式輸出，不要包含任何 Markdown 標記或額外文字：
 
 {{
     "Interpretation": {{
         "coverage": "[數值]%",
-        "score": '[數值]分',
+        "score": '[數值]',
         "feedback": "[1至2句話，精準指出學生針對 statements, graphics, questions 等要素的處理狀況]"
     }},
     "Analysis": {{
         "coverage": "[數值]%",
-        "score": '[數值]分',
+        "score": '[數值]',
         "feedback": "[1至2句話，精準針對 claims, arguments, patterns 等要素的分析深度回饋]"
     }},
     "Evaluation": {{
         "coverage": "[數值]%",
-        "score": '[數值]分',
+        "score": '[數值]',
         "feedback": "[1至2句話，精準針對 alternative points of view 等要素的評估回饋]"
     }},
     "Inference": {{
         "coverage": "[數值]%",
-        "score": '[數值]分',
+        "score": '[數值]',
         "feedback": "[1至2句話，精準針對 predictions, implications 等要素的推論回饋]"
     }},
     "Explanation": {{
         "coverage": "[數值]%",
-        "score": '[數值]分',
+        "score": '[數值]',
         "feedback": "[1至2句話，精準針對 sources integration, justification 等要素的解釋回饋]"
     }},
     "Disposition": {{
         "coverage": "[數值]%",
-        "score": '[數值]分',
+        "score": '[數值]',
         "feedback": "[1至2句話，精準針對 perspective, open-mindedness 等要素的態度回饋]"
     }}
 }}
