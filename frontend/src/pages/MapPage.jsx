@@ -166,14 +166,17 @@ export const MapPage = () => {
         }
     }, [mapError, essayError]);
 
+    // 當 mapId 變化時，立即清空 essay 內容
     useEffect(() => {
-        if (essayData?.essay?.content) {
-            setEssayContent(essayData.essay.content);
+        setEssayContent('');
+    }, [mapId]);
+
+    // 當 essayData 更新時，同步內容（包括空字串）
+    useEffect(() => {
+        if (essayData?.essay) {
+            setEssayContent(essayData.essay.content || '');
         }
-        else {
-            setEssayContent('');
-        }
-    }, [essayData, mapId]);
+    }, [essayData]);
 
     const { isEssayValid, handleEssayChange } = useEssayValidation();
 
