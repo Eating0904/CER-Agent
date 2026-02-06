@@ -49,7 +49,7 @@ export const ScoringResult = ({ data, chatType = 'mindmap' }) => {
         const mindmapItems = [
             { key: 'Claim', title: 'Claim（主張）' },
             { key: 'Evidence', title: 'Evidence（證據）' },
-            { key: 'Reasoning', title: 'Reasoning（推論）' },
+            { key: 'Reasoning', title: 'Reasoning（推理）' },
         ];
 
         // 驗證 mindmap 資料結構
