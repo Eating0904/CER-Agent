@@ -10,10 +10,7 @@ const mindMapTemplateApi = baseApi.injectEndpoints({
             query: () => ({ url: 'mind-map-template/my/' }),
             providesTags: ['MindMapTemplate'],
         }),
-        getMindMapTemplate: build.query({
-            query: (id) => ({ url: `mind-map-template/${id}/` }),
-            providesTags: ['MindMapTemplate'],
-        }),
+
         createMindMapTemplate: build.mutation({
             query: (body) => ({
                 url: 'mind-map-template/',
@@ -77,7 +74,6 @@ const mindMapTemplateApi = baseApi.injectEndpoints({
 export const {
     useGetMindMapTemplatesQuery,
     useGetMyMindMapTemplatesQuery,
-    useGetMindMapTemplateQuery,
     useCreateMindMapTemplateMutation,
     useUpdateMindMapTemplateMutation,
     useDeleteMindMapTemplateMutation,

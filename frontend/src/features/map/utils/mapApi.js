@@ -26,13 +26,7 @@ const mapApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ['Map'],
         }),
-        deleteMap: build.mutation({
-            query: (id) => ({
-                url: `map/${id}/`,
-                method: 'DELETE',
-            }),
-            invalidatesTags: ['Map'],
-        }),
+
     }),
 });
 
@@ -41,7 +35,6 @@ export const {
     useGetMapQuery,
     useCreateMapFromTemplateMutation,
     useUpdateMapMutation,
-    useDeleteMapMutation,
 } = mapApi;
 
 export default mapApi;

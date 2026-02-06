@@ -52,25 +52,7 @@ const chatApi = baseApi.injectEndpoints({
             }),
             providesTags: (result, error, mapId) => [{ type: 'ChatHistory', id: mapId }],
         }),
-        saveChatMessage: build.mutation({
-            query: ({ mapId, role, content }) => ({
-                url: `chatbot/mindmap/history/${mapId}/save/`,
-                method: 'POST',
-                body: {
-                    role,
-                    content,
-                },
-            }),
-            async onQueryStarted({ mapId }, { dispatch, queryFulfilled }) {
-                try {
-                    await queryFulfilled;
-                    dispatch(chatApi.util.invalidateTags([{ type: 'ChatHistory', id: mapId }]));
-                }
-                catch {
-                    // 儲存失敗時不需要額外處理
-                }
-            },
-        }),
+
         sendEssayChatMessage: build.mutation({
             query: ({ message, mapId, essayPlainText, userActionId }) => ({
                 url: 'chatbot/essay/chat/',
@@ -128,7 +110,6 @@ const chatApi = baseApi.injectEndpoints({
 export const {
     useSendChatMessageMutation,
     useGetChatHistoryQuery,
-    useSaveChatMessageMutation,
     // Essay Chat
     useSendEssayChatMessageMutation,
     useGetEssayChatHistoryQuery,
