@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import logging
 import os
 import sys
 from datetime import timedelta
@@ -270,3 +271,14 @@ LOGGING = {
         },
     },
 }
+
+
+# Profiling
+ENABLE_PROFILING = os.getenv('ENABLE_PROFILING', 'false').lower() == 'true'
+
+if ENABLE_PROFILING:
+    INSTALLED_APPS.append('nplusone.ext.django')
+    MIDDLEWARE.insert(0, 'nplusone.ext.django.NPlusOneMiddleware')
+
+    NPLUSONE_LOGGER = logging.getLogger('django')
+    NPLUSONE_LOG_LEVEL = logging.WARN
