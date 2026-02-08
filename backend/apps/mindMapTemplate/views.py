@@ -26,34 +26,34 @@ class MindMapTemplateViewSet(viewsets.ModelViewSet):
 
         # list action: 所有人都能看到所有 template（用於 template list 頁面）
         if self.action == 'list':
-            return MindMapTemplate.objects.all()
+            return MindMapTemplate.objects.select_related('created_by').all()
 
         # my action: 返回用戶可以管理的 template（用於 management 頁面）
         if self.action == 'my':
             if user.role == 'admin':
-                return MindMapTemplate.objects.all()
+                return MindMapTemplate.objects.select_related('created_by').all()
 
             if user.role == 'teacher':
-                return MindMapTemplate.objects.filter(created_by=user)
+                return MindMapTemplate.objects.select_related('created_by').filter(created_by=user)
 
             if user.role == 'assistant':
-                return MindMapTemplate.objects.filter(permissions__assistant=user).distinct()
+                return MindMapTemplate.objects.select_related('created_by').filter(permissions__assistant=user).distinct()
 
             return MindMapTemplate.objects.none()
 
         # retrieve: 所有人都能查看單一 template
         if self.action == 'retrieve':
-            return MindMapTemplate.objects.all()
+            return MindMapTemplate.objects.select_related('created_by').all()
 
         # create/update/delete 等管理操作：根據角色過濾
         if user.role == 'admin':
-            return MindMapTemplate.objects.all()
+            return MindMapTemplate.objects.select_related('created_by').all()
 
         if user.role == 'teacher':
-            return MindMapTemplate.objects.filter(created_by=user)
+            return MindMapTemplate.objects.select_related('created_by').filter(created_by=user)
 
         if user.role == 'assistant':
-            return MindMapTemplate.objects.filter(permissions__assistant=user).distinct()
+            return MindMapTemplate.objects.select_related('created_by').filter(permissions__assistant=user).distinct()
 
         return MindMapTemplate.objects.none()
 
@@ -72,7 +72,7 @@ class MindMapTemplateViewSet(viewsets.ModelViewSet):
     def assistants(self, request, pk=None):
         """取得某個 template 的助教列表"""
         template = self.get_object()
-        permissions = template.permissions.all()
+        permissions = template.permissions.select_related('assistant', 'granted_by').all()
         serializer = TemplatePermissionSerializer(permissions, many=True)
         return Response(serializer.data)
 

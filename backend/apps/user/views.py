@@ -55,7 +55,7 @@ class UserViewSet(viewsets.GenericViewSet):
         query = request.query_params.get('q', '')
         role = request.query_params.get('role', None)
 
-        users = get_user_model().objects.all()
+        users = get_user_model().objects.select_related('lab').all()
 
         # 角色過濾
         if role:
