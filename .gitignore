@@ -10,6 +10,7 @@
 # Environments
 .env
 .env.prod
+.env.stage
 
 # Log
 *.log
