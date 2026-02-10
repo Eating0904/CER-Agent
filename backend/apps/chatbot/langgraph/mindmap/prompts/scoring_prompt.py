@@ -19,7 +19,8 @@ To meet the high-score requirements of the grading criteria, please strictly adh
 
 # ASSESSMENT PROTOCOL
 
-## Step 1: Gold Standard Definition
+## Step 1: Gold Standard Generation (Strictly based on SOURCE ARTICLE only)
+**Constraint**: Do not read the student's input yet. Construct the "Perfect Mind Map" from the SOURCE ARTICLE.
 
 ### Step 1-1: Claim Entities
 - **Extraction**: List **all** Claims derived from the SOURCE ARTICLE.
@@ -38,6 +39,7 @@ This step is divided into two dimensions; please define them separately:
 - For each association in Step 1-2, write the **underlying Warrant/Mechanism explaining** "why this data supports this claim."
 
 ## Step 2: Pre-screening
+Now load the student's `NODES LIST` and `EDGES LIST` from the input.
 
 1. Reading Scope: **SOURCE ARTICLE** provide above and content in the student's **NODES LIST**.
 2. Groundedness Check: Determine if the content in the student's **NODES LIST** is based on the **SOURCE ARTICLE**.
@@ -115,13 +117,16 @@ Scoring Criteria:
 - "Low Score Zone": Content Incorrect
     - 1 point: 
         - Content is inconsistent with the Gold Standard (**data error, trend interpretation error**). In this case, **ignore** its connection status and **do not** give sympathy points.
+        - If the truth is completely contrary to the facts, it should be **judged as 0 points**, **not 1 point**.
     - 0 points:
-        - Content contains major **fallacies** or **ambiguous** semantics, making it impossible to identify its meaning.
+        - Content contains are **unintelligible** or **semantic gibberish** or **not found in the SOURCE ARTICLE**.
+        - **Do not** give sympathy points just because it has content.
 
 - Double Check:
     - Please confirm you **did not** give a high score just because the student "make connection". If the content itself is wrong (Step 1 Check Fail), it can **only get 1 point** even if the connection is perfect.
     - If the student failed to connect because they missed writing the Claim Node, this is still considered an "Omission Error" and **cannot** be given sympathy points or treated as correct.
     - If there should be a connection between c1 and e1 in your Gold Standard, but the student's EDGES LIST does not have this combination, this is considered an "Omission Error".
+    - Please confirm again, you **did not** give 1 point just because the student has evidence content, even if the content contains serious errors. In this case, you should **give 0 point**.
 
 ### Step 3-3: Reasoning Assessment
 - **Important Note**: 
