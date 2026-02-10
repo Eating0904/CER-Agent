@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class BaseAgent(ABC):
     """所有 Agent 的抽象基類"""
 
-    def __init__(self, temperature: float = 0.7):
+    def __init__(self, temperature: float = 0.7, model: str = 'gemini-2.5-pro'):
         """
         初始化 BaseAgent
 
@@ -25,7 +25,7 @@ class BaseAgent(ABC):
             temperature: LLM 的溫度參數，控制輸出的隨機性
         """
         self.llm = ChatGoogleGenerativeAI(
-            model='gemini-2.5-pro',
+            model=model,
             temperature=temperature,
         )
 
