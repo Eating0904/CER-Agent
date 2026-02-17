@@ -210,7 +210,7 @@ LOGGING = {
     'handlers': {
         'default': {
             'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': ROTATING_FILE_HANDLER_CLASS,
             'filename': LOG_DIR / 'default.log',
             'maxBytes': 1024 * 1024 * 3,
             'backupCount': 300,
@@ -219,7 +219,7 @@ LOGGING = {
         },
         'file_error': {
             'level': 'ERROR',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': ROTATING_FILE_HANDLER_CLASS,
             'filename': LOG_DIR / 'file_error.log',
             'maxBytes': 1024 * 1024 * 3,
             'backupCount': 300,
@@ -228,7 +228,7 @@ LOGGING = {
         },
         'db': {
             'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': ROTATING_FILE_HANDLER_CLASS,
             'filename': LOG_DIR / 'db.log',
             'maxBytes': 1024 * 1024 * 3,
             'backupCount': 300,
@@ -237,7 +237,7 @@ LOGGING = {
         },
         'django': {
             'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': ROTATING_FILE_HANDLER_CLASS,
             'filename': LOG_DIR / 'django.log',
             'maxBytes': 1024 * 1024 * 3,
             'backupCount': 300,
