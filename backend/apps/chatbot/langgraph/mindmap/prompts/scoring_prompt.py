@@ -1,7 +1,6 @@
 from langchain_core.prompts import PromptTemplate
 
 from .cer_definition import CER_DEFINITION
-from .scoring_criteria import SCORING_CRITERIA
 
 PROMPT_TEMPLATE = """
 # ROLE DEFINITION
@@ -23,8 +22,10 @@ To meet the high-score requirements of the grading criteria, please strictly adh
 **Constraint**: Do not read the student's input yet. Construct the "Perfect Mind Map" from the SOURCE ARTICLE.
 
 ### Step 1-1: Claim Entities
+- **Segmentation**: Divide the SOURCE ARTICLE into distinct **Topic Blocks**.
 - **Extraction**: List **all** Claims derived from the SOURCE ARTICLE.
-- **Classification**: Classify each Claim as a **Major Claim** or a **Minor Claim**.
+- **Mapping**: Assign each Claim to its corresponding Topic Block.
+- **Classification**: Classify each Claim as a **Major Claim**(central argument of a Topic Block) or a **Minor Claim**.
 - **Elaboration**: For each Claim, explicitly list the **Context, Units, and Variables** required to support that argument.
 
 ### Step 1-2: Evidence Entities & Logical Associations
@@ -122,6 +123,9 @@ Scoring Criteria:
         - Content contains are **unintelligible** or **semantic gibberish** or **not found in the SOURCE ARTICLE**.
         - **Do not** give sympathy points just because it has content.
 
+- **Coverage Constraint**: 
+If the student's **Claim Score is 3 or lower due to Low Coverage**, the maximum score for Evidence is capped at **3 points**, even if the connections are perfect.
+
 - Double Check:
     - Please confirm you **did not** give a high score just because the student "make connection". If the content itself is wrong (Step 1 Check Fail), it can **only get 1 point** even if the connection is perfect.
     - If the student failed to connect because they missed writing the Claim Node, this is still considered an "Omission Error" and **cannot** be given sympathy points or treated as correct.
@@ -154,6 +158,9 @@ Scoring Criteria:
     2. On the other hand, **contains logical fallacies, reversed causality, or cites wrong facts**.
 - 0 points: No Reasoning content provided.
 
+- **Coverage Constraint**: 
+If the student's **Claim Score is 3 or lower due to Low Coverage**, the maximum score for Reasoning is capped at **3 points**, even if the connections are perfect.
+
 Double Check:
 - Please confirm you **did not** give a high score just because the student "make connection". If the content itself is wrong (Step 1 Check Fail), it can **only get 1 point** even if the connection is perfect.
 - If the student failed to connect because they missed writing the Claim Node or Evidence Node, this is still considered a "detail inconsistency" and **cannot** be given sympathy points or treated as correct.
@@ -176,17 +183,14 @@ Please output **strictly in JSON format**, **without** any Markdown tags or extr
 
 {{
    "Claim": {{
-        "coverage": 'None',
         "score": '[numerical values]',
         "feedback": "[In one or two sentences, precisely explain what was done well and what was lacking.]"
    }},
     "Evidence": {{
-        "coverage": 'None',
         "score": '[numerical values]',
         "feedback": "[In one or two sentences, precisely explain what was done well and what was lacking.]"
     }},
     "Reasoning": {{
-        "coverage": 'None',
         "score": '[numerical values]',
         "feedback": "[In one or two sentences, precisely explain what was done well and what was lacking.]"
     }}
@@ -196,5 +200,5 @@ Please output **strictly in JSON format**, **without** any Markdown tags or extr
 SCORING_PROMPT = PromptTemplate(
     template=PROMPT_TEMPLATE,
     input_variables=['article_content'],
-    partial_variables={'scoring_criteria': SCORING_CRITERIA, 'cer_definition': CER_DEFINITION},
+    partial_variables={'cer_definition': CER_DEFINITION},
 )

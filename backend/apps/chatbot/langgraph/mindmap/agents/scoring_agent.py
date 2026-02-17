@@ -65,9 +65,9 @@ class ScoringAgent(BaseAgent):
 
         期望 LLM 回傳 JSON 格式：
         {
-            "Claim": {"coverage": "X%", "score": "Y分", "feedback": "..."},
-            "Evidence": {"coverage": "X%", "score": "Y分", "feedback": "..."},
-            "Reasoning": {"coverage": "X%", "score": "Y分", "feedback": "..."}
+            "Claim": {"score": "Y分", "feedback": "..."},
+            "Evidence": {"score": "Y分", "feedback": "..."},
+            "Reasoning": {"score": "Y分", "feedback": "..."}
         }
 
         Args:
@@ -110,13 +110,10 @@ class ScoringAgent(BaseAgent):
                     return {}
 
             return {
-                'claim_coverage': result['Claim'].get('coverage', ''),
                 'claim_score': result['Claim'].get('score', ''),
                 'claim_feedback': result['Claim'].get('feedback', ''),
-                'evidence_coverage': result['Evidence'].get('coverage', ''),
                 'evidence_score': result['Evidence'].get('score', ''),
                 'evidence_feedback': result['Evidence'].get('feedback', ''),
-                'reasoning_coverage': result['Reasoning'].get('coverage', ''),
                 'reasoning_score': result['Reasoning'].get('score', ''),
                 'reasoning_feedback': result['Reasoning'].get('feedback', ''),
             }
