@@ -85,7 +85,7 @@ export const MapPage = () => {
 
     // 設定 Header 內容為 ViewSwitcher
     useEffect(() => {
-        const taskName = mapData?.template?.name;
+        const taskName = mapData?.template ? mapData.template.name : 'Deleted';
         setHeaderContent(<ViewSwitcher taskName={taskName} />);
 
         // 清理函數：當組件卸載時清空 Header 內容
@@ -248,11 +248,11 @@ export const MapPage = () => {
         );
     }
 
-    const isReadOnly = mapData?.template?.is_within_deadline === false;
+    const isReadOnly = !mapData?.template || mapData.template.is_within_deadline === false;
 
     // 根據 view 參數決定顯示的內容
     if (view === 'article') {
-        const articleContent = mapData?.template?.article_content || '';
+        const articleContent = mapData?.template?.article_content || 'Deleted';
         return (
             <div style={{ height: '100%', width: '100%' }}>
                 <ArticlePageContent articleContent={articleContent} />

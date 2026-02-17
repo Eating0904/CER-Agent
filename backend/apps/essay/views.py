@@ -40,7 +40,7 @@ def essay_detail(request, map_id):
     elif request.method == 'PUT':
         try:
             # 檢查期限
-            if map_instance.template and not check_template_deadline(map_instance.template):
+            if not map_instance.template or not check_template_deadline(map_instance.template):
                 logger.warning(
                     f'Template expired, cannot update essay: map_id={map_id}, user={request.user.id}'
                 )

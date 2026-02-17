@@ -136,7 +136,7 @@ class MapViewSet(viewsets.ModelViewSet):
         """更新 map 之前檢查期限"""
         instance = self.get_object()
 
-        if instance.template and not check_template_deadline(instance.template):
+        if not instance.template or not check_template_deadline(instance.template):
             logger.warning(
                 f'Template expired, cannot update map: map_id={instance.id}, user={request.user.id}'
             )

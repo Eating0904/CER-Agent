@@ -38,7 +38,7 @@ def chat(request, chat_type):
         # 取得 map 並檢查期限
         try:
             map_instance = Map.objects.get(id=map_id, user=request.user)
-            if map_instance.template and not check_template_deadline(map_instance.template):
+            if not map_instance.template or not check_template_deadline(map_instance.template):
                 logger.warning(
                     f'Template expired, cannot use chat: map_id={map_id}, user={request.user.id}'
                 )
