@@ -1,0 +1,10 @@
+[Unit]
+Description=Run CER backup every 6 hours
+
+[Timer]
+# UTC 16,22,04,10 = Asia/Taipei 00,06,12,18
+OnCalendar=*-*-* 04,10,16,22:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

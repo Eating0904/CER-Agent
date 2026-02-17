@@ -1,0 +1,8 @@
+[Unit]
+Description=CER Database Backup (PostgreSQL + ClickHouse)
+
+[Service]
+Type=oneshot
+ExecStart=/home/ccliu/CER-Agent/scripts/backup_db.sh
+User=ccliu
+WorkingDirectory=/home/ccliu/CER-Agent
