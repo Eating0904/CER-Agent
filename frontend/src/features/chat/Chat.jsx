@@ -32,7 +32,7 @@ export const Chat = ({
     onSendMessage,
     isSending,
     chatType = 'mindmap',
-    isEssayValid = true,
+
     isReadOnly = false,
 }) => {
     const { message } = App.useApp();
@@ -75,15 +75,6 @@ export const Chat = ({
 
     // 3. 處理發送訊息
     const handleSend = async () => {
-        // 如果被禁用，顯示警告並不發送
-        if (chatType === 'essay' && !isEssayValid) {
-            message.error({
-                content: 'The essay content should be in English',
-                key: 'chat-validation',
-            });
-            return;
-        }
-
         // 如果 AI 正在思考，顯示警告並不發送
         if (isSending) {
             message.error({

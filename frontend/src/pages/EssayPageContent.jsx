@@ -20,7 +20,7 @@ export const EssayPageContent = ({
     isSending,
     editorRef,
     mapContext,
-    isEssayValid = true,
+
     essayId = null,
     isReadOnly = false,
 }) => (
@@ -67,7 +67,6 @@ export const EssayPageContent = ({
                         >
                             <EssaySaveButton
                                 essayContent={essayContent}
-                                disabled={!isEssayValid}
                                 onSendMessage={handleSendMessage}
                                 setIsChatOpen={setIsChatOpen}
                                 essayId={essayId}
@@ -85,7 +84,6 @@ export const EssayPageContent = ({
             onSendMessage={handleSendMessage}
             isSending={isSending}
             chatType="essay"
-            isEssayValid={isEssayValid}
             isReadOnly={isReadOnly}
         />
 

@@ -12,7 +12,6 @@ import { useGetEssayQuery } from '../features/essay/essayApi';
 import {
     useEssayAutoSave,
     useEssaySendMessage,
-    useEssayValidation,
 } from '../features/essay/hooks';
 import { ViewSwitcher } from '../features/map/components/viewSwitcher';
 import { useMapEventNotifier } from '../features/map/events';
@@ -179,12 +178,10 @@ export const MapPage = () => {
         }
     }, [essayData]);
 
-    const { isEssayValid, handleEssayChange } = useEssayValidation();
-
-    // 處理內容改變：整合驗證與更新
+    // 處理內容改變
     const onEssayChange = useCallback((newContent) => {
-        handleEssayChange(newContent, setEssayContent);
-    }, [handleEssayChange]);
+        setEssayContent(newContent);
+    }, []);
 
     const editorRef = useRef(null);
     const handleEssayAutoSave = useEssayAutoSave(mapId, essayContent, essayData?.essay?.id);
@@ -270,7 +267,6 @@ export const MapPage = () => {
                     key={mapId}
                     essayContent={essayContent}
                     setEssayContent={onEssayChange}
-                    isEssayValid={isEssayValid}
                     isChatOpen={isChatOpen}
                     setIsChatOpen={setIsChatOpen}
                     handleSendMessage={sendEssayMessage}
