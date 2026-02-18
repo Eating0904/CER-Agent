@@ -88,7 +88,7 @@ export const SiderMenu = () => {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
             {canManage && (
                 <Button
                     onClick={() => navigate('/mind-map-template-management')}
@@ -97,6 +97,7 @@ export const SiderMenu = () => {
                         padding: '8px 8px 8px 10px',
                         borderRadius: '8px',
                         margin: '4px 8px',
+                        flexShrink: 0,
                     }}
                     icon={<SettingOutlined />}
                 >
@@ -110,80 +111,83 @@ export const SiderMenu = () => {
                     padding: '8px 8px 8px 10px',
                     borderRadius: '8px',
                     margin: '4px 8px',
+                    flexShrink: 0,
                 }}
                 icon={<PlusCircleOutlined />}
             >
                 Add New
             </Button>
-            <List
-                dataSource={maps}
-                renderItem={(map) => {
-                    const isSelected = currentMapId === String(map.id);
-                    const isHovered = hoveredMapId === map.id;
+            <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+                <List
+                    dataSource={maps}
+                    renderItem={(map) => {
+                        const isSelected = currentMapId === String(map.id);
+                        const isHovered = hoveredMapId === map.id;
 
-                    let backgroundColor = NEUTRAL_COLORS.transparent;
-                    if (isSelected) {
-                        backgroundColor = LAYOUT_COLORS.menuItemSelectedBg;
-                    }
-                    else if (isHovered) {
-                        backgroundColor = LAYOUT_COLORS.menuItemHoverBgTransparent;
-                    }
+                        let backgroundColor = NEUTRAL_COLORS.transparent;
+                        if (isSelected) {
+                            backgroundColor = LAYOUT_COLORS.menuItemSelectedBg;
+                        }
+                        else if (isHovered) {
+                            backgroundColor = LAYOUT_COLORS.menuItemHoverBgTransparent;
+                        }
 
-                    return (
-                        <List.Item
-                            key={map.id}
-                            onClick={() => handleMapClick(map)}
-                            onMouseEnter={() => setHoveredMapId(map.id)}
-                            onMouseLeave={() => setHoveredMapId(null)}
-                            style={{
-                                cursor: 'pointer',
-                                height: '40px',
-                                padding: '8px 8px 8px 10px',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                borderRadius: '8px',
-                                margin: '4px 8px',
-                                color: isSelected
-                                    ? LAYOUT_COLORS.menuItemSelectedColor
-                                    : LAYOUT_COLORS.menuItemColor,
-                                backgroundColor,
-                                transition: 'background-color 0.2s ease',
-                            }}
-                        >
-                            <div
+                        return (
+                            <List.Item
+                                key={map.id}
+                                onClick={() => handleMapClick(map)}
+                                onMouseEnter={() => setHoveredMapId(map.id)}
+                                onMouseLeave={() => setHoveredMapId(null)}
                                 style={{
-                                    flex: 1,
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
+                                    cursor: 'pointer',
+                                    height: '40px',
+                                    padding: '8px 8px 8px 10px',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    borderRadius: '8px',
+                                    margin: '4px 8px',
+                                    color: isSelected
+                                        ? LAYOUT_COLORS.menuItemSelectedColor
+                                        : LAYOUT_COLORS.menuItemColor,
+                                    backgroundColor,
+                                    transition: 'background-color 0.2s ease',
                                 }}
                             >
-                                {map.name}
-                            </div>
-                            <Dropdown
-                                menu={{ items: getMenuItems(map) }}
-                                trigger={['click']}
-                                placement="bottomLeft"
-                            >
-                                <Button
-                                    type="text"
-                                    icon={<EllipsisOutlined style={{ transform: 'rotate(90deg)', fontSize: '16px' }} />}
-                                    shape="circle"
+                                <div
                                     style={{
-                                        color: isSelected
-                                            ? LAYOUT_COLORS.menuItemSelectedColor
-                                            : LAYOUT_COLORS.menuItemColor,
-                                        flexShrink: 0,
-                                        opacity: isHovered ? 1 : 0,
-                                        visibility: isHovered ? 'visible' : 'hidden',
+                                        flex: 1,
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
                                     }}
-                                />
-                            </Dropdown>
-                        </List.Item>
-                    );
-                }}
-            />
+                                >
+                                    {map.name}
+                                </div>
+                                <Dropdown
+                                    menu={{ items: getMenuItems(map) }}
+                                    trigger={['click']}
+                                    placement="bottomLeft"
+                                >
+                                    <Button
+                                        type="text"
+                                        icon={<EllipsisOutlined style={{ transform: 'rotate(90deg)', fontSize: '16px' }} />}
+                                        shape="circle"
+                                        style={{
+                                            color: isSelected
+                                                ? LAYOUT_COLORS.menuItemSelectedColor
+                                                : LAYOUT_COLORS.menuItemColor,
+                                            flexShrink: 0,
+                                            opacity: isHovered ? 1 : 0,
+                                            visibility: isHovered ? 'visible' : 'hidden',
+                                        }}
+                                    />
+                                </Dropdown>
+                            </List.Item>
+                        );
+                    }}
+                />
+            </div>
             <RenameMapModal
                 open={renameModalState.open}
                 mapId={renameModalState.map?.id}
