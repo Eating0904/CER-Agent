@@ -9,7 +9,16 @@ from .models import Essay
 
 @admin.register(Essay)
 class EssayAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'map_name', 'template_name', 'word_count', 'created_at')
+    list_display = (
+        'id',
+        'user',
+        'map_name',
+        'template_name',
+        'word_count',
+        'scoring_remaining',
+        'scoring_updated_at',
+        'created_at',
+    )
     list_filter = ('map__template', 'updated_at')
     search_fields = ('user__username', 'user__email', 'map__name')
     ordering = ('-created_at',)
@@ -53,6 +62,7 @@ class EssayAdmin(admin.ModelAdmin):
     fieldsets = (
         ('基本資訊', {'fields': ('user', 'map', 'template_name')}),
         ('內容資訊', {'fields': ('word_count', 'formatted_content')}),
+        ('評分資訊', {'fields': ('scoring_remaining', 'scoring_updated_at')}),
         ('時間資訊', {'fields': ('created_at', 'updated_at')}),
     )
 
@@ -62,6 +72,8 @@ class EssayAdmin(admin.ModelAdmin):
         'template_name',
         'word_count',
         'formatted_content',
+        'scoring_remaining',
+        'scoring_updated_at',
         'created_at',
         'updated_at',
     )

@@ -25,6 +25,7 @@ export const EssayPageContent = ({
 
     essayId = null,
     isReadOnly = false,
+    scoringRemaining,
 }) => (
     <>
         <div style={{ height: '100%', display: 'flex' }}>
@@ -76,6 +77,7 @@ export const EssayPageContent = ({
                                     setIsChatOpen={setIsChatOpen}
                                     essayId={essayId}
                                     isSending={isSending}
+                                    scoringRemaining={scoringRemaining}
                                 />
                             </Space>
                         </div>

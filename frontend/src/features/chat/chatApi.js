@@ -40,9 +40,13 @@ const chatApi = baseApi.injectEndpoints({
                             }),
                         );
                     }
+                    // 4. 評分後刷新 Map 資料以更新剩餘次數
+                    if (data?.scoring_remaining !== undefined) {
+                        dispatch(baseApi.util.invalidateTags(['Map']));
+                    }
                 }
                 catch {
-                    // 4. 如果失敗，不需要撤銷（user message 已發送，只是 AI 沒回應）
+                    // 5. 如果失敗，不需要撤銷（user message 已發送，只是 AI 沒回應）
                 }
             },
         }),
@@ -92,9 +96,13 @@ const chatApi = baseApi.injectEndpoints({
                             }),
                         );
                     }
+                    // 4. 評分後刷新 Essay 資料以更新剩餘次數
+                    if (data?.scoring_remaining !== undefined) {
+                        dispatch(baseApi.util.invalidateTags([{ type: 'Essay', id: mapId }]));
+                    }
                 }
                 catch {
-                    // 4. 如果失敗，不需要撤銷（user message 已發送，只是 AI 沒回應）
+                    // 5. 如果失敗，不需要撤銷（user message 已發送，只是 AI 沒回應）
                 }
             },
         }),

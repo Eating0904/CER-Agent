@@ -35,6 +35,7 @@ export const MapPageContent = ({
     handleCloseFeedback,
     isSending,
     isReadOnly = false,
+    scoringRemaining,
 }) => (
     <>
         <MapProvider value={mapContext}>
@@ -63,6 +64,7 @@ export const MapPageContent = ({
                                         onSendMessage={handleSendMessage}
                                         setIsChatOpen={setIsChatOpen}
                                         isSending={isSending}
+                                        scoringRemaining={scoringRemaining}
                                     />
                                 </Space>
                             </div>

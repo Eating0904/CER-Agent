@@ -8,8 +8,8 @@ class EssaySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Essay
-        fields = ['id', 'map', 'user', 'content', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        fields = ['id', 'map', 'user', 'content', 'scoring_remaining', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'scoring_remaining', 'created_at', 'updated_at']
 
 
 class EssayContentSerializer(serializers.ModelSerializer):

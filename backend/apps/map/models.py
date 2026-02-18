@@ -12,6 +12,10 @@ class Map(models.Model):
     )
     nodes = models.JSONField(default=list)
     edges = models.JSONField(default=list)
+    scoring_remaining = models.IntegerField(default=5, help_text='心智圖評分剩餘次數')
+    scoring_updated_at = models.DateTimeField(
+        null=True, blank=True, help_text='上次評分次數變動時間（供未來重置機制使用）'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

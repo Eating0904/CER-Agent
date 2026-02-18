@@ -275,6 +275,7 @@ export const MapPage = () => {
                     mapContext={mapContext}
                     essayId={essayData?.essay?.id}
                     isReadOnly={isReadOnly}
+                    scoringRemaining={essayData?.essay?.scoring_remaining}
                 />
             </div>
         );
@@ -295,6 +296,7 @@ export const MapPage = () => {
                 handleCloseFeedback={handleCloseFeedback}
                 isSending={isMapSending}
                 isReadOnly={isReadOnly}
+                scoringRemaining={mapData?.scoring_remaining}
             />
         </div>
     );

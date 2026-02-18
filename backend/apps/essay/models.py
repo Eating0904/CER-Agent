@@ -12,6 +12,10 @@ class Essay(models.Model):
         User, on_delete=models.CASCADE, related_name='essays', help_text='擁有者'
     )
     content = models.TextField(blank=True, default='', help_text='Essay 內容')
+    scoring_remaining = models.IntegerField(default=5, help_text='文章評分剩餘次數')
+    scoring_updated_at = models.DateTimeField(
+        null=True, blank=True, help_text='上次評分次數變動時間（供未來重置機制使用）'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

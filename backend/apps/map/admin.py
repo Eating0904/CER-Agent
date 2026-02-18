@@ -15,6 +15,8 @@ class MapAdmin(admin.ModelAdmin):
         'nodes_count',
         'edges_count',
         'essay_id',
+        'scoring_remaining',
+        'scoring_updated_at',
         'created_at',
         'updated_at',
     )
@@ -62,6 +64,7 @@ class MapAdmin(admin.ModelAdmin):
     fieldsets = (
         ('基本資訊', {'fields': ('id', 'user', 'name', 'essay_id', 'template_name')}),
         ('節點和邊資料', {'fields': ('formatted_nodes', 'formatted_edges')}),
+        ('評分資訊', {'fields': ('scoring_remaining', 'scoring_updated_at')}),
         ('時間資訊', {'fields': ('created_at', 'updated_at')}),
     )
 
@@ -73,6 +76,8 @@ class MapAdmin(admin.ModelAdmin):
         'template_name',
         'formatted_nodes',
         'formatted_edges',
+        'scoring_remaining',
+        'scoring_updated_at',
         'created_at',
         'updated_at',
     )

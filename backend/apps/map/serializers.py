@@ -10,8 +10,8 @@ class MapListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Map
-        fields = ['id', 'name', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'scoring_remaining', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'scoring_remaining', 'created_at', 'updated_at']
 
 
 class MapSerializer(serializers.ModelSerializer):
@@ -21,8 +21,18 @@ class MapSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Map
-        fields = ['id', 'name', 'user', 'template', 'nodes', 'edges', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        fields = [
+            'id',
+            'name',
+            'user',
+            'template',
+            'nodes',
+            'edges',
+            'scoring_remaining',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = ['id', 'scoring_remaining', 'created_at', 'updated_at']
 
 
 class CreateMapFromTemplateSerializer(serializers.Serializer):
