@@ -11,10 +11,7 @@ import { useUpdateEssayMutation } from './essayApi';
 
 export const EssaySaveButton = ({
     essayContent,
-    onSendMessage,
-    setIsChatOpen,
     essayId = null,
-    isSending = false,
 }) => {
     const { message } = App.useApp();
     const [searchParams] = useSearchParams();
@@ -25,32 +22,19 @@ export const EssaySaveButton = ({
 
     const handleSave = async () => {
         try {
-            // 1. 先儲存 essay
             await updateEssay({
                 mapId,
                 content: essayContent,
             }).unwrap();
             message.success('Essay saved successfully');
 
-            // 2. 記錄點擊 Save 按鈕（無論是否執行評分都要記錄）
+            // 記錄手動儲存 essay
             trackAction(
                 'manual_save_essay',
                 {},
                 mapId ? parseInt(mapId, 10) : null,
                 essayId ? parseInt(essayId, 10) : null,
             );
-
-            // 3. 檢查是否有訊息正在處理中
-            if (isSending) {
-                message.info('Scoring skipped. Please wait for the current response to finish.');
-                return;
-            }
-
-            // 4. 開啟聊天室
-            setIsChatOpen(true);
-
-            // 5. 自動發送 [scoring] 訊息
-            await onSendMessage('[scoring]');
         }
         catch (error) {
             message.error('Failed to save');

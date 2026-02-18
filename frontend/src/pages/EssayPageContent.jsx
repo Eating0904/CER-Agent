@@ -1,9 +1,11 @@
+import { Space } from 'antd';
 import Split from 'react-split';
 
 import { Chat } from '../features/chat/Chat';
 import { FloatingChatButton } from '../features/chat/FloatingChatButton';
 import { EssayEditor } from '../features/essay/EssayEditor';
 import { EssaySaveButton } from '../features/essay/EssaySaveButton';
+import { EssayScoreButton } from '../features/essay/EssayScoreButton';
 import { BaseMap } from '../features/map/BaseMap';
 import { MapProvider } from '../features/map/MapProvider';
 
@@ -62,16 +64,20 @@ export const EssayPageContent = ({
                                 top: '10px',
                                 right: '16px',
                                 zIndex: 10,
-                                width: '100px',
                             }}
                         >
-                            <EssaySaveButton
-                                essayContent={essayContent}
-                                onSendMessage={handleSendMessage}
-                                setIsChatOpen={setIsChatOpen}
-                                essayId={essayId}
-                                isSending={isSending}
-                            />
+                            <Space>
+                                <EssaySaveButton
+                                    essayContent={essayContent}
+                                    essayId={essayId}
+                                />
+                                <EssayScoreButton
+                                    onSendMessage={handleSendMessage}
+                                    setIsChatOpen={setIsChatOpen}
+                                    essayId={essayId}
+                                    isSending={isSending}
+                                />
+                            </Space>
                         </div>
                     )}
                 </div>

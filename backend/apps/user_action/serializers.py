@@ -57,6 +57,7 @@ class UserActionSerializer(serializers.ModelSerializer):
             'click_scoring_mindmap',
             'chat_in_essay',
             'manual_save_essay',
+            'click_scoring_essay',
             'essay_edit_start',
             'essay_edit_end',
             'page_view_start',
