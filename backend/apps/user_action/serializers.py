@@ -62,6 +62,7 @@ class UserActionSerializer(serializers.ModelSerializer):
             'essay_edit_end',
             'page_view_start',
             'page_view_end',
+            'paste_detected',
         ]
 
         if value not in valid_action_types:

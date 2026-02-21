@@ -1,15 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Input } from 'antd';
+import { App, Input } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
 import { NEUTRAL_COLORS, SHADOW_COLORS } from '../../../../constants/colors';
+import {
+    calcPasteScore,
+    PASTE_SCORE_THRESHOLD_MINDMAP,
+    showPasteWarning,
+} from '../../../../constants/pasteDetection';
 import { useUserActionTracker } from '../../../userAction/hooks';
 import { useMapContext } from '../../hooks';
 
 const { TextArea } = Input;
 
 export const ExpandableInput = () => {
+    const { notification } = App.useApp();
     const [isFocused, setIsFocused] = useState(false);
     const [localContent, setLocalContent] = useState('');
     const containerRef = useRef(null);
@@ -34,6 +40,20 @@ export const ExpandableInput = () => {
         setLocalContent(newContent);
         if (selectedNode) {
             updateNodeContent(selectedNode.id, newContent);
+        }
+    };
+
+    const handlePaste = (e) => {
+        const pastedText = e.clipboardData?.getData('text/plain') || '';
+        const { score, cjkCount, wordCount } = calcPasteScore(pastedText);
+
+        if (score > PASTE_SCORE_THRESHOLD_MINDMAP) {
+            showPasteWarning(notification);
+            trackAction(
+                'paste_detected',
+                { paste_score: score, cjk_count: cjkCount, word_count: wordCount, source: 'mindmap_node', node_id: selectedNode?.id },
+                mapId ? parseInt(mapId, 10) : null,
+            );
         }
     };
 
@@ -66,6 +86,7 @@ export const ExpandableInput = () => {
             <TextArea
                 value={localContent}
                 onChange={handleChange}
+                onPaste={handlePaste}
                 placeholder={selectedNode ? 'Edit node content...' : 'Select a node to edit...'}
                 disabled={!selectedNode}
                 onFocus={handleFocus}

@@ -1,7 +1,13 @@
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
+import { App } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 
+import {
+    calcPasteScore,
+    PASTE_SCORE_THRESHOLD_ESSAY,
+    showPasteWarning,
+} from '../../constants/pasteDetection';
 import { SimpleEditor } from '../../tiptap-ui/tiptap-templates/simple/simple-editor';
 import { useUserActionTracker } from '../userAction/hooks';
 
@@ -12,6 +18,7 @@ export const EssayEditor = ({
     disabled = false,
     essayId = null,
 }) => {
+    const { notification } = App.useApp();
     const [searchParams] = useSearchParams();
     const mapId = searchParams.get('mapId');
     const { trackAction } = useUserActionTracker();
@@ -40,6 +47,19 @@ export const EssayEditor = ({
         }
     };
 
+    const handlePasteDetected = useCallback((pastedText) => {
+        const { score, cjkCount, wordCount } = calcPasteScore(pastedText);
+        if (score > PASTE_SCORE_THRESHOLD_ESSAY) {
+            showPasteWarning(notification);
+            trackAction(
+                'paste_detected',
+                { paste_score: score, cjk_count: cjkCount, word_count: wordCount, source: 'essay' },
+                mapId ? parseInt(mapId, 10) : null,
+                essayId ? parseInt(essayId, 10) : null,
+            );
+        }
+    }, [trackAction, mapId, essayId, notification]);
+
     return (
         <div
             style={{
@@ -58,6 +78,7 @@ export const EssayEditor = ({
                     editorRef={editorRef}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
+                    onPasteDetected={handlePasteDetected}
                     editable={!disabled}
                 />
             </div>

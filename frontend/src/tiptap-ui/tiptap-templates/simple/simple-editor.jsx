@@ -124,11 +124,16 @@ const MobileToolbarContent = ({
   </>
 )
 
-export function SimpleEditor({ content, onChange, editorRef, onFocus, onBlur, editable = true }) {
+export function SimpleEditor({ content, onChange, editorRef, onFocus, onBlur, onPasteDetected, editable = true }) {
   const isMobile = useIsBreakpoint()
   const { height } = useWindowSize()
   const [mobileView, setMobileView] = useState("main")
   const toolbarRef = useRef(null)
+  const onPasteDetectedRef = useRef(onPasteDetected)
+
+  useEffect(() => {
+    onPasteDetectedRef.current = onPasteDetected
+  }, [onPasteDetected])
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -140,6 +145,13 @@ export function SimpleEditor({ content, onChange, editorRef, onFocus, onBlur, ed
         autocapitalize: "off",
         "aria-label": "Main content area, start typing to enter text.",
         class: "simple-editor",
+      },
+      handlePaste: (view, event) => {
+        const pastedText = event.clipboardData?.getData('text/plain') || ''
+        if (pastedText && onPasteDetectedRef.current) {
+          onPasteDetectedRef.current(pastedText)
+        }
+        return false // 不阻止貼上
       },
     },
     extensions: [
