@@ -18,7 +18,7 @@ class EssayScoringAgent(BaseAgent):
     """Essay 評分 Agent"""
 
     def __init__(self):
-        super().__init__(temperature=0.5)
+        super().__init__(temperature=0.5, model='gemini-3-pro-preview')
         self.prompt_template = SCORING_PROMPT
 
     def prepare_messages(
@@ -28,7 +28,7 @@ class EssayScoringAgent(BaseAgent):
         **kwargs,
     ) -> List[BaseMessage]:
         """
-        準備訊息：傳入 essay_content 和當前的 mind_map_data
+        準備訊息：傳入 essay_content
 
         Args:
             messages: 原始對話歷史
@@ -40,18 +40,15 @@ class EssayScoringAgent(BaseAgent):
         """
         last_message = messages[-1]
         essay_content = ''
-        mind_map_data = {}
 
         try:
             content = json.loads(last_message.content)
             essay_content = content.get('context', {}).get('essay_content', '')
-            mind_map_data = content.get('context', {}).get('mind_map_data', {})
         except (json.JSONDecodeError, AttributeError):
             pass
 
         system_message_content = self.prompt_template.format(
             article_content=article_content,
-            cer_mind_map_data=json.dumps(mind_map_data, ensure_ascii=False),
         )
 
         human_message_content = essay_content if essay_content else '（尚未撰寫）'
@@ -75,12 +72,11 @@ class EssayScoringAgent(BaseAgent):
         try:
             result = parse_llm_json_response(response.content)
             required_keys = [
-                'Interpretation',
-                'Analysis',
-                'Evaluation',
-                'Inference',
-                'Explanation',
-                'Disposition',
+                'Explanation_of_Issues',
+                'Evidence_Integration',
+                'Influence_of_Context',
+                'Students_Position',
+                'Conclusions',
             ]
             for key in required_keys:
                 if key not in result:
@@ -106,12 +102,11 @@ class EssayScoringAgent(BaseAgent):
         try:
             result = parse_llm_json_response(response.content)
             required_keys = [
-                'Interpretation',
-                'Analysis',
-                'Evaluation',
-                'Inference',
-                'Explanation',
-                'Disposition',
+                'Explanation_of_Issues',
+                'Evidence_Integration',
+                'Influence_of_Context',
+                'Students_Position',
+                'Conclusions',
             ]
 
             for key in required_keys:
@@ -119,24 +114,18 @@ class EssayScoringAgent(BaseAgent):
                     return {}
 
             return {
-                'interpretation_coverage': result['Interpretation'].get('coverage', ''),
-                'interpretation_score': result['Interpretation'].get('score', ''),
-                'interpretation_feedback': result['Interpretation'].get('feedback', ''),
-                'analysis_coverage': result['Analysis'].get('coverage', ''),
-                'analysis_score': result['Analysis'].get('score', ''),
-                'analysis_feedback': result['Analysis'].get('feedback', ''),
-                'evaluation_coverage': result['Evaluation'].get('coverage', ''),
-                'evaluation_score': result['Evaluation'].get('score', ''),
-                'evaluation_feedback': result['Evaluation'].get('feedback', ''),
-                'inference_coverage': result['Inference'].get('coverage', ''),
-                'inference_score': result['Inference'].get('score', ''),
-                'inference_feedback': result['Inference'].get('feedback', ''),
-                'explanation_coverage': result['Explanation'].get('coverage', ''),
-                'explanation_score': result['Explanation'].get('score', ''),
-                'explanation_feedback': result['Explanation'].get('feedback', ''),
-                'disposition_coverage': result['Disposition'].get('coverage', ''),
-                'disposition_score': result['Disposition'].get('score', ''),
-                'disposition_feedback': result['Disposition'].get('feedback', ''),
+                'explanation_of_issues_score': result['Explanation_of_Issues'].get('score', ''),
+                'explanation_of_issues_feedback': result['Explanation_of_Issues'].get(
+                    'feedback', ''
+                ),
+                'evidence_integration_score': result['Evidence_Integration'].get('score', ''),
+                'evidence_integration_feedback': result['Evidence_Integration'].get('feedback', ''),
+                'influence_of_context_score': result['Influence_of_Context'].get('score', ''),
+                'influence_of_context_feedback': result['Influence_of_Context'].get('feedback', ''),
+                'students_position_score': result['Students_Position'].get('score', ''),
+                'students_position_feedback': result['Students_Position'].get('feedback', ''),
+                'conclusions_score': result['Conclusions'].get('score', ''),
+                'conclusions_feedback': result['Conclusions'].get('feedback', ''),
             }
 
         except Exception as e:

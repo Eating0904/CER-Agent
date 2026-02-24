@@ -19,12 +19,11 @@ export const ScoringResult = ({ data, chatType = 'mindmap' }) => {
     if (chatType === 'essay') {
         // Essay 評分項目配置
         const essayItems = [
-            { key: 'Interpretation', title: 'Interpretation（詮釋）' },
-            { key: 'Analysis', title: 'Analysis（分析）' },
-            { key: 'Evaluation', title: 'Evaluation（評估）' },
-            { key: 'Inference', title: 'Inference（推論）' },
-            { key: 'Explanation', title: 'Explanation（解釋）' },
-            { key: 'Disposition', title: 'Disposition（傾向）' },
+            { key: 'Explanation_of_Issues', title: 'Explanation of Issues（議題解釋）' },
+            { key: 'Evidence_Integration', title: 'Evidence Integration（證據整合）' },
+            { key: 'Influence_of_Context', title: 'Influence of Context（脈絡影響）' },
+            { key: 'Students_Position', title: "Student's Position（學生立場）" },
+            { key: 'Conclusions', title: 'Conclusions（結論）' },
         ];
 
         // 驗證 essay 資料結構
@@ -93,7 +92,7 @@ export const ScoringResult = ({ data, chatType = 'mindmap' }) => {
                                 {item.data.score}
                             </Text>
                             <Text style={{ fontSize: '12px', color: '#000000', marginLeft: 4 }}>
-                                / {chatType === 'mindmap' ? '5' : '6'}
+                                / {chatType === 'mindmap' ? '5' : '4'}
                             </Text>
                         </div>
                         <div>

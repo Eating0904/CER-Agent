@@ -1,188 +1,76 @@
 """Critical Thinking 評分標準 (Scoring Criteria)"""
 
 SCORING_CRITERIA = """
-## Interpretation (詮釋)
+# GLOSSARY
+- Ambiguity: Information that may be interpreted in more than one way.
+- Assumptions: Ideas, conditions, or beliefs (often implicit or unstated) that are "taken for granted or accepted as true without proof".
+- Context: The historical, ethical, political, cultural, environmental, or circumstantial settings or conditions that influence and complicate the consideration of any issues, ideas, artifacts, and events.
 
-### 分數 6
-* Clearly and accurately identifies all of the major viewpoints.
-* Accurately interprets evidence, statements, graphics, questions, etc. with precision and detail.
-* Demonstrates confident ability to work with the key concepts and terminology.
+## Dimension 1: Explanation of Issues
+### 0 分
+- Issue/problem to be considered critically is not stated or identified.
+### 1 分
+- Issue/problem to be considered critically is stated without clarification or description.
+### 2 分
+- Issue/problem to be considered critically is stated but description leaves some terms undefined, ambiguities unexplored, boundaries undetermined, and/or backgrounds unknown.
+### 3 分
+- Issue/problem to be considered critically is stated, described, and clarified so that understanding is not seriously impeded by omissions.
+### 4 分
+- Issue/problem to be considered critically is stated clearly and described comprehensively, delivering all relevant information necessary for full understanding.
 
-### 分數 5
-* Clearly identifies all of the major viewpoints.
-* Accurately interprets evidence, statements, graphics, questions, etc.
-* Demonstrates a strong ability to work with the key concepts and terminology.
+## Dimension 2: Evidence
+### 0 分
+- Information is not taken from any source(s), or the information provided is completely irrelevant to the investigation of a point of view or conclusion.
+### 1 分
+- Information is taken from source(s) without any interpretation/evaluation. 
+- Viewpoints of experts are taken as fact, without question.
+### 2 分
+- Information is taken from source(s) with some interpretation/evaluation, but not enough to develop a coherent analysis or synthesis. 
+- Viewpoints of experts are taken as mostly fact, with little questioning.
+### 3 分
+- Information is taken from source(s) with enough interpretation/evaluation to develop a coherent analysis or synthesis. 
+- Viewpoints of experts are subject to questioning.
+### 4 分
+- Information is taken from source(s) with enough interpretation/evaluation to develop a comprehensive analysis or synthesis. 
+- Viewpoints of experts are questioned thoroughly.
 
-### 分數 4
-* Identifies not only the major viewpoints, but recognizes some of the nuances of those positions.
-* Interprets evidence, statements, graphics, questions, etc.
-* Demonstrates a clear ability to work with the key concepts.
+## Dimension 3: Influence of Context and Assumptions
+### 0 分
+- Shows no awareness of present assumptions and does not identify any contexts when presenting a position.
+### 1 分
+- Shows an emerging awareness of present assumptions (sometimes labels assertions as assumptions). 
+- Begins to identify some contexts when presenting a position.
+### 2 分
+- Questions some assumptions. Identifies several relevant contexts when presenting a position. 
+- May be more aware of others' assumptions than one's own (or vice versa).
+### 3 分
+- Identifies own and others' assumptions and several relevant contexts when presenting a position.
+### 4 分
+- Thoroughly (systematically and methodically) analyzes own and others' assumptions and carefully evaluates the relevance of contexts when presenting a position.
 
-### 分數 3
-* Identifies only the basics of each viewpoint, relying heavily on quotes and failing to articulate points in their own words.
-* Interprets some evidence, statements, graphics, questions, etc.
-* Demonstrates an uneven or shaky ability to work with the key concepts.
+## Dimension 4: Student's Position
+### 0 分
+- Specific position (perspective, thesis/hypothesis) is not stated.
+### 1 分
+- Specific position (perspective, thesis/hypothesis) is stated but is simplistic and obvious.
+### 2 分
+- Specific position (perspective, thesis/hypothesis) acknowledges different sides of an issue.
+### 3 分
+- Specific position (perspective, thesis/hypothesis) takes into account the complexities of an issue. 
+- Others' points of view are acknowledged within position (perspective, thesis/hypothesis).
+### 4 分
+- Specific position (perspective, thesis/hypothesis) is imaginative, taking into account the complexities of an issue. Limits of position (perspective, thesis/ hypothesis) are acknowledged. 
+- Others' points of view are synthesized within position (perspective, thesis/hypothesis).
 
-### 分數 2
-* Identifies a few viewpoints or instead identifies only personal position or point of view.
-* Offers incorrect or no interpretations of evidence, statements, graphics, questions, etc.
-* Demonstrates an extremely limited ability to work with the key concepts.
-
-### 分數 1
-* Does not identify the viewpoint, but offers a biased position based on previously held beliefs.
-* Offers no or only biased interpretations of evidence, statements, graphics, questions, information, or the points of view of others.
-* Demonstrates no ability to work with the key concepts.
-
----
-
-## Analysis (分析)
-
-### 分數 6
-* Thoughtfully analyzes all points of view to present a thorough evaluation of similarities and differences.
-* Accurately identifies important claims, arguments, patterns, and/or assumptions in the evidence.
-* Consistently demonstrates clear, accurate, detailed and comprehensive ability to organize the information for further examination.
-
-### 分數 5
-* Analyzes all points of view to present a thorough evaluation of similarities and differences.
-* Accurately identifies claims, arguments, patterns, and/or assumptions in the evidence.
-* Consistently demonstrates an accurate and detailed ability to organize the information for further examination.
-
-### 分數 4
-* Analyzes all points of view to present an evaluation of similarities and differences.
-* Identifies claims, arguments, patterns, and/or assumptions in the evidence.
-* Demonstrates clear ability to organize the information for further examination.
-
-### 分數 3
-* Analyzes all points of view to present an evaluation of obvious or oversimplified similarities and differences.
-* Superficially identifies the basic claims, arguments, patterns, and/or assumptions in the evidence.
-* Demonstrates an adequate ability to organize the information for further examination.
-
-### 分數 2
-* Presents a superficial analysis of similarities and differences between the various points of view.
-* Incorrectly identifies claims, arguments, patterns, and/or assumptions in the evidence.
-* Demonstrates an inadequate ability to organize the information for further examination.
-
-### 分數 1
-* Presents little to no analysis of similarities and differences between the various points of view.
-* Does not identify claims, arguments, patterns, and/or assumptions in the evidence.
-* Demonstrates no ability to organize the information for further examination.
-
----
-
-## Evaluation (評估)
-
-### 分數 6
-* Identifies the salient arguments (reasons and claims) from multiple perspectives with a clear explanation of each perspective.
-* Thoughtfully analyzes and evaluates all major alternative points of view.
-
-### 分數 5
-* Identifies the salient arguments (reasons and claims) from multiple perspectives.
-* Offers analyses and evaluations of most alternative points of view.
-
-### 分數 4
-* Identifies relevant arguments (reasons and claims) from multiple perspectives.
-* Offers analyses and evaluations of alternative points of view.
-
-### 分數 3
-* Superficially identifies some arguments (reasons and claims) from main perspectives.
-* Superficially evaluates obvious alternative points of view.
-
-### 分數 2
-* Hastily dismisses relevant counter-arguments.
-* Ignores obvious and important alternative points of view.
-
-### 分數 1
-* Fails to identify relevant counter-arguments.
-* Ignore all alternative points of view.
-
----
-
-## Inference (推論)
-
-### 分數 6
-* Demonstrates confident ability to apply or extend key concepts to make predictions, drawing inferences, and analyzing implications.
-* Demonstrates surprising/insightful ability to take concepts further into new territory with broader generalizations and implications.
-
-### 分數 5
-* Demonstrates a clear ability to apply or extend key concepts to make predictions, drawing inferences, and analyzing implications.
-* Demonstrates strong ability to take concepts further into new territory with broader generalizations and implications.
-
-### 分數 4
-* Demonstrates an adequate ability to apply or extend key concepts to make predictions, drawing inferences, and analyzing implications.
-* Demonstrates an adequate ability to take concepts further into new territory with broader generalizations and implications.
-
-### 分數 3
-* Demonstrates a shaky ability to apply or extend key concepts to make predictions, drawing inferences, and analyzing implications.
-* Demonstrates an uneven ability to take concepts further into new territory with broader generalizations and implications.
-
-### 分數 2
-* Demonstrates inadequate ability to apply or extend key concepts to make predictions, drawing inferences, and analyzing implications.
-* Demonstrates a superficial ability to take concepts further into new territory with broader generalizations.
-
-### 分數 1
-* Demonstrates no ability to apply or extend key concepts to make predictions, drawing inferences, and analyzing implications.
-* Demonstrates no ability to take concepts further into new territory with broader generalizations.
-
----
-
-## Explanation (解釋)
-
-### 分數 6
-* Explicitly integrates key sources to support conclusions that address the question.
-* Clearly justifies and explains assumptions and reasons with evidence.
-* Demonstrates warranted, judicious, non-fallacious conclusions by using strong, persuasive support.
-
-### 分數 5
-* Integrates multiple sources to support conclusions that address the question.
-* Justifies and explains some assumptions and reasons with evidence.
-* Demonstrates warranted, non-fallacious conclusions by using strong support.
-
-### 分數 4
-* Utilizes information from several sources, but excludes an important view point.
-* Justifies and explains reasons with evidence.
-* Conclusions appear reasonable through use of support.
-
-### 分數 3
-* Correctly references information from few sources, but excludes any sources that support a conflicting view.
-* Justifies and explains some reasons with evidence.
-* Conclusions are acceptable, but support is weak.
-
-### 分數 2
-* Misuse of information or vague reference of information from the sources.
-* Seldom justifies or explains reasons with evidence.
-* Conclusions are limited because support is lacking.
-
-### 分數 1
-* References information from none of the relevant material
-* Does explain or explicitly state reasons with evidence.
-* Argues using fallacious or irrelevant reasons, and unwarranted, unsupported claims.
-
----
-
-## Disposition (傾向)
-
-### 分數 6
-* Objectively follows where evidence leads by considering the provided context.
-* Students demonstrate a relativist view of knowledge through the adoption of a consistent point of view with appropriate justification as well as awareness of alternative viewpoints.
-
-### 分數 5
-* Fair-mindedly follows where evidence leads by considering the provided context.
-* Students demonstrate a relativist view of knowledge through the adoption of a clear point of view with appropriate justification as well as awareness of alternative viewpoints.
-
-### 分數 4
-* Fair-mindedly follows where evidence leads by addressing the provided context.
-* Students demonstrate an understanding of the existence of multiple perspectives.
-
-### 分數 3
-* Follows where evidence leads, but fails to consider the provided context.
-* Students demonstrate an understanding of the existence of multiple perspectives, but struggle to evaluate these diverse perspectives.
-
-### 分數 2
-* Defends only with a single perspective and fails to discuss other possible perspectives, especially those salient to the provided context.
-* Students demonstrate a dualist view of knowledge through a treatment of the issue in terms of right/wrong, black/white, and good/bad.
-
-### 分數 1
-* Maintains views based on preconceptions and exhibits close-mindedness or hostility to reason.
-* Students demonstrate a dualist view of knowledge through a treatment of the issue in terms of right/wrong, black/white, and good/bad, and focuses on only one side of the issue.
-
+## Dimension 5: Conclusions and Related Outcomes
+### 0 分
+- Conclusion is not provided, or is completely disconnected from the information discussed.
+### 1 分
+- Conclusion is inconsistently tied to some of the information discussed; related outcomes (consequences and implications) are oversimplified.
+### 2 分
+- Conclusion is logically tied to information (because information is chosen to fit the desired conclusion); some related outcomes (consequences and implications) are identified clearly.
+### 3 分
+- Conclusion is logically tied to a range of information, including opposing viewpoints; related outcomes (consequences and implications) are identified clearly.
+### 4 分
+- Conclusions and related outcomes (consequences and implications) are logical and reflect student's informed evaluation and ability to place evidence and perspectives discussed in priority order.
 """
