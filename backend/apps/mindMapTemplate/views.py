@@ -37,7 +37,11 @@ class MindMapTemplateViewSet(viewsets.ModelViewSet):
                 return MindMapTemplate.objects.select_related('created_by').filter(created_by=user)
 
             if user.role == 'assistant':
-                return MindMapTemplate.objects.select_related('created_by').filter(permissions__assistant=user).distinct()
+                return (
+                    MindMapTemplate.objects.select_related('created_by')
+                    .filter(permissions__assistant=user)
+                    .distinct()
+                )
 
             return MindMapTemplate.objects.none()
 
@@ -53,7 +57,11 @@ class MindMapTemplateViewSet(viewsets.ModelViewSet):
             return MindMapTemplate.objects.select_related('created_by').filter(created_by=user)
 
         if user.role == 'assistant':
-            return MindMapTemplate.objects.select_related('created_by').filter(permissions__assistant=user).distinct()
+            return (
+                MindMapTemplate.objects.select_related('created_by')
+                .filter(permissions__assistant=user)
+                .distinct()
+            )
 
         return MindMapTemplate.objects.none()
 
