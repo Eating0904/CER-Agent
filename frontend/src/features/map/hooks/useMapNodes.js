@@ -32,7 +32,8 @@ export const useMapNodes = (mapData) => {
             setNodes(JSON.parse(JSON.stringify(mapData.nodes || [])));
             setEdges(JSON.parse(JSON.stringify(mapData.edges || [])));
         }
-    }, [mapData]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mapData?.id]);
 
     useEffect(() => {
         const prevNodeId = prevSelectedNodeIdRef.current;

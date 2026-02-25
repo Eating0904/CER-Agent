@@ -176,7 +176,8 @@ export const MapPage = () => {
         if (essayData?.essay) {
             setEssayContent(essayData.essay.content || '');
         }
-    }, [essayData]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [essayData?.essay?.id]);
 
     // 處理內容改變
     const onEssayChange = useCallback((newContent) => {

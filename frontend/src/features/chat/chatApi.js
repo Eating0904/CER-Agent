@@ -40,9 +40,13 @@ const chatApi = baseApi.injectEndpoints({
                             }),
                         );
                     }
-                    // 4. 評分後刷新 Map 資料以更新剩餘次數
+                    // 4. 評分後直接更新 Map cache 中的剩餘次數（不 refetch，避免覆蓋未儲存的內容）
                     if (data?.scoring_remaining !== undefined) {
-                        dispatch(baseApi.util.invalidateTags(['Map']));
+                        dispatch(
+                            baseApi.util.updateQueryData('getMap', mapId, (draft) => {
+                                draft.scoring_remaining = data.scoring_remaining;
+                            }),
+                        );
                     }
                 }
                 catch {
@@ -96,9 +100,15 @@ const chatApi = baseApi.injectEndpoints({
                             }),
                         );
                     }
-                    // 4. 評分後刷新 Essay 資料以更新剩餘次數
+                    // 4. 評分後直接更新 Essay cache 中的剩餘次數（不 refetch，避免覆蓋未儲存的內容）
                     if (data?.scoring_remaining !== undefined) {
-                        dispatch(baseApi.util.invalidateTags([{ type: 'Essay', id: mapId }]));
+                        dispatch(
+                            baseApi.util.updateQueryData('getEssay', mapId, (draft) => {
+                                if (draft?.essay) {
+                                    draft.essay.scoring_remaining = data.scoring_remaining;
+                                }
+                            }),
+                        );
                     }
                 }
                 catch {

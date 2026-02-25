@@ -24,7 +24,21 @@ const mapApi = baseApi.injectEndpoints({
                 method: 'PATCH',
                 body,
             }),
-            invalidatesTags: ['Map'],
+            // 不使用 invalidatesTags 避免 refetch getMap，防止覆蓋使用者本地未儲存的修改
+            async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    // 用回應資料直接更新 getMap cache
+                    dispatch(
+                        mapApi.util.updateQueryData('getMap', id, (draft) => {
+                            Object.assign(draft, data);
+                        }),
+                    );
+                }
+                catch {
+                    // 儲存失敗不需要處理 cache
+                }
+            },
         }),
 
     }),
