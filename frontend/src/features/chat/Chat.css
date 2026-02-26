@@ -161,3 +161,12 @@
 .cs-typing-indicator__wrapper {
     background-color: transparent !important;
 }
+
+/* ScoringResult 訊息寬度撐滿 */
+.cs-message--incoming .cs-message__custom-content {
+    width: 100%;
+}
+
+.cs-message--incoming:has(.cs-message__custom-content) .cs-message__content-wrapper {
+    width: 100%;
+}

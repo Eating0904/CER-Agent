@@ -19,11 +19,11 @@ export const ScoringResult = ({ data, chatType = 'mindmap' }) => {
     if (chatType === 'essay') {
         // Essay 評分項目配置
         const essayItems = [
-            { key: 'Explanation_of_Issues', title: 'Explanation of Issues（議題解釋）' },
-            { key: 'Evidence_Integration', title: 'Evidence Integration（證據整合）' },
-            { key: 'Influence_of_Context', title: 'Influence of Context（脈絡影響）' },
-            { key: 'Students_Position', title: "Student's Position（學生立場）" },
-            { key: 'Conclusions', title: 'Conclusions（結論）' },
+            { key: 'Explanation_of_Issues', title: 'Explanation of Issues' },
+            { key: 'Evidence_Integration', title: 'Evidence Integration' },
+            { key: 'Influence_of_Context', title: 'Influence of Context' },
+            { key: 'Students_Position', title: "Student's Position" },
+            { key: 'Conclusions', title: 'Conclusions' },
         ];
 
         // 驗證 essay 資料結構
@@ -46,9 +46,9 @@ export const ScoringResult = ({ data, chatType = 'mindmap' }) => {
     else {
         // Mindmap 評分項目配置
         const mindmapItems = [
-            { key: 'Claim', title: 'Claim（主張）' },
-            { key: 'Evidence', title: 'Evidence（證據）' },
-            { key: 'Reasoning', title: 'Reasoning（推理）' },
+            { key: 'Claim', title: 'Claim' },
+            { key: 'Evidence', title: 'Evidence' },
+            { key: 'Reasoning', title: 'Reasoning' },
         ];
 
         // 驗證 mindmap 資料結構
