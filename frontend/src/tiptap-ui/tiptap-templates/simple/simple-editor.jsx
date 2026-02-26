@@ -151,7 +151,10 @@ export function SimpleEditor({ content, onChange, editorRef, onFocus, onBlur, on
         if (pastedText && onPasteDetectedRef.current) {
           onPasteDetectedRef.current(pastedText)
         }
-        return false // 不阻止貼上
+        // 阻止預設貼上（含格式），改為插入純文字
+        event.preventDefault()
+        view.dispatch(view.state.tr.insertText(pastedText))
+        return true
       },
     },
     extensions: [

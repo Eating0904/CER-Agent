@@ -58,7 +58,7 @@ export const FontSizeDropdown = forwardRef((
                     ref={ref}
                 >
                     <span style={{ minWidth: '2rem', fontSize: '0.875rem' }}>
-                        {currentFontSize || '12px'}
+                        {currentFontSize || '16px'}
                     </span>
                     <ChevronDownIcon className="tiptap-button-dropdown-small" />
                 </Button>

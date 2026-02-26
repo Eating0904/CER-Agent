@@ -33,11 +33,15 @@
   outline: none;
   caret-color: var(--tt-cursor-color);
 
-  // Paragraph spacing
-  p:not(:first-child):not(td p):not(th p) {
-    font-size: 1rem;
+  // Paragraph base styles (all paragraphs including first-child)
+  p:not(td p):not(th p) {
+    font-size: 16px;
     line-height: 1.6;
     font-weight: normal;
+  }
+
+  // Paragraph spacing (skip first paragraph)
+  p:not(:first-child):not(td p):not(th p) {
     margin-top: 6px;
   }
 
