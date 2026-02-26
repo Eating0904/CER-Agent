@@ -29,8 +29,8 @@ PROMPT = """
 # Output Format
 請**嚴格**以 JSON 格式輸出，不要包含任何 Markdown 標記或額外文字：
 
-{{
+{
   "reasoning": "簡短說明判斷依據",
   "next_action": "essay_support" | "essay_scoring"
-}}
+}
 """

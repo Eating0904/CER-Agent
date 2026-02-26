@@ -33,8 +33,8 @@ PROMPT = """
 # Output Format
 請**嚴格**以 JSON 格式輸出，不要包含任何 Markdown 標記或額外文字:
 
-{{
-  "reasoning": "簡短說明判斷依據，例如:學生詢問如何刪除節點，屬於操作問題。"，
+{
+  "reasoning": "簡短說明判斷依據，例如:學生詢問如何刪除節點，屬於操作問題。",
   "next_action": "operator_support" | "cer_cognitive_support" | "cer_scoring"
-}}
+}
 """
