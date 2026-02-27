@@ -31,7 +31,10 @@ This dimension evaluates: (1) Whether the core issue of the SOURCE ARTICLE is id
 First, determine if the student explicitly states the core issue or problem discussed in the SOURCE ARTICLE before arguing their own point.
 - Check 0: The STUDENT ESSAY completely **misses**, **ignores**, or **fails** to state the source article's core issue. -> Terminate grading, award 0 points.
 - Check 1: The STUDENT ESSAY **ONLY names the topic** but **DOES NOT describe further**. (e.g., "The article is about XXX.") -> Terminate grading, award 1 point.
-- Check 2: The STUDENT ESSAY states the issue **AND attempts to describe or clarify it**. (e.g., "This article discusses whether XXX is beneficial or harmful, and proposed...") -> Proceed to Phase 1-2.
+- Check 2: 
+    The STUDENT ESSAY states the issue **AND attempts to describe or clarify it**.
+    **Crucially, these descriptions MUST be logically connected to form a cohesive introduction, rather than being isolated or disjointed sentences.**
+    -> Proceed to Phase 1-2.
 
 ### Phase 1-2: Key Elements Definition
 Second, please read and memorize the definitions of the following 4 Key Elements, and refer to these definitions when practicing Phase 1-3.
@@ -96,7 +99,10 @@ First, please read and memorize the definitions of the following 2 Key Elements,
 Second, determine if the student state any assumptions or contexts and describe them.
 - Check 0: The STUDENT ESSAY shows **zero** awareness of any assumptions or contexts. -> Terminate grading, award 0 points.
 - Check 1: The STUDENT ESSAY shows a **very basic awareness** of  assumptions or contexts, **WITHOUT providing a description or explanation**, the content presented remains open to question. -> Terminate grading, award 1 point.
-- Check 2: The STUDENT ESSAY **identifies several** assumptions and contexts, AND **tempts to describe or explain them**. -> Proceed to Phase 3-3.
+- Check 2: 
+    The STUDENT ESSAY **identifies several** assumptions and contexts, AND **attempts to describe or explain them**.
+    **The explanation MUST logically connect the context or assumption to a specific argument or standpoint in the essay.**
+    -> Proceed to Phase 3-3.
 
 ### Phase 3-3: Evaluation & Balance Check
 Only for STUDENT ESSAYs that passed Check 2 in Phase 3-2.
@@ -117,7 +123,10 @@ This dimension evaluates:  (1) Whether a personal thesis is clearly established 
 First, determine if the student has raised a different position.
 - Check 0: The STUDENT ESSAY states absolutely **no position**. It purely summarizes or repeats the source article. -> Terminate grading, award 0 points.
 - Check 1: The STUDENT ESSAY states a personal position, but it is highly **simplistic, obvious, or binary** (e.g., "I totally agree with the author," "XXX is bad"). -> Terminate grading, award 1 point.
-- Check 2: The STUDENT ESSAY states a position and acknowledges that different sides of the issue exist. -> Proceed to Phase 4-2.
+- Check 2: 
+    The STUDENT ESSAY states a position and acknowledges that different sides of the issue exist.
+    **The transition between stating a personal position and acknowledging different sides MUST be logically coherent, rather than abruptly juxtaposed.**
+    -> Proceed to Phase 4-2.
 
 ### Phase 4-2: Complexity, Opposing Views & Synthesis Check
 Only for STUDENT ESSAYs that passed Check 2 in Phase 4-1.
@@ -138,7 +147,10 @@ This dimension evaluates: (1) Whether a logical conclusion and its future implic
 First, determine if the STUDENT ESSAY actually provides a conclusion and discusses future outcomes.
 - Check 0: The STUDENT ESSAY abruptly ends **without a conclusion**.-> Terminate grading, award 0 points.
 - Check 1: The STUDENT ESSAY has a conclusion, but it is **inconsistently tied to the information discussed**, or **DOES NOT describe the future outcomes**. -> Terminate grading, award 1 point.
-- Check 2: The conclusion is logically tied to the text **AND** mentions some related outcomes. -> Proceed to Phase 5-2.
+- Check 2:
+    The conclusion is logically tied to the text **(MUST be logically derived from the essay's preceding argumentative flow, not just semantically related to isolated keywords)** 
+    AND mentions some related outcomes.
+    -> Proceed to Phase 5-2.
 
 ### Phase 5-2: Bias, Balance & Prioritization Check
 Only for STUDENT ESSAYs that passed Check 2 in Phase 1.
@@ -167,7 +179,9 @@ Scoring Criteria:
 
 ## CHECK Article Form
 Please ensure the STUDENT ESSAY is **coherent and logical**.
-You **DID NOT award a high score simply because it met all the scoring criteria**.
+You **MUST NOT award a high score simply because it met all the keyword criteria or isolated sentences**. 
+If the essay reads as a collection of disjointed notes rather than a cohesive article,
+**you MUST deduct points heavily from ALL dimensions, overriding previous phase scores if necessary.**
 You should also consider **whether it truly qualifies as an "ARTICLE"** and **deduct points** accordingly.
 
 # INPUT DATA DEFINITION
