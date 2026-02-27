@@ -30,7 +30,7 @@ PROMPT = """
 請**嚴格**以 JSON 格式輸出，不要包含任何 Markdown 標記或額外文字：
 
 {
-  "reasoning": "簡短說明判斷依據",
+  "reasoning": "請先引用學生的『實際原話』或描述『當前對話進度』，再說明為何將其導向該類別。絕對不可捏造學生沒有輸入的關鍵字",
   "next_action": "essay_support" | "essay_scoring"
 }
 """
