@@ -26,7 +26,10 @@ To meet the high-score requirements of the grading criteria, please strictly adh
 - **Extraction**: List **all** Claims derived from the SOURCE ARTICLE.
 - **Mapping**: Assign each Claim to its corresponding Topic Block.
 - **Classification**: Classify each Claim as a **Major Claim**(central argument of a Topic Block) or a **Minor Claim**.
-- **Elaboration**: For each Claim, explicitly list the **Context, Units, and Variables** required to support that argument.
+- **Elaboration**: For each Claim, explicitly list the required descriptive elements based on the following three dimensions. Note that each dimension may contain more than one element:
+    - Context (Applicable Scope): Under what time period, region, population, or condition does this claim hold? (e.g., "from 2000 to 2020", "in developing countries")
+    - Variables (Core Factors): What factor is influencing what outcome? Identify the subject of the argument. (e.g., rising CO₂ emissions are linked to increasing global temperatures)
+    - Units (Claim Specificity): Is the claim stated with enough directional precision to be verifiable? A strong Claim should express directionality or degree (e.g., "shows a significant upward trend", "is disproportionately higher in X group") rather than a vague assertion (e.g., "has an impact"). Note: this is about the claim's precision, not about presenting raw data.
 
 ### Step 1-2: Evidence Entities & Logical Associations
 This step is divided into two dimensions; please define them separately:
