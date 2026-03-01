@@ -37,6 +37,10 @@ export const MapPage = () => {
     const mapId = searchParams.get('mapId');
     const view = searchParams.get('view') || 'article';
 
+    const prevViewRef = useRef(view);
+    const mapAutoSaveRef = useRef(null);
+    const essayAutoSaveRef = useRef(null);
+
     const { setHeaderContent } = useHeaderContext();
     const { trackAction } = useUserActionTracker();
 
@@ -93,6 +97,7 @@ export const MapPage = () => {
     }, [setHeaderContent, mapData]);
 
     const handleMapAutoSave = useMapAutoSave(mapId, mapContext.nodes, mapContext.edges);
+    mapAutoSaveRef.current = handleMapAutoSave;
 
     const feedbackQueue = useFeedbackQueue(mapId, handleMapAutoSave);
     const { addOperation, alerts, setAlerts } = feedbackQueue;
@@ -186,6 +191,21 @@ export const MapPage = () => {
 
     const editorRef = useRef(null);
     const handleEssayAutoSave = useEssayAutoSave(mapId, essayContent, essayData?.essay?.id);
+    essayAutoSaveRef.current = handleEssayAutoSave;
+
+    // 切換 view 時自動儲存離開的 view
+    useEffect(() => {
+        const prevView = prevViewRef.current;
+        if (prevView !== view) {
+            if (prevView === 'mindmap') {
+                mapAutoSaveRef.current(null, 'before_switch_view');
+            }
+            else if (prevView === 'essay') {
+                essayAutoSaveRef.current('before_switch_view');
+            }
+            prevViewRef.current = view;
+        }
+    }, [view]);
 
     const {
         isSending: isEssaySending,
