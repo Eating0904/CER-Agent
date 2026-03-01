@@ -37,7 +37,7 @@ export const MapPage = () => {
     const mapId = searchParams.get('mapId');
     const view = searchParams.get('view') || 'article';
 
-    const prevViewRef = useRef(view);
+    const prevStateRef = useRef({ view, mapId });
     const mapAutoSaveRef = useRef(null);
     const essayAutoSaveRef = useRef(null);
 
@@ -194,18 +194,23 @@ export const MapPage = () => {
     essayAutoSaveRef.current = handleEssayAutoSave;
 
     // 切換 view 時自動儲存離開的 view
+    // 注意：只有在同一個 map 內切換 view 才觸發
+    // 若 mapId 也同時改變（例如從 id1 essay 跳到 id2 essay），
+    // 此時 essayContent state 還是舊 map 的內容，auto save 會把舊內容存進新 map，須跳過
     useEffect(() => {
-        const prevView = prevViewRef.current;
-        if (prevView !== view) {
+        const prevState = prevStateRef.current;
+        const prevView = prevState.view;
+        const prevMapId = prevState.mapId;
+        if (prevMapId === mapId && prevView !== view) {
             if (prevView === 'mindmap') {
                 mapAutoSaveRef.current(null, 'before_switch_view');
             }
             else if (prevView === 'essay') {
                 essayAutoSaveRef.current('before_switch_view');
             }
-            prevViewRef.current = view;
         }
-    }, [view]);
+        prevStateRef.current = { view, mapId };
+    }, [view, mapId]);
 
     const {
         isSending: isEssaySending,
