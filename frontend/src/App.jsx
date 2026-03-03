@@ -10,6 +10,7 @@ import { RoleProtectedRoute } from './features/user/RoleProtectedRoute';
 import { useTokenCheckTimer } from './hooks/useTokenCheckTimer';
 import { MainLayout, PublicLayout } from './layouts';
 import {
+    HowToUsePage,
     LoginPage,
     MapPage,
     MindMapTemplateListPage,
@@ -67,6 +68,8 @@ const App = () => {
                     <Route path="/mind-map-template-list" element={<MindMapTemplateListPage />} />
                 </Route>
             </Route>
+
+            <Route path="/how-to-use" element={<HowToUsePage />} />
         </Routes>
     );
 };

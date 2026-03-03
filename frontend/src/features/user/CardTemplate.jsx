@@ -1,5 +1,7 @@
 import { Card } from 'antd';
 
+import { HowToUseButton } from '../howToUse';
+
 export const CardTemplate = ({ children }) => (
     <div
         style={{
@@ -7,6 +9,7 @@ export const CardTemplate = ({ children }) => (
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            flexDirection: 'column',
         }}
     >
         <Card
@@ -18,5 +21,6 @@ export const CardTemplate = ({ children }) => (
         >
             {children}
         </Card>
+        <HowToUseButton style={{ marginTop: '12px' }} />
     </div>
 );

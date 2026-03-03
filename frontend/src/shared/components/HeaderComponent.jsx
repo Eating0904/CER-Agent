@@ -10,6 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import baseApi from '../../api/baseApi';
 import { NEUTRAL_COLORS } from '../../constants/colors';
+import { HowToUseButton } from '../../features/howToUse';
 import { logout } from '../../features/user/authUtils';
 import { useGetMeQuery } from '../../features/user/userApi';
 import { useHeaderContext } from '../HeaderContext';
@@ -68,6 +69,7 @@ export const HeaderComponent = () => {
                     </Title>
                 </Link>
             )}
+            <HowToUseButton style={{ marginLeft: 'auto' }} />
             <Popover
                 content={popoverContent}
                 trigger="click"
@@ -78,7 +80,7 @@ export const HeaderComponent = () => {
                         backgroundColor: '#7265e6',
                         cursor: 'pointer',
                         flexShrink: 0,
-                        marginLeft: 'auto',
+                        marginLeft: '8px',
                         marginRight: '8px',
                     }}
                 >
