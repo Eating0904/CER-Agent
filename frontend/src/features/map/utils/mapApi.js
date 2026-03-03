@@ -34,6 +34,13 @@ const mapApi = baseApi.injectEndpoints({
                             Object.assign(draft, data);
                         }),
                     );
+                    // 同步更新 getMaps 列表 cache，讓側邊欄即時顯示新名稱
+                    dispatch(
+                        mapApi.util.updateQueryData('getMaps', undefined, (draft) => {
+                            const item = draft.find((m) => m.id === id);
+                            if (item) Object.assign(item, data);
+                        }),
+                    );
                 }
                 catch {
                     // 儲存失敗不需要處理 cache

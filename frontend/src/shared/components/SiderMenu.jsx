@@ -164,25 +164,31 @@ export const SiderMenu = () => {
                                 >
                                     {map.name}
                                 </div>
-                                <Dropdown
-                                    menu={{ items: getMenuItems(map) }}
-                                    trigger={['click']}
-                                    placement="bottomLeft"
+                                <div
+                                    role="presentation"
+                                    onClick={(e) => e.stopPropagation()}
+                                    onKeyDown={(e) => e.stopPropagation()}
                                 >
-                                    <Button
-                                        type="text"
-                                        icon={<EllipsisOutlined style={{ transform: 'rotate(90deg)', fontSize: '16px' }} />}
-                                        shape="circle"
-                                        style={{
-                                            color: isSelected
-                                                ? LAYOUT_COLORS.menuItemSelectedColor
-                                                : LAYOUT_COLORS.menuItemColor,
-                                            flexShrink: 0,
-                                            opacity: isHovered ? 1 : 0,
-                                            visibility: isHovered ? 'visible' : 'hidden',
-                                        }}
-                                    />
-                                </Dropdown>
+                                    <Dropdown
+                                        menu={{ items: getMenuItems(map) }}
+                                        trigger={['click']}
+                                        placement="bottomLeft"
+                                    >
+                                        <Button
+                                            type="text"
+                                            icon={<EllipsisOutlined style={{ transform: 'rotate(90deg)', fontSize: '16px' }} />}
+                                            shape="circle"
+                                            style={{
+                                                color: isSelected
+                                                    ? LAYOUT_COLORS.menuItemSelectedColor
+                                                    : LAYOUT_COLORS.menuItemColor,
+                                                flexShrink: 0,
+                                                opacity: isHovered ? 1 : 0,
+                                                visibility: isHovered ? 'visible' : 'hidden',
+                                            }}
+                                        />
+                                    </Dropdown>
+                                </div>
                             </List.Item>
                         );
                     }}
