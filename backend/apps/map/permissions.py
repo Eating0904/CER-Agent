@@ -26,6 +26,13 @@ def require_map_owner(view_func):
 
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
+        # 0. 確認使用者已登入
+        if not request.user or not request.user.is_authenticated:
+            return Response(
+                {'success': False, 'error': 'Authentication required'},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
         # 1. 嘗試從 URL 參數取得 map_id
         map_id = kwargs.get('map_id')
 

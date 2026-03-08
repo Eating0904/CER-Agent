@@ -79,6 +79,9 @@ def view_essay_detail(request, map_id):
     GET: 查看任意學生的 Essay（僅限特定 role，唯讀）
     若 essay 不存在，回傳空內容
     """
+    if not request.user or not request.user.is_authenticated:
+        return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
     if request.user.role not in VIEW_ALLOWED_ROLES:
         return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
 
