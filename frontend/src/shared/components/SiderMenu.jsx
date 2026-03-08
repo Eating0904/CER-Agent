@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import {
     EditOutlined,
     EllipsisOutlined,
+    EyeOutlined,
     PlusCircleOutlined,
     SettingOutlined,
 } from '@ant-design/icons';
@@ -102,6 +103,21 @@ export const SiderMenu = () => {
                     icon={<SettingOutlined />}
                 >
                     Manage
+                </Button>
+            )}
+            {currentUser?.role === 'admin' && (
+                <Button
+                    onClick={() => navigate('/view')}
+                    style={{
+                        height: '40px',
+                        padding: '8px 8px 8px 10px',
+                        borderRadius: '8px',
+                        margin: '4px 8px',
+                        flexShrink: 0,
+                    }}
+                    icon={<EyeOutlined />}
+                >
+                    View
                 </Button>
             )}
             <Button

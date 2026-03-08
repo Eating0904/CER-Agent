@@ -22,3 +22,14 @@
     cursor: col-resize;
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
 }
+
+/* MapViewTable 淡紫色樣式 */
+.map-view-table .ant-table-thead > tr > th,
+.map-view-table .ant-table-thead > tr > td {
+    background-color: #e6d9ff !important;
+}
+
+.map-view-table .ant-table-tbody > tr:hover > td {
+    background-color: #f0e6ff !important;
+}
+

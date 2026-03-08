@@ -16,6 +16,7 @@ import {
     MindMapTemplateListPage,
     MindMapTemplateManagementPage,
     RegisterPage,
+    ViewPage,
 } from './pages';
 
 import '@xyflow/react/dist/style.css';
@@ -62,6 +63,14 @@ const App = () => {
                         element={(
                             <RoleProtectedRoute allowedRoles={['admin', 'teacher', 'assistant']}>
                                 <MindMapTemplateManagementPage />
+                            </RoleProtectedRoute>
+                        )}
+                    />
+                    <Route
+                        path="/view"
+                        element={(
+                            <RoleProtectedRoute allowedRoles={['admin']}>
+                                <ViewPage />
                             </RoleProtectedRoute>
                         )}
                     />

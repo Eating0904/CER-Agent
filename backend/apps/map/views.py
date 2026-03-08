@@ -9,7 +9,12 @@ from apps.common.utils.deadline_checker import check_template_deadline
 from apps.mindMapTemplate.models import MindMapTemplate
 
 from .models import Map
-from .serializers import CreateMapFromTemplateSerializer, MapListSerializer, MapSerializer
+from .serializers import (
+    CreateMapFromTemplateSerializer,
+    MapListSerializer,
+    MapSerializer,
+    MapViewListSerializer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -146,3 +151,46 @@ class MapViewSet(viewsets.ModelViewSet):
             )
 
         return super().partial_update(request, *args, **kwargs)
+
+    @action(detail=False, methods=['get'], url_path='view')
+    def view_list(self, request):
+        """查看所有使用者的 maps（僅限特定 role）"""
+        VIEW_ALLOWED_ROLES = ['admin']
+        if request.user.role not in VIEW_ALLOWED_ROLES:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+
+        queryset = Map.objects.select_related('user', 'template').all()
+
+        username = request.query_params.get('username')
+        if username:
+            queryset = queryset.filter(user__username__icontains=username)
+
+        map_id = request.query_params.get('map_id')
+        if map_id:
+            queryset = queryset.filter(id=map_id)
+
+        map_name = request.query_params.get('map_name')
+        if map_name:
+            queryset = queryset.filter(name__icontains=map_name)
+
+        template_id = request.query_params.get('template_id')
+        if template_id:
+            queryset = queryset.filter(template__id=template_id)
+
+        serializer = MapViewListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'], url_path='view')
+    def view_detail(self, request, pk=None):
+        """查看任意使用者的單筆完整 map（含 nodes/edges），僅限特定 role"""
+        VIEW_ALLOWED_ROLES = ['admin']
+        if request.user.role not in VIEW_ALLOWED_ROLES:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            map_instance = Map.objects.select_related('template').get(pk=pk)
+        except Map.DoesNotExist:
+            return Response({'error': 'Map not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = MapSerializer(map_instance, context={'request': request})
+        return Response(serializer.data)
