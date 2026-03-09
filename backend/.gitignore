@@ -42,3 +42,9 @@ logs/
 # Seeder
 seeder/**/*/*.env
 seeder/**/*/*.env.prod
+
+# Batch Scoring
+batch_scoring/mindmap/data/
+batch_scoring/mindmap/results/
+batch_scoring/essay/data/
+batch_scoring/essay/results/
