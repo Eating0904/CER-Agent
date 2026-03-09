@@ -89,6 +89,8 @@ const ModalContent = ({ mapId }) => {
 };
 
 export const MapViewModal = ({ open, mapData, tableIndex, onClose }) => {
+    const [openKey, setOpenKey] = useState(0);
+
     const practiceLabel = mapData
         ? `PracticeID-${mapData.id} ${mapData.name ?? ''}`
         : '';
@@ -108,9 +110,12 @@ export const MapViewModal = ({ open, mapData, tableIndex, onClose }) => {
             style={{ top: 20 }}
             styles={{ body: { height: 'calc(95vh - 110px)', padding: 0, overflow: 'hidden' } }}
             title={title}
+            afterOpenChange={(isOpen) => {
+                if (isOpen) setOpenKey((k) => k + 1);
+            }}
         >
             {open && mapData && (
-                <ModalContent mapId={mapData.id} />
+                <ModalContent key={`${mapData.id}-${openKey}`} mapId={mapData.id} />
             )}
         </Modal>
     );
