@@ -103,6 +103,15 @@ export const LoginCard = () => {
                 <Text>
                     No Account？<Link to="/register">Register</Link>
                 </Text>
+                <br />
+                <Link
+                    to="/forgot-password"
+                    style={{
+                        textDecoration: 'underline',
+                    }}
+                >
+                    Forgot password?
+                </Link>
             </div>
         </CardTemplate>
     );

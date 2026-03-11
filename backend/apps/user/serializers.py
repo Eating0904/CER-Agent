@@ -39,3 +39,13 @@ class VerifyEmailSerializer(serializers.Serializer):
 
 class ResendVerificationSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.CharField(max_length=6, min_length=6)
+    new_password = serializers.CharField(validators=[validate_password])

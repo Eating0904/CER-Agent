@@ -57,6 +57,20 @@ const userApi = baseApi.injectEndpoints({
         getVerificationStatus: build.query({
             query: (email) => ({ url: `user/verification-status/?email=${encodeURIComponent(email)}` }),
         }),
+        forgotPassword: build.mutation({
+            query: ({ email }) => ({
+                url: 'user/forgot-password/',
+                method: 'POST',
+                body: { email },
+            }),
+        }),
+        resetPassword: build.mutation({
+            query: ({ email, code, new_password }) => ({
+                url: 'user/reset-password/',
+                method: 'POST',
+                body: { email, code, new_password },
+            }),
+        }),
     }),
 });
 
@@ -68,6 +82,8 @@ export const {
     useRefreshMutation,
     useGetMeQuery,
     useGetVerificationStatusQuery,
+    useForgotPasswordMutation,
+    useResetPasswordMutation,
 } = userApi;
 
 export default userApi;

@@ -13,6 +13,7 @@ import { VerifyEmailCard } from './features/user/VerifyEmailCard';
 import { useTokenCheckTimer } from './hooks/useTokenCheckTimer';
 import { MainLayout, PublicLayout } from './layouts';
 import {
+    ForgotPasswordPage,
     HowToUsePage,
     LoginPage,
     MapPage,
@@ -72,6 +73,7 @@ const App = () => {
                 <Route element={<PublicLayout />}>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 </Route>
             </Route>
 

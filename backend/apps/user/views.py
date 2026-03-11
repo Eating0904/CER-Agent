@@ -14,8 +14,10 @@ from apps.user_action.models import UserAction
 
 from .models import EmailVerification
 from .serializers import (
+    ForgotPasswordSerializer,
     RegisterSerializer,
     ResendVerificationSerializer,
+    ResetPasswordSerializer,
     UserSerializer,
     VerifyEmailSerializer,
 )
@@ -23,6 +25,7 @@ from .serializers import (
 logger = logging.getLogger(__name__)
 
 COOLDOWN_SECONDS = 60
+PASSWORD_RESET_EXPIRY_MINUTES = 10
 
 
 class UserViewSet(viewsets.GenericViewSet):
@@ -35,6 +38,10 @@ class UserViewSet(viewsets.GenericViewSet):
             return VerifyEmailSerializer
         if self.action == 'resend_verification':
             return ResendVerificationSerializer
+        if self.action == 'forgot_password':
+            return ForgotPasswordSerializer
+        if self.action == 'reset_password':
+            return ResetPasswordSerializer
         return UserSerializer
 
     def get_permissions(self):
@@ -43,6 +50,8 @@ class UserViewSet(viewsets.GenericViewSet):
             'verify_email',
             'resend_verification',
             'verification_status',
+            'forgot_password',
+            'reset_password',
         ):
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
@@ -125,17 +134,8 @@ class UserViewSet(viewsets.GenericViewSet):
         if user.is_verified:
             return Response({'message': 'Email already verified.'})
 
-        # 冷卻檢查
-        cooldown_threshold = timezone.now() - timedelta(seconds=COOLDOWN_SECONDS)
-        latest = EmailVerification.objects.filter(
-            user=user,
-            purpose='email_verify',
-            created_at__gte=cooldown_threshold,
-        ).first()
-
-        if latest:
-            elapsed = (timezone.now() - latest.created_at).total_seconds()
-            remaining = max(0, int(COOLDOWN_SECONDS - elapsed))
+        remaining = self._check_cooldown(user, 'email_verify')
+        if remaining > 0:
             return Response(
                 {
                     'error': 'Please wait before requesting a new code.',
@@ -208,3 +208,79 @@ class UserViewSet(viewsets.GenericViewSet):
             send_verification_email(user.email, code, purpose)
         except Exception as e:
             logger.error(f'Failed to send verification email to {user.email}: {e}')
+
+    def _check_cooldown(self, user, purpose):
+        cooldown_threshold = timezone.now() - timedelta(seconds=COOLDOWN_SECONDS)
+        latest = EmailVerification.objects.filter(
+            user=user,
+            purpose=purpose,
+            created_at__gte=cooldown_threshold,
+        ).first()
+
+        if latest:
+            elapsed = (timezone.now() - latest.created_at).total_seconds()
+            return max(0, int(COOLDOWN_SECONDS - elapsed))
+        return 0
+
+    @action(detail=False, methods=['post'], url_path='forgot-password')
+    def forgot_password(self, request: Request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+
+        try:
+            user = get_user_model().objects.get(email=email)
+        except get_user_model().DoesNotExist:
+            return Response({'message': 'If the email exists, a reset code has been sent.'})
+
+        remaining = self._check_cooldown(user, 'password_reset')
+        if remaining > 0:
+            return Response(
+                {
+                    'error': 'Please wait before requesting a new code.',
+                    'cooldown_remaining': remaining,
+                },
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
+
+        self._send_verification_code(user, 'password_reset')
+        return Response({'message': 'Reset code sent.', 'cooldown_remaining': COOLDOWN_SECONDS})
+
+    @action(detail=False, methods=['post'], url_path='reset-password')
+    def reset_password(self, request: Request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        code = serializer.validated_data['code']
+        new_password = serializer.validated_data['new_password']
+
+        try:
+            user = get_user_model().objects.get(email=email)
+        except get_user_model().DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        expiry_threshold = timezone.now() - timedelta(minutes=PASSWORD_RESET_EXPIRY_MINUTES)
+        verification = EmailVerification.objects.filter(
+            user=user,
+            code=code,
+            purpose='password_reset',
+            is_used=False,
+            created_at__gte=expiry_threshold,
+        ).first()
+
+        if not verification:
+            return Response(
+                {'error': 'Invalid or expired reset code.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        verification.is_used = True
+        verification.save()
+        user.set_password(new_password)
+        user.is_verified = True
+        user.save()
+
+        logger.info(f'Password reset: user_id={user.id}, email={email}')
+        return Response({'message': 'Password reset successfully.'})
