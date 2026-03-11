@@ -94,30 +94,34 @@ class UserViewSet(viewsets.GenericViewSet):
         if user.is_verified:
             return Response({'message': 'Email already verified.'})
 
-        expiry_threshold = timezone.now() - timedelta(
-            hours=EmailVerification.EXPIRY_HOURS['email_verify']
-        )
-        verification = EmailVerification.objects.filter(
-            user=user,
-            code=code,
-            purpose='email_verify',
-            is_used=False,
-            created_at__gte=expiry_threshold,
-        ).first()
-
-        if not verification:
-            return Response(
-                {'error': 'Invalid or expired verification code.'},
-                status=status.HTTP_400_BAD_REQUEST,
+        try:
+            expiry_threshold = timezone.now() - timedelta(
+                hours=EmailVerification.EXPIRY_HOURS['email_verify']
             )
+            verification = EmailVerification.objects.filter(
+                user=user,
+                code=code,
+                purpose='email_verify',
+                is_used=False,
+                created_at__gte=expiry_threshold,
+            ).first()
 
-        verification.is_used = True
-        verification.save()
-        user.is_verified = True
-        user.save()
+            if not verification:
+                return Response(
+                    {'error': 'Invalid or expired verification code.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-        logger.info(f'Email verified: user_id={user.id}, email={email}')
-        return Response({'message': 'Email verified successfully.'})
+            verification.is_used = True
+            verification.save()
+            user.is_verified = True
+            user.save()
+
+            logger.info(f'Email verified: user_id={user.id}, email={email}')
+            return Response({'message': 'Email verified successfully.'})
+        except Exception as e:
+            logger.exception(f'Email verification failed: email={email}, error={e}')
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['post'], url_path='resend-verification')
     def resend_verification(self, request: Request):
@@ -134,20 +138,25 @@ class UserViewSet(viewsets.GenericViewSet):
         if user.is_verified:
             return Response({'message': 'Email already verified.'})
 
-        remaining = self._check_cooldown(user, 'email_verify')
-        if remaining > 0:
-            return Response(
-                {
-                    'error': 'Please wait before requesting a new code.',
-                    'cooldown_remaining': remaining,
-                },
-                status=status.HTTP_429_TOO_MANY_REQUESTS,
-            )
+        try:
+            remaining = self._check_cooldown(user, 'email_verify')
+            if remaining > 0:
+                return Response(
+                    {
+                        'error': 'Please wait before requesting a new code.',
+                        'cooldown_remaining': remaining,
+                    },
+                    status=status.HTTP_429_TOO_MANY_REQUESTS,
+                )
 
-        self._send_verification_code(user, 'email_verify')
-        return Response(
-            {'message': 'Verification code sent.', 'cooldown_remaining': COOLDOWN_SECONDS}
-        )
+            self._send_verification_code(user, 'email_verify')
+            logger.info(f'Verification code resent: user_id={user.id}, email={email}')
+            return Response(
+                {'message': 'Verification code sent.', 'cooldown_remaining': COOLDOWN_SECONDS}
+            )
+        except Exception as e:
+            logger.exception(f'Resend verification failed: email={email}, error={e}')
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'], url_path='verification-status')
     def verification_status(self, request: Request):
@@ -160,21 +169,25 @@ class UserViewSet(viewsets.GenericViewSet):
         except get_user_model().DoesNotExist:
             return Response({'is_verified': False, 'cooldown_remaining': 0})
 
-        if user.is_verified:
-            return Response({'is_verified': True, 'cooldown_remaining': 0})
+        try:
+            if user.is_verified:
+                return Response({'is_verified': True, 'cooldown_remaining': 0})
 
-        latest = EmailVerification.objects.filter(
-            user=user,
-            purpose='email_verify',
-        ).first()
+            latest = EmailVerification.objects.filter(
+                user=user,
+                purpose='email_verify',
+            ).first()
 
-        if latest:
-            elapsed = (timezone.now() - latest.created_at).total_seconds()
-            remaining = max(0, int(COOLDOWN_SECONDS - elapsed))
-        else:
-            remaining = 0
+            if latest:
+                elapsed = (timezone.now() - latest.created_at).total_seconds()
+                remaining = max(0, int(COOLDOWN_SECONDS - elapsed))
+            else:
+                remaining = 0
 
-        return Response({'is_verified': False, 'cooldown_remaining': remaining})
+            return Response({'is_verified': False, 'cooldown_remaining': remaining})
+        except Exception as e:
+            logger.exception(f'Verification status check failed: email={email}, error={e}')
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'], url_path='me')
     def me(self, request: Request):
@@ -203,24 +216,34 @@ class UserViewSet(viewsets.GenericViewSet):
 
     def _send_verification_code(self, user, purpose):
         code = generate_verification_code()
-        EmailVerification.objects.create(user=user, code=code, purpose=purpose)
+        try:
+            EmailVerification.objects.create(user=user, code=code, purpose=purpose)
+        except Exception as e:
+            logger.exception(f'Failed to create verification record: user_id={user.id}, error={e}')
+            raise
         try:
             send_verification_email(user.email, code, purpose)
         except Exception as e:
             logger.error(f'Failed to send verification email to {user.email}: {e}')
 
     def _check_cooldown(self, user, purpose):
-        cooldown_threshold = timezone.now() - timedelta(seconds=COOLDOWN_SECONDS)
-        latest = EmailVerification.objects.filter(
-            user=user,
-            purpose=purpose,
-            created_at__gte=cooldown_threshold,
-        ).first()
+        try:
+            cooldown_threshold = timezone.now() - timedelta(seconds=COOLDOWN_SECONDS)
+            latest = EmailVerification.objects.filter(
+                user=user,
+                purpose=purpose,
+                created_at__gte=cooldown_threshold,
+            ).first()
 
-        if latest:
-            elapsed = (timezone.now() - latest.created_at).total_seconds()
-            return max(0, int(COOLDOWN_SECONDS - elapsed))
-        return 0
+            if latest:
+                elapsed = (timezone.now() - latest.created_at).total_seconds()
+                return max(0, int(COOLDOWN_SECONDS - elapsed))
+            return 0
+        except Exception as e:
+            logger.exception(
+                f'Cooldown check failed: user_id={user.id}, purpose={purpose}, error={e}'
+            )
+            raise
 
     @action(detail=False, methods=['post'], url_path='forgot-password')
     def forgot_password(self, request: Request):
@@ -234,18 +257,23 @@ class UserViewSet(viewsets.GenericViewSet):
         except get_user_model().DoesNotExist:
             return Response({'message': 'If the email exists, a reset code has been sent.'})
 
-        remaining = self._check_cooldown(user, 'password_reset')
-        if remaining > 0:
-            return Response(
-                {
-                    'error': 'Please wait before requesting a new code.',
-                    'cooldown_remaining': remaining,
-                },
-                status=status.HTTP_429_TOO_MANY_REQUESTS,
-            )
+        try:
+            remaining = self._check_cooldown(user, 'password_reset')
+            if remaining > 0:
+                return Response(
+                    {
+                        'error': 'Please wait before requesting a new code.',
+                        'cooldown_remaining': remaining,
+                    },
+                    status=status.HTTP_429_TOO_MANY_REQUESTS,
+                )
 
-        self._send_verification_code(user, 'password_reset')
-        return Response({'message': 'Reset code sent.', 'cooldown_remaining': COOLDOWN_SECONDS})
+            self._send_verification_code(user, 'password_reset')
+            logger.info(f'Password reset code sent: user_id={user.id}, email={email}')
+            return Response({'message': 'Reset code sent.', 'cooldown_remaining': COOLDOWN_SECONDS})
+        except Exception as e:
+            logger.exception(f'Forgot password failed: email={email}, error={e}')
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['post'], url_path='reset-password')
     def reset_password(self, request: Request):
@@ -261,26 +289,30 @@ class UserViewSet(viewsets.GenericViewSet):
         except get_user_model().DoesNotExist:
             return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        expiry_threshold = timezone.now() - timedelta(minutes=PASSWORD_RESET_EXPIRY_MINUTES)
-        verification = EmailVerification.objects.filter(
-            user=user,
-            code=code,
-            purpose='password_reset',
-            is_used=False,
-            created_at__gte=expiry_threshold,
-        ).first()
+        try:
+            expiry_threshold = timezone.now() - timedelta(minutes=PASSWORD_RESET_EXPIRY_MINUTES)
+            verification = EmailVerification.objects.filter(
+                user=user,
+                code=code,
+                purpose='password_reset',
+                is_used=False,
+                created_at__gte=expiry_threshold,
+            ).first()
 
-        if not verification:
-            return Response(
-                {'error': 'Invalid or expired reset code.'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            if not verification:
+                return Response(
+                    {'error': 'Invalid or expired reset code.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-        verification.is_used = True
-        verification.save()
-        user.set_password(new_password)
-        user.is_verified = True
-        user.save()
+            verification.is_used = True
+            verification.save()
+            user.set_password(new_password)
+            user.is_verified = True
+            user.save()
 
-        logger.info(f'Password reset: user_id={user.id}, email={email}')
-        return Response({'message': 'Password reset successfully.'})
+            logger.info(f'Password reset: user_id={user.id}, email={email}')
+            return Response({'message': 'Password reset successfully.'})
+        except Exception as e:
+            logger.exception(f'Password reset failed: email={email}, error={e}')
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
