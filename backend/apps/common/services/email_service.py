@@ -78,10 +78,11 @@ def send_verification_email(to_email, code, purpose='email_verify'):
     """
 
     api_keys = settings.RESEND_API_KEYS
-    email_from = settings.EMAIL_FROM
+    email_from_list = settings.EMAIL_FROM_LIST
     last_error = None
 
-    for key in api_keys:
+    for idx, key in enumerate(api_keys):
+        email_from = email_from_list[idx] if idx < len(email_from_list) else email_from_list[0]
         try:
             resend.api_key = key
             resend.Emails.send(
@@ -92,16 +93,26 @@ def send_verification_email(to_email, code, purpose='email_verify'):
                     'html': html_body,
                 }
             )
-            logger.info(f'Email sent to {to_email} (purpose={purpose})')
+            logger.info(f'Email sent to {to_email} (purpose={purpose}, key_index={idx + 1})')
             return True
         except Exception as e:
             last_error = e
             error_str = str(e)
-            if '429' in error_str or 'rate' in error_str.lower():
-                logger.warning(f'Resend API key rate limited, trying next key: {e}')
-                continue
-            logger.exception(f'Failed to send email to {to_email}: {e}')
-            raise
+            status_code = getattr(e, 'status_code', None)
+
+            if (
+                status_code in (429, 401, 403, 422)
+                or '429' in error_str
+                or 'rate' in error_str.lower()
+            ):
+                logger.warning(
+                    f'Resend key #{idx + 1} failed (status={status_code}), trying next: {e}'
+                )
+            elif isinstance(e, (ConnectionError, TimeoutError, OSError)):
+                logger.warning(f'Resend key #{idx + 1} network error, trying next: {e}')
+            else:
+                logger.warning(f'Resend key #{idx + 1} unexpected error, trying next: {e}')
+            continue
 
     logger.error(f'All Resend API keys exhausted for {to_email}')
     raise last_error or Exception('All Resend API keys exhausted')
