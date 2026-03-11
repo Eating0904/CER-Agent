@@ -287,3 +287,4 @@ if ENABLE_PROFILING:
 # Email (Resend)
 RESEND_API_KEYS = [k.strip() for k in os.getenv('RESEND_API_KEYS', '').split(',') if k.strip()]
 EMAIL_FROM = os.getenv('EMAIL_FROM', 'noreply@example.com')
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3001')
