@@ -63,8 +63,8 @@ export const ResetPasswordCard = ({ email, initialCountdown = 0 }) => {
                 newPassword: values.newPassword,
             }).unwrap();
 
-            setSuccessMessage('Password reset successfully! Redirecting to login...');
-            setTimeout(() => navigate('/login'), 1500);
+            setSuccessMessage('Password reset successfully!');
+            setTimeout(() => navigate('/login'), 2000);
         }
         catch (err) {
             if (err.data?.newPassword) {
@@ -102,6 +102,7 @@ export const ResetPasswordCard = ({ email, initialCountdown = 0 }) => {
             <Form name="reset-password" onFinish={handleReset} size="large">
                 <Form.Item
                     name="code"
+                    getValueFromEvent={(val) => val}
                     rules={[
                         { required: true, message: 'Please enter the 6-digit code!' },
                         { len: 6, message: 'Code must be 6 digits!' },

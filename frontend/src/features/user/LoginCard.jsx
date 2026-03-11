@@ -86,6 +86,18 @@ export const LoginCard = () => {
                         placeholder="Password"
                     />
                 </Form.Item>
+                <Link
+                    to="/forgot-password"
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        marginTop: '-16px',
+                        marginBottom: '12px',
+                        textDecoration: 'underline',
+                    }}
+                >
+                    Forgot password?
+                </Link>
 
                 <Form.Item>
                     <Button
@@ -103,15 +115,6 @@ export const LoginCard = () => {
                 <Text>
                     No Account？<Link to="/register">Register</Link>
                 </Text>
-                <br />
-                <Link
-                    to="/forgot-password"
-                    style={{
-                        textDecoration: 'underline',
-                    }}
-                >
-                    Forgot password?
-                </Link>
             </div>
         </CardTemplate>
     );
