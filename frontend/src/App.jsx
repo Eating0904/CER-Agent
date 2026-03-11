@@ -47,7 +47,7 @@ const VerificationGate = () => {
         );
     }
 
-    if (user && !user.is_verified) {
+    if (user && !user.isVerified) {
         return <VerifyEmailCard email={user.email} onVerified={refetch} />;
     }
 

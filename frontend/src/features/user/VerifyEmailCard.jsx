@@ -27,7 +27,7 @@ export const VerifyEmailCard = ({ email, onVerified }) => {
 
     useEffect(() => {
         if (statusData && countdown === null) {
-            setCountdown(statusData.cooldown_remaining ?? 0);
+            setCountdown(statusData.cooldownRemaining ?? 0);
         }
     }, [statusData, countdown]);
 
@@ -75,7 +75,7 @@ export const VerifyEmailCard = ({ email, onVerified }) => {
         }
         catch (err) {
             if (err.status === 429) {
-                const remaining = err.data?.cooldown_remaining ?? 60;
+                const remaining = err.data?.cooldownRemaining ?? 60;
                 setCountdown(remaining);
                 setErrorMessage('Please wait before requesting a new code.');
             }

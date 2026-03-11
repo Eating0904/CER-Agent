@@ -53,9 +53,18 @@ const userApi = baseApi.injectEndpoints({
         getMe: build.query({
             query: () => ({ url: 'user/me/' }),
             providesTags: ['User'],
+            transformResponse: (response) => ({
+                ...response,
+                isVerified: response.is_verified,
+            }),
         }),
         getVerificationStatus: build.query({
             query: (email) => ({ url: `user/verification-status/?email=${encodeURIComponent(email)}` }),
+            transformResponse: (response) => ({
+                ...response,
+                isVerified: response.is_verified,
+                cooldownRemaining: response.cooldown_remaining,
+            }),
         }),
         forgotPassword: build.mutation({
             query: ({ email }) => ({
@@ -63,12 +72,16 @@ const userApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: { email },
             }),
+            transformResponse: (response) => ({
+                ...response,
+                cooldownRemaining: response.cooldown_remaining,
+            }),
         }),
         resetPassword: build.mutation({
-            query: ({ email, code, new_password }) => ({
+            query: ({ email, code, newPassword }) => ({
                 url: 'user/reset-password/',
                 method: 'POST',
-                body: { email, code, new_password },
+                body: { email, code, new_password: newPassword },
             }),
         }),
     }),

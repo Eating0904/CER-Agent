@@ -38,12 +38,12 @@ export const ResetPasswordCard = ({ email, initialCountdown = 0 }) => {
 
         try {
             const result = await forgotPassword({ email }).unwrap();
-            setCountdown(result.cooldown_remaining ?? 60);
+            setCountdown(result.cooldownRemaining ?? 60);
             setSuccessMessage('Reset code resent.');
         }
         catch (err) {
             if (err.status === 429) {
-                setCountdown(err.data?.cooldown_remaining ?? 60);
+                setCountdown(err.data?.cooldownRemaining ?? 60);
                 setErrorMessage('Please wait before requesting a new code.');
             }
             else {
@@ -60,15 +60,15 @@ export const ResetPasswordCard = ({ email, initialCountdown = 0 }) => {
             await resetPassword({
                 email,
                 code: values.code,
-                new_password: values.new_password,
+                newPassword: values.newPassword,
             }).unwrap();
 
             setSuccessMessage('Password reset successfully! Redirecting to login...');
             setTimeout(() => navigate('/login'), 1500);
         }
         catch (err) {
-            if (err.data?.new_password) {
-                setErrorMessage(err.data.new_password[0]);
+            if (err.data?.newPassword) {
+                setErrorMessage(err.data.newPassword[0]);
             }
             else {
                 setErrorMessage(err.data?.error || 'Failed to reset password.');
@@ -111,7 +111,7 @@ export const ResetPasswordCard = ({ email, initialCountdown = 0 }) => {
                 </Form.Item>
 
                 <Form.Item
-                    name="new_password"
+                    name="newPassword"
                     rules={[
                         { required: true, message: 'Please enter your new password!' },
                         { min: 6, message: 'Password must be at least 6 characters!' },
@@ -121,13 +121,13 @@ export const ResetPasswordCard = ({ email, initialCountdown = 0 }) => {
                 </Form.Item>
 
                 <Form.Item
-                    name="confirm_password"
-                    dependencies={['new_password']}
+                    name="confirmPassword"
+                    dependencies={['newPassword']}
                     rules={[
                         { required: true, message: 'Please confirm your password!' },
                         ({ getFieldValue }) => ({
                             validator(_, value) {
-                                if (!value || getFieldValue('new_password') === value) {
+                                if (!value || getFieldValue('newPassword') === value) {
                                     return Promise.resolve();
                                 }
                                 return Promise.reject(new Error('Passwords do not match!'));

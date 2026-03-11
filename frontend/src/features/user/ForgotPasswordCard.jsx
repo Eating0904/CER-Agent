@@ -25,7 +25,7 @@ export const ForgotPasswordCard = ({ onCodeSent }) => {
 
         try {
             const result = await forgotPassword({ email: values.email }).unwrap();
-            onCodeSent(values.email, result.cooldown_remaining ?? 60);
+            onCodeSent(values.email, result.cooldownRemaining ?? 60);
         }
         catch (err) {
             if (err.status === 429) {
