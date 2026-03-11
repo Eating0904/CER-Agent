@@ -12,7 +12,7 @@ def generate_verification_code():
     return ''.join(random.choices(string.digits, k=6))
 
 
-def send_verification_email(to_email, code, purpose='email_verify'):
+def send_verification_email(to_email, code, purpose='email_verify', expiry_hours=None):
     frontend_url = settings.FRONTEND_URL
     if purpose == 'password_reset':
         subject = 'Password Reset Code'
@@ -24,7 +24,13 @@ def send_verification_email(to_email, code, purpose='email_verify'):
         subject = 'Verify Your Email'
         title = 'Email Verification'
         description = f'Thank you for registering! Please login in to {frontend_url} and use the verification code below to verify your email address.'
-        expiry_text = 'This code will expire in <strong>24 hours</strong>.'
+        if expiry_hours and expiry_hours >= 24:
+            days = expiry_hours // 24
+            expiry_text = (
+                f'This code will expire in <strong>{days} day{"s" if days > 1 else ""}</strong>.'
+            )
+        else:
+            expiry_text = 'This code will expire in <strong>24 hours</strong>.'
         ignore_text = "If you didn't create an account, you can safely ignore this email."
 
     html_body = f"""

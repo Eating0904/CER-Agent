@@ -72,6 +72,7 @@ class Command(BaseCommand):
                     user.email,
                     code,
                     'email_verify',
+                    expiry_hours=expiry_hours,
                 ): user
                 for user, code in tasks
             }
