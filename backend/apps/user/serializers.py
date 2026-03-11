@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username', 'email', 'role', 'lab']
+        fields = ['id', 'username', 'email', 'role', 'lab', 'is_verified']
         read_only_fields = ['id']
 
 
@@ -30,3 +30,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class VerifyEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.CharField(max_length=6, min_length=6)
+
+
+class ResendVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()

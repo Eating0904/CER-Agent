@@ -24,6 +24,20 @@ const userApi = baseApi.injectEndpoints({
                 body: { email, username, password },
             }),
         }),
+        verifyEmail: build.mutation({
+            query: ({ email, code }) => ({
+                url: 'user/verify-email/',
+                method: 'POST',
+                body: { email, code },
+            }),
+        }),
+        resendVerification: build.mutation({
+            query: ({ email }) => ({
+                url: 'user/resend-verification/',
+                method: 'POST',
+                body: { email },
+            }),
+        }),
         refresh: build.mutation({
             query: () => ({
                 url: 'user/refresh/',
@@ -40,14 +54,20 @@ const userApi = baseApi.injectEndpoints({
             query: () => ({ url: 'user/me/' }),
             providesTags: ['User'],
         }),
+        getVerificationStatus: build.query({
+            query: (email) => ({ url: `user/verification-status/?email=${encodeURIComponent(email)}` }),
+        }),
     }),
 });
 
 export const {
     useLoginMutation,
     useRegisterMutation,
+    useVerifyEmailMutation,
+    useResendVerificationMutation,
     useRefreshMutation,
     useGetMeQuery,
+    useGetVerificationStatusQuery,
 } = userApi;
 
 export default userApi;

@@ -282,3 +282,8 @@ if ENABLE_PROFILING:
 
     NPLUSONE_LOGGER = logging.getLogger('django')
     NPLUSONE_LOG_LEVEL = logging.WARN
+
+
+# Email (Resend)
+RESEND_API_KEYS = [k.strip() for k in os.getenv('RESEND_API_KEYS', '').split(',') if k.strip()]
+EMAIL_FROM = os.getenv('EMAIL_FROM', 'noreply@example.com')
