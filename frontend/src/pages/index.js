@@ -1,4 +1,5 @@
 export * from './ArticlePageContent';
+export * from './ForgotPasswordPage';
 export * from './HowToUsePage';
 export * from './LoginPage';
 export * from './MapPage';

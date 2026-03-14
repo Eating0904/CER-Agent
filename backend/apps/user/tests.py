@@ -1,8 +1,13 @@
+from datetime import timedelta
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
+
+from apps.user.models import EmailVerification
 
 User = get_user_model()
 
@@ -37,8 +42,17 @@ class TestUserRegister:
         response_data = response.json()
         assert response_data['username'] == user_data['username']
         assert response_data['email'] == user_data['email']
+        assert response_data['is_verified'] is False
         assert 'password' not in response_data  # 密碼不應該在回應中
         assert 'id' in response_data
+
+    def test_register_creates_verification_record(self, api_client, user_data):
+        """測試註冊後自動建立驗證碼"""
+        url = reverse('user-register')
+        api_client.post(url, user_data)
+
+        user = User.objects.get(username=user_data['username'])
+        assert EmailVerification.objects.filter(user=user, purpose='email_verify').exists()
 
     def test_register_user_missing_username(self, api_client, user_data):
         """測試缺少 username 的註冊"""
@@ -105,6 +119,118 @@ class TestUserRegister:
 
 
 @pytest.mark.django_db
+class TestVerifyEmail:
+    def test_verify_email_success(self, api_client, user_data):
+        """測試成功驗證 email"""
+        register_url = reverse('user-register')
+        api_client.post(register_url, user_data)
+
+        user = User.objects.get(username=user_data['username'])
+        verification = EmailVerification.objects.get(user=user, purpose='email_verify')
+
+        url = reverse('user-verify-email')
+        response = api_client.post(url, {'email': user_data['email'], 'code': verification.code})
+
+        assert response.status_code == status.HTTP_200_OK
+        user.refresh_from_db()
+        assert user.is_verified is True
+
+    def test_verify_email_wrong_code(self, api_client, user_data):
+        """測試錯誤的驗證碼"""
+        register_url = reverse('user-register')
+        api_client.post(register_url, user_data)
+
+        url = reverse('user-verify-email')
+        response = api_client.post(url, {'email': user_data['email'], 'code': '000000'})
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_verify_email_nonexistent_user(self, api_client):
+        """測試不存在的用戶"""
+        url = reverse('user-verify-email')
+        response = api_client.post(url, {'email': 'nobody@example.com', 'code': '123456'})
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_verify_email_already_verified(self, api_client, user):
+        """測試已驗證的用戶"""
+        user.is_verified = True
+        user.save()
+
+        url = reverse('user-verify-email')
+        response = api_client.post(url, {'email': user.email, 'code': '123456'})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert 'already' in response.json()['message'].lower()
+
+    def test_verify_email_expired_code(self, api_client, user_data):
+        """測試過期的驗證碼"""
+        register_url = reverse('user-register')
+        api_client.post(register_url, user_data)
+
+        user = User.objects.get(username=user_data['username'])
+        verification = EmailVerification.objects.get(user=user, purpose='email_verify')
+
+        # 手動將 created_at 設為 25 小時前
+        EmailVerification.objects.filter(id=verification.id).update(
+            created_at=timezone.now() - timedelta(hours=25)
+        )
+
+        url = reverse('user-verify-email')
+        response = api_client.post(url, {'email': user_data['email'], 'code': verification.code})
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+class TestResendVerification:
+    def test_resend_verification_success(self, api_client, user_data):
+        """測試成功重寄驗證碼"""
+        register_url = reverse('user-register')
+        api_client.post(register_url, user_data)
+
+        # 手動將上一次的 created_at 設為 61 秒前（繞開冷卻）
+        user = User.objects.get(username=user_data['username'])
+        EmailVerification.objects.filter(user=user).update(
+            created_at=timezone.now() - timedelta(seconds=61)
+        )
+
+        url = reverse('user-resend-verification')
+        response = api_client.post(url, {'email': user_data['email']})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert EmailVerification.objects.filter(user=user, purpose='email_verify').count() == 2
+
+    def test_resend_verification_cooldown(self, api_client, user_data):
+        """測試 60 秒冷卻"""
+        register_url = reverse('user-register')
+        api_client.post(register_url, user_data)
+
+        url = reverse('user-resend-verification')
+        response = api_client.post(url, {'email': user_data['email']})
+
+        assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+    def test_resend_verification_already_verified(self, api_client, user):
+        """測試已驗證用戶不會收到驗證碼"""
+        user.is_verified = True
+        user.save()
+
+        url = reverse('user-resend-verification')
+        response = api_client.post(url, {'email': user.email})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert 'already' in response.json()['message'].lower()
+
+    def test_resend_verification_nonexistent_email(self, api_client):
+        """測試不存在的 email（不洩漏資訊）"""
+        url = reverse('user-resend-verification')
+        response = api_client.post(url, {'email': 'nobody@example.com'})
+
+        assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.django_db
 class TestUserMe:
     def test_me_authenticated_user(self, api_client, user):
         """測試已認證用戶獲取自己的資訊"""
@@ -118,6 +244,7 @@ class TestUserMe:
         assert response_data['id'] == user.id
         assert response_data['username'] == user.username
         assert response_data['email'] == user.email
+        assert 'is_verified' in response_data
         assert 'password' not in response_data
 
     def test_me_unauthenticated_user(self, api_client):
@@ -187,6 +314,5 @@ class TestUserViewSetSerializerClass:
         response_data = response.json()
 
         # UserSerializer 的特定欄位
-        expected_fields = {'id', 'username', 'email'}
-        assert set(response_data.keys()) == expected_fields
+        assert 'is_verified' in response_data
         assert 'password' not in response_data

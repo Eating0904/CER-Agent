@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from apps.common.utils.admin_helpers import format_json_field
 from apps.lab.models import Lab
 
-from .models import User
+from .models import EmailVerification, User
 
 
 class LabGroupFilter(SimpleListFilter):
@@ -50,13 +50,14 @@ class UserAdmin(BaseUserAdmin):
         'username',
         'email',
         'role',
+        'is_verified',
         'lab_group',
         'maps_count',
         'essays_count',
         'is_staff',
         'is_active',
     )
-    list_filter = ('role', LabGroupFilter)
+    list_filter = ('role', 'is_verified', LabGroupFilter)
     search_fields = ('username', 'email', 'role')
     ordering = ('username',)
 
@@ -100,6 +101,18 @@ class UserAdmin(BaseUserAdmin):
 
         formset.save_m2m()
 
-    fieldsets = BaseUserAdmin.fieldsets + (('角色資訊', {'fields': ('role',)}),)
+    fieldsets = BaseUserAdmin.fieldsets + (
+        ('角色資訊', {'fields': ('role',)}),
+        ('驗證狀態', {'fields': ('is_verified',)}),
+    )
 
     add_fieldsets = BaseUserAdmin.add_fieldsets + (('角色資訊', {'fields': ('email', 'role')}),)
+
+
+@admin.register(EmailVerification)
+class EmailVerificationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'code', 'purpose', 'is_used', 'created_at')
+    list_filter = ('purpose', 'is_used')
+    search_fields = ('user__username', 'user__email', 'code')
+    readonly_fields = ('user', 'code', 'purpose', 'created_at')
+    ordering = ('-created_at',)
