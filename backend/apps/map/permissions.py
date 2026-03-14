@@ -1,9 +1,12 @@
+import logging
 from functools import wraps
 
 from rest_framework import status
 from rest_framework.response import Response
 
 from .models import Map
+
+logger = logging.getLogger(__name__)
 
 
 def require_map_owner(view_func):
@@ -48,10 +51,17 @@ def require_map_owner(view_func):
             )
 
         # 4. 檢查 map 是否存在且屬於當前使用者
-        if not Map.objects.filter(id=map_id, user=request.user).exists():
-            # 回傳 404 而非 403，避免洩漏資源存在性
+        try:
+            if not Map.objects.filter(id=map_id, user=request.user).exists():
+                # 回傳 404 而非 403，避免洩漏資源存在性
+                return Response(
+                    {'success': False, 'error': 'Map not found'}, status=status.HTTP_404_NOT_FOUND
+                )
+        except Exception as e:
+            logger.exception(f'Map ownership check failed: map_id={map_id}')
             return Response(
-                {'success': False, 'error': 'Map not found'}, status=status.HTTP_404_NOT_FOUND
+                {'success': False, 'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
         # 5. 權限檢查通過，執行原本的 view

@@ -37,7 +37,15 @@ export const MapSaveButton = () => {
             }, mapId ? parseInt(mapId, 10) : null);
         }
         catch (error) {
-            message.error('Save failed, please try again later', error);
+            let errorMsg = 'Save failed, please try again later.';
+            if (error?.status >= 500) {
+                errorMsg = 'System error occurred. Please try again later.';
+            }
+            else {
+                errorMsg = error?.data?.error || error?.data?.message || 'Save failed, please try again later.';
+            }
+            message.error(errorMsg);
+            console.error('Failed to save mindmap:', error);
         }
         finally {
             // pass

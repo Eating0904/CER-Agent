@@ -68,7 +68,14 @@ export const useEssaySendMessage = (
                 }).unwrap();
             }
             catch (err) {
-                message.error('Operation failed');
+                let errorMsg = 'Operation failed';
+                if (err?.status >= 500) {
+                    errorMsg = 'System error occurred. Please try again later.';
+                }
+                else {
+                    errorMsg = err?.data?.error || err?.data?.message || 'Operation failed';
+                }
+                message.error(errorMsg);
                 console.error('Failed to send essay message:', err);
                 throw err;
             }

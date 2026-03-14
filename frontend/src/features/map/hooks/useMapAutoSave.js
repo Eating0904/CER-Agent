@@ -54,7 +54,14 @@ export const useMapAutoSave = (mapId, nodes, edges) => {
                 }
             }
             catch (err) {
-                message.warning('Auto-save failed');
+                let errorMsg = 'Auto-save failed';
+                if (err?.status >= 500) {
+                    errorMsg = 'System error occurred during auto-save.';
+                }
+                else {
+                    errorMsg = err?.data?.error || err?.data?.message || 'Auto-save failed';
+                }
+                message.warning(errorMsg);
                 console.error('Failed to auto-save mind map:', err);
             }
         },

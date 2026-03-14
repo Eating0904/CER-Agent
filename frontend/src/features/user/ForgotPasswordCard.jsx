@@ -28,12 +28,16 @@ export const ForgotPasswordCard = ({ onCodeSent }) => {
             onCodeSent(values.email, result.cooldownRemaining ?? 60);
         }
         catch (err) {
-            if (err.status === 429) {
+            if (err?.status >= 500) {
+                setErrorMessage('System error occurred. Please try again later.');
+            }
+            else if (err.status === 429) {
                 setErrorMessage('Please wait before requesting a new code.');
             }
             else {
                 setErrorMessage(err.data?.error || 'Failed to send reset code.');
             }
+            console.error('Forgot password error:', err);
         }
     };
 

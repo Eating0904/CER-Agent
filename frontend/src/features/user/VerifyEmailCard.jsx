@@ -60,7 +60,13 @@ export const VerifyEmailCard = ({ email, onVerified }) => {
             }
         }
         catch (err) {
-            setErrorMessage(err.data?.error || 'Verification failed. Please try again.');
+            if (err?.status >= 500) {
+                setErrorMessage('System error occurred. Please try again later.');
+            }
+            else {
+                setErrorMessage(err.data?.error || 'Verification failed. Please try again.');
+            }
+            console.error('Verify email error:', err);
         }
     };
 
@@ -74,7 +80,10 @@ export const VerifyEmailCard = ({ email, onVerified }) => {
             setSuccessMessage('Verification code resent.');
         }
         catch (err) {
-            if (err.status === 429) {
+            if (err?.status >= 500) {
+                setErrorMessage('System error occurred. Please try again later.');
+            }
+            else if (err.status === 429) {
                 const remaining = err.data?.cooldownRemaining ?? 60;
                 setCountdown(remaining);
                 setErrorMessage('Please wait before requesting a new code.');
@@ -82,6 +91,7 @@ export const VerifyEmailCard = ({ email, onVerified }) => {
             else {
                 setErrorMessage(err.data?.error || 'Failed to resend code.');
             }
+            console.error('Resend verification code error:', err);
         }
     };
 

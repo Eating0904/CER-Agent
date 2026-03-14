@@ -95,8 +95,15 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
             );
         }
         catch (err) {
+            let errorMsg = 'failed to generate feedback';
+            if (err?.status >= 500) {
+                errorMsg = 'System error occurred. Please try again later.';
+            }
+            else {
+                errorMsg = err?.data?.error || err?.message || 'failed to generate feedback';
+            }
             updateAlert(alertId, {
-                description: err.data?.error || err.message || 'failed to generate feedback',
+                description: errorMsg,
                 status: 'error',
                 showAsk: false,
             });

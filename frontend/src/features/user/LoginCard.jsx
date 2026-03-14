@@ -35,9 +35,14 @@ export const LoginCard = () => {
 
             navigate('/');
         }
-        catch {
-            const errorMsg = 'Invalid username or password';
-            setErrorMessage(errorMsg);
+        catch (err) {
+            if (err?.status >= 500) {
+                setErrorMessage('System error occurred. Please try again later.');
+            }
+            else {
+                setErrorMessage(err?.data?.error || 'Invalid username or password');
+            }
+            console.error('Login error:', err);
         }
     };
 

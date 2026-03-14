@@ -46,10 +46,17 @@ export const useEssayAutoSave = (mapId, essayContent, essayId = null) => {
                 essayId || response?.id || null,
             );
         }
-        catch (error) {
-            message.warning('Auto-save failed');
-            console.error('Failed to auto-save essay:', error);
-            throw error;
+        catch (err) {
+            let errorMsg = 'Auto-save failed';
+            if (err?.status >= 500) {
+                errorMsg = 'System error occurred during auto-save.';
+            }
+            else {
+                errorMsg = err?.data?.error || err?.data?.message || 'Auto-save failed';
+            }
+            message.warning(errorMsg);
+            console.error('Failed to auto-save essay:', err);
+            throw err;
         }
     }, [mapId, essayContent, updateEssay, message, mapIdFromParams, trackAction, essayId]);
 

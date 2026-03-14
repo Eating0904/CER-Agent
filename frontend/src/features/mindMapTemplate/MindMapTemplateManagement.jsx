@@ -77,7 +77,14 @@ export const MindMapTemplateManagement = () => {
                     message.success('Task deleted successfully!');
                 }
                 catch (err) {
-                    message.error('Failed to delete task.');
+                    let errorMsg = 'Failed to delete task.';
+                    if (err?.status >= 500) {
+                        errorMsg = 'System error occurred. Please try again later.';
+                    }
+                    else {
+                        errorMsg = err?.data?.error || err?.data?.message || 'Failed to delete task.';
+                    }
+                    message.error(errorMsg);
                     console.error('Failed to delete task:', err);
                 }
             },

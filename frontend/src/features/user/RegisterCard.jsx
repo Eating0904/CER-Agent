@@ -38,7 +38,10 @@ export const RegisterCard = () => {
             setStep('verify');
         }
         catch (err) {
-            if (err.data && err.status === 400) {
+            if (err?.status >= 500) {
+                setErrorMessage('System error occurred. Please try again later.');
+            }
+            else if (err.data && err.status === 400) {
                 if (err.data.username) {
                     setErrorMessage(err.data.username[0]);
                 }

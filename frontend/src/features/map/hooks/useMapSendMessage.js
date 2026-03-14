@@ -43,9 +43,16 @@ export const useMapSendMessage = (mapId, handleAutoSave) => {
                 }).unwrap();
             }
             catch (err) {
-                message.error('Operation failed');
+                let errorMsg = 'Operation failed';
+                if (err?.status >= 500) {
+                    errorMsg = 'System error occurred. Please try again later.';
+                }
+                else {
+                    errorMsg = err?.data?.error || err?.data?.message || 'Operation failed';
+                }
+                message.error(errorMsg);
                 console.error('Failed to send mindmap message:', err);
-                throw err; // 讓呼叫者知道失敗
+                throw err;
             }
             finally {
                 // 從發送中集合移除當前 mapId

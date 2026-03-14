@@ -37,7 +37,14 @@ export const EssaySaveButton = ({
             );
         }
         catch (error) {
-            message.error('Failed to save');
+            let errorMsg = 'Failed to save';
+            if (error?.status >= 500) {
+                errorMsg = 'System error occurred. Please try again later.';
+            }
+            else {
+                errorMsg = error?.data?.error || error?.data?.message || 'Failed to save';
+            }
+            message.error(errorMsg);
             console.error('Failed to save essay:', error);
         }
     };

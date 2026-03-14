@@ -106,4 +106,5 @@ class BaseAgent(ABC):
             return response_text, metadata
 
         except Exception as e:
+            logger.exception(f'{agent_name}: Processing failed')
             raise

@@ -79,7 +79,14 @@ export const EditMindMapTemplate = ({
             }
         }
         catch (error) {
-            message.error('Failed to save task.');
+            let errorMsg = 'Failed to save task.';
+            if (error?.status >= 500) {
+                errorMsg = 'System error occurred. Please try again later.';
+            }
+            else {
+                errorMsg = error?.data?.error || error?.data?.message || 'Failed to save task.';
+            }
+            message.error(errorMsg);
             console.error('Failed to save task:', error);
         }
     };

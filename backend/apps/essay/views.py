@@ -30,12 +30,18 @@ def essay_detail(request, map_id):
         )
 
     if request.method == 'GET':
-        # 獲取或創建 Essay
-        essay, created = Essay.objects.get_or_create(
-            map=map_instance, defaults={'user': request.user}
-        )
-        serializer = EssaySerializer(essay)
-        return Response({'success': True, 'essay': serializer.data, 'created': created})
+        try:
+            # 獲取或創建 Essay
+            essay, created = Essay.objects.get_or_create(
+                map=map_instance, defaults={'user': request.user}
+            )
+            serializer = EssaySerializer(essay)
+            return Response({'success': True, 'essay': serializer.data, 'created': created})
+        except Exception as e:
+            logger.exception(f'Failed to get essay: map_id={map_id}, user={request.user.id}')
+            return Response(
+                {'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     elif request.method == 'PUT':
         try:
@@ -93,9 +99,15 @@ def view_essay_detail(request, map_id):
             {'success': False, 'error': 'Map not found'}, status=status.HTTP_404_NOT_FOUND
         )
 
-    essay = Essay.objects.filter(map=map_instance).first()
-    if essay:
-        serializer = EssaySerializer(essay)
-        return Response({'success': True, 'essay': serializer.data})
-    else:
-        return Response({'success': True, 'essay': None})
+    try:
+        essay = Essay.objects.filter(map=map_instance).first()
+        if essay:
+            serializer = EssaySerializer(essay)
+            return Response({'success': True, 'essay': serializer.data})
+        else:
+            return Response({'success': True, 'essay': None})
+    except Exception as e:
+        logger.exception(f'Failed to get essay detail: map_id={map_id}')
+        return Response(
+            {'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

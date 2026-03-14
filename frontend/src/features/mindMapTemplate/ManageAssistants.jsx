@@ -72,7 +72,14 @@ export const ManageAssistants = ({ open, onClose, template }) => {
             setSelectedAssistant(null);
         }
         catch (err) {
-            message.error('Failed to grant permission.');
+            let errorMsg = 'Failed to grant permission.';
+            if (err?.status >= 500) {
+                errorMsg = 'System error occurred. Please try again later.';
+            }
+            else {
+                errorMsg = err?.data?.error || err?.data?.message || 'Failed to grant permission.';
+            }
+            message.error(errorMsg);
             console.error('Failed to grant permission:', err);
         }
     };
@@ -94,7 +101,14 @@ export const ManageAssistants = ({ open, onClose, template }) => {
                     message.success('Removed successfully！');
                 }
                 catch (err) {
-                    message.error('Failed to remove permission.');
+                    let errorMsg = 'Failed to remove permission.';
+                    if (err?.status >= 500) {
+                        errorMsg = 'System error occurred. Please try again later.';
+                    }
+                    else {
+                        errorMsg = err?.data?.error || err?.data?.message || 'Failed to remove permission.';
+                    }
+                    message.error(errorMsg);
                     console.error('Failed to revoke permission:', err);
                 }
             },

@@ -67,22 +67,34 @@ class MindMapTemplateViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """建立 template 時自動設定 created_by"""
-        serializer.save(created_by=self.request.user)
+        try:
+            serializer.save(created_by=self.request.user)
+        except Exception as e:
+            logger.exception(f'Failed to create template: user={self.request.user.id}')
+            raise
 
     @action(detail=False, methods=['get'])
     def my(self, request):
         """取得當前用戶可以管理的 templates"""
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        try:
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.exception(f'Failed to get user templates: user={request.user.id}')
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['get'])
     def assistants(self, request, pk=None):
         """取得某個 template 的助教列表"""
-        template = self.get_object()
-        permissions = template.permissions.select_related('assistant', 'granted_by').all()
-        serializer = TemplatePermissionSerializer(permissions, many=True)
-        return Response(serializer.data)
+        try:
+            template = self.get_object()
+            permissions = template.permissions.select_related('assistant', 'granted_by').all()
+            serializer = TemplatePermissionSerializer(permissions, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.exception(f'Failed to get template assistants: template_id={pk}')
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['post'])
     def grant_permission(self, request, pk=None):
@@ -130,7 +142,9 @@ class MindMapTemplateViewSet(viewsets.ModelViewSet):
             logger.warning(
                 f'Permission not found: template_id={template.id}, assistant_id={assistant_id}'
             )
-            return Response({'error': '找不到此授權記錄'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {'error': 'Authorization record not found.'}, status=status.HTTP_404_NOT_FOUND
+            )
         except Exception as e:
             logger.exception(e)
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

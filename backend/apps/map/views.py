@@ -139,18 +139,22 @@ class MapViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         """更新 map 之前檢查期限"""
-        instance = self.get_object()
+        try:
+            instance = self.get_object()
 
-        if not instance.template or not check_template_deadline(instance.template):
-            logger.warning(
-                f'Template expired, cannot update map: map_id={instance.id}, user={request.user.id}'
-            )
-            return Response(
-                {'error': 'This task has expired and cannot be edited'},
-                status=status.HTTP_403_FORBIDDEN,
-            )
+            if not instance.template or not check_template_deadline(instance.template):
+                logger.warning(
+                    f'Template expired, cannot update map: map_id={instance.id}, user={request.user.id}'
+                )
+                return Response(
+                    {'error': 'This task has expired and cannot be edited'},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
 
-        return super().partial_update(request, *args, **kwargs)
+            return super().partial_update(request, *args, **kwargs)
+        except Exception as e:
+            logger.exception(f'Failed to update map: user={request.user.id}')
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'], url_path='view')
     def view_list(self, request):
@@ -159,26 +163,30 @@ class MapViewSet(viewsets.ModelViewSet):
         if request.user.role not in VIEW_ALLOWED_ROLES:
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
 
-        queryset = Map.objects.select_related('user', 'template').all()
+        try:
+            queryset = Map.objects.select_related('user', 'template').all()
 
-        username = request.query_params.get('username')
-        if username:
-            queryset = queryset.filter(user__username__icontains=username)
+            username = request.query_params.get('username')
+            if username:
+                queryset = queryset.filter(user__username__icontains=username)
 
-        map_id = request.query_params.get('map_id')
-        if map_id:
-            queryset = queryset.filter(id=map_id)
+            map_id = request.query_params.get('map_id')
+            if map_id:
+                queryset = queryset.filter(id=map_id)
 
-        map_name = request.query_params.get('map_name')
-        if map_name:
-            queryset = queryset.filter(name__icontains=map_name)
+            map_name = request.query_params.get('map_name')
+            if map_name:
+                queryset = queryset.filter(name__icontains=map_name)
 
-        template_id = request.query_params.get('template_id')
-        if template_id:
-            queryset = queryset.filter(template__id=template_id)
+            template_id = request.query_params.get('template_id')
+            if template_id:
+                queryset = queryset.filter(template__id=template_id)
 
-        serializer = MapViewListSerializer(queryset, many=True)
-        return Response(serializer.data)
+            serializer = MapViewListSerializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.exception(f'Failed to get map view list: user={request.user.id}')
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['get'], url_path='view')
     def view_detail(self, request, pk=None):
@@ -191,6 +199,13 @@ class MapViewSet(viewsets.ModelViewSet):
             map_instance = Map.objects.select_related('template').get(pk=pk)
         except Map.DoesNotExist:
             return Response({'error': 'Map not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.exception(f'Failed to get map detail: pk={pk}, user={request.user.id}')
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        serializer = MapSerializer(map_instance, context={'request': request})
-        return Response(serializer.data)
+        try:
+            serializer = MapSerializer(map_instance, context={'request': request})
+            return Response(serializer.data)
+        except Exception as e:
+            logger.exception(f'Failed to serialize map detail: pk={pk}')
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

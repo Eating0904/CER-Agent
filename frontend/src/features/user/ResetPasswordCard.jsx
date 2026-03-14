@@ -42,13 +42,17 @@ export const ResetPasswordCard = ({ email, initialCountdown = 0 }) => {
             setSuccessMessage('Reset code resent.');
         }
         catch (err) {
-            if (err.status === 429) {
+            if (err?.status >= 500) {
+                setErrorMessage('System error occurred. Please try again later.');
+            }
+            else if (err.status === 429) {
                 setCountdown(err.data?.cooldownRemaining ?? 60);
                 setErrorMessage('Please wait before requesting a new code.');
             }
             else {
                 setErrorMessage(err.data?.error || 'Failed to resend code.');
             }
+            console.error('Resend reset code error:', err);
         }
     };
 
@@ -67,12 +71,16 @@ export const ResetPasswordCard = ({ email, initialCountdown = 0 }) => {
             setTimeout(() => navigate('/login'), 2000);
         }
         catch (err) {
-            if (err.data?.newPassword) {
+            if (err?.status >= 500) {
+                setErrorMessage('System error occurred. Please try again later.');
+            }
+            else if (err.data?.newPassword) {
                 setErrorMessage(err.data.newPassword[0]);
             }
             else {
                 setErrorMessage(err.data?.error || 'Failed to reset password.');
             }
+            console.error('Reset password error:', err);
         }
     };
 
