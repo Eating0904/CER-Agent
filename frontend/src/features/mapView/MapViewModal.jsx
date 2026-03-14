@@ -90,6 +90,17 @@ const ModalContent = ({ mapId }) => {
 
 export const MapViewModal = ({ open, mapData, tableIndex, onClose }) => {
     const [openKey, setOpenKey] = useState(0);
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    useEffect(() => {
+        if (open) {
+            setIsAnimating(true);
+        }
+        else {
+            setIsAnimating(false);
+            setOpenKey(0); // 重置 key
+        }
+    }, [open]);
 
     const practiceLabel = mapData
         ? `PracticeID-${mapData.id} ${mapData.name ?? ''}`
@@ -111,11 +122,20 @@ export const MapViewModal = ({ open, mapData, tableIndex, onClose }) => {
             styles={{ body: { height: 'calc(95vh - 110px)', padding: 0, overflow: 'hidden' } }}
             title={title}
             afterOpenChange={(isOpen) => {
-                if (isOpen) setOpenKey((k) => k + 1);
+                if (isOpen) {
+                    setIsAnimating(false);
+                    setOpenKey((k) => k + 1);
+                }
             }}
         >
             {open && mapData && (
-                <ModalContent key={`${mapData.id}-${openKey}`} mapId={mapData.id} />
+                isAnimating ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                        <Spin size="large" />
+                    </div>
+                ) : (
+                    <ModalContent key={`${mapData.id}-${openKey}`} mapId={mapData.id} />
+                )
             )}
         </Modal>
     );
