@@ -282,3 +282,9 @@ if ENABLE_PROFILING:
 
     NPLUSONE_LOGGER = logging.getLogger('django')
     NPLUSONE_LOG_LEVEL = logging.WARN
+
+
+# Email (Resend)
+RESEND_API_KEYS = [k.strip() for k in os.getenv('RESEND_API_KEYS', '').split(',') if k.strip()]
+EMAIL_FROM_LIST = [e.strip() for e in os.getenv('EMAIL_FROM', '').split(',') if e.strip()]
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3001')

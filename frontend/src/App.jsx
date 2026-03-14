@@ -1,3 +1,4 @@
+import { Spin } from 'antd';
 import {
     Navigate,
     Outlet,
@@ -7,9 +8,12 @@ import {
 
 import { isAuthenticated } from './features/user/authUtils';
 import { RoleProtectedRoute } from './features/user/RoleProtectedRoute';
+import { useGetMeQuery } from './features/user/userApi';
+import { VerifyEmailCard } from './features/user/VerifyEmailCard';
 import { useTokenCheckTimer } from './hooks/useTokenCheckTimer';
 import { MainLayout, PublicLayout } from './layouts';
 import {
+    ForgotPasswordPage,
     HowToUsePage,
     LoginPage,
     MapPage,
@@ -27,6 +31,24 @@ const ProtectedRoute = () => {
 
     if (!auth) {
         return <Navigate to="/login" replace />;
+    }
+
+    return <VerificationGate />;
+};
+
+const VerificationGate = () => {
+    const { data: user, isLoading, refetch } = useGetMeQuery();
+
+    if (isLoading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <Spin size="large" />
+            </div>
+        );
+    }
+
+    if (user && !user.isVerified) {
+        return <VerifyEmailCard email={user.email} onVerified={refetch} />;
     }
 
     return <Outlet />;
@@ -51,6 +73,7 @@ const App = () => {
                 <Route element={<PublicLayout />}>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 </Route>
             </Route>
 

@@ -12,17 +12,19 @@ import {
     Input,
     Typography,
 } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { CardTemplate } from './CardTemplate';
 import { useRegisterMutation } from './userApi';
+import { VerifyEmailCard } from './VerifyEmailCard';
 
 const { Title, Text } = Typography;
 
 export const RegisterCard = () => {
+    const [step, setStep] = useState('register');
+    const [registeredEmail, setRegisteredEmail] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    const navigate = useNavigate();
     const [register, { isLoading }] = useRegisterMutation();
 
     const handleSubmit = async (values) => {
@@ -32,7 +34,8 @@ export const RegisterCard = () => {
             const { username, email, password } = values;
             await register({ username, email, password }).unwrap();
 
-            navigate('/login');
+            setRegisteredEmail(email);
+            setStep('verify');
         }
         catch (err) {
             if (err.data && err.status === 400) {
@@ -58,6 +61,10 @@ export const RegisterCard = () => {
             console.error('Registration error:', err);
         }
     };
+
+    if (step === 'verify') {
+        return <VerifyEmailCard email={registeredEmail} />;
+    }
 
     return (
         <CardTemplate>
