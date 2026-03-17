@@ -44,11 +44,11 @@ def select_test_folder(base_dir: Path) -> Path:
         print(f'❌ test_data 目錄下沒有任何資料夾: {test_data_dir}')
         sys.exit(1)
 
-    EXCLUDED = {'article.txt', 'prompt.txt'}
+    EXCLUDED = {'article.txt', 'prompt.py'}
     print('\n📂 可用的測試資料夾：')
     for idx, folder in enumerate(folders, 1):
         data_count = len([f for f in folder.iterdir() if f.is_file() and f.name not in EXCLUDED])
-        has_prompt = '  ✦ 含自訂 prompt' if (folder / 'prompt.txt').exists() else ''
+        has_prompt = '  ✦ 含自訂 prompt' if (folder / 'prompt.py').exists() else ''
         print(f'  {idx}. {folder.name}  ({data_count} 筆資料){has_prompt}')
 
     while True:
@@ -97,23 +97,23 @@ def load_article(folder_path: Path) -> str:
 
 def select_prompt(folder_path: Path, agent) -> None:
     """
-    偵測資料夾下是否有 prompt.txt。
+    偵測資料夾下是否有 prompt.py。
     若有，詢問使用者要用內建還是自訂 prompt；
-    若選自訂，讀取 prompt.txt 並覆蓋 agent.prompt_template。
+    若選自訂，動態載入 prompt.py 中的 SCORING_PROMPT 並覆蓋 agent.prompt_template。
 
     Args:
         folder_path: 測試資料夾路徑
         agent: Scoring Agent 實例（需有 prompt_template 屬性）
     """
-    prompt_path = folder_path / 'prompt.txt'
+    prompt_path = folder_path / 'prompt.py'
 
     if not prompt_path.exists():
         print('📝 使用內建 Prompt')
         return
 
-    print('\n📝 偵測到 prompt.txt，請選擇要使用的 Prompt：')
+    print('\n📝 偵測到 prompt.py，請選擇要使用的 Prompt：')
     print('  1. 使用內建 Prompt（backend 預設）')
-    print('  2. 使用自訂 Prompt（prompt.txt）')
+    print('  2. 使用自訂 Prompt（prompt.py）')
 
     while True:
         choice = input('\n請輸入選項 [1/2]: ').strip()
@@ -121,10 +121,24 @@ def select_prompt(folder_path: Path, agent) -> None:
             print('✅ 使用內建 Prompt')
             return
         elif choice == '2':
-            with open(prompt_path, encoding='utf-8') as f:
-                custom_prompt = f.read()
-            agent.prompt_template = custom_prompt
-            print('✅ 使用自訂 Prompt（prompt.txt）')
+            import importlib.util
+            import sys
+
+            module_name = 'custom_prompt_module'
+            spec = importlib.util.spec_from_file_location(module_name, str(prompt_path))
+            if spec is None or spec.loader is None:
+                print('❌ 錯誤：無法從 prompt.py 載入模組規格。改回使用內建 Prompt。')
+                return
+
+            custom_module = importlib.util.module_from_spec(spec)
+            sys.modules[module_name] = custom_module
+            spec.loader.exec_module(custom_module)
+
+            if hasattr(custom_module, 'SCORING_PROMPT'):
+                agent.prompt_template = custom_module.SCORING_PROMPT
+                print('✅ 使用自訂 Prompt（prompt.py 的 SCORING_PROMPT 物件）')
+            else:
+                print('❌ 錯誤：在 prompt.py 中找不到 SCORING_PROMPT 物件。改回使用內建 Prompt。')
             return
         else:
             print('⚠️  請輸入 1 或 2')
