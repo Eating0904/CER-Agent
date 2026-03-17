@@ -76,11 +76,19 @@ SCORE_FILLS = {
     0: PatternFill(start_color='FFF2CC', end_color='FFF2CC', fill_type='solid'),  # 黃
 }
 
-DIMENSIONS = ['Claim', 'Evidence', 'Reasoning']
+DIMENSIONS = [
+    'C_覆蓋',
+    'C_細節',
+    'E_內容',
+    'E_連線',
+    'R_合理',
+]
 METADATA_KEYS = {
-    'Claim': ('claim_score', 'claim_feedback'),
-    'Evidence': ('evidence_score', 'evidence_feedback'),
-    'Reasoning': ('reasoning_score', 'reasoning_feedback'),
+    'C_覆蓋': ('claim_coverage_score', 'claim_coverage_feedback'),
+    'C_細節': ('claim_precision_score', 'claim_precision_feedback'),
+    'E_內容': ('evidence_coverage_score', 'evidence_coverage_feedback'),
+    'E_連線': ('evidence_connection_score', 'evidence_connection_feedback'),
+    'R_合理': ('reasoning_score', 'reasoning_feedback'),
 }
 
 
@@ -129,7 +137,8 @@ def generate_excel(results: list[dict], output_path: Path) -> None:
     """
     產生 Mindmap 評分結果 Excel。
 
-    欄位：A=ID | B=C分數 | C=E分數 | D=R分數 | E=C feedback | F=E feedback | G=R feedback
+    欄位：A=ID | B=C_覆蓋分數 | C=C_細節分數 | D=E_內容分數 | E=E_連線分數 | F=R_合理分數 |
+        G=C_覆蓋 Feedback | H=C_細節 Feedback | I=E_內容 Feedback | J=E_連線 Feedback | K=R_合理 Feedback
 
     Args:
         results: score_one() 回傳的結果清單
@@ -146,8 +155,20 @@ def generate_excel(results: list[dict], output_path: Path) -> None:
     left_align = styles['left_align']
     thin_border = styles['thin_border']
 
-    score_cols = {'Claim': 2, 'Evidence': 3, 'Reasoning': 4}  # B/C/D
-    feedback_cols = {'Claim': 5, 'Evidence': 6, 'Reasoning': 7}  # E/F/G
+    score_cols = {
+        'C_覆蓋': 2,
+        'C_細節': 3,
+        'E_內容': 4,
+        'E_連線': 5,
+        'R_合理': 6,
+    }
+    feedback_cols = {
+        'C_覆蓋': 7,
+        'C_細節': 8,
+        'E_內容': 9,
+        'E_連線': 10,
+        'R_合理': 11,
+    }
 
     # ── 表頭（第 1 列）────────────────────────────────────────────────────────
     write_cell(ws.cell(row=1, column=1), 'ID', header_font, center_align, thin_border)
@@ -155,14 +176,14 @@ def generate_excel(results: list[dict], output_path: Path) -> None:
     for dim in DIMENSIONS:
         write_cell(
             ws.cell(row=1, column=score_cols[dim]),
-            f'{dim[0]} 分數',
+            f'{dim} 分數',
             header_font,
             center_align,
             thin_border,
         )
         write_cell(
             ws.cell(row=1, column=feedback_cols[dim]),
-            f'{dim[0]} Feedback',
+            f'{dim} Feedback',
             header_font,
             center_align,
             thin_border,
@@ -195,14 +216,18 @@ def generate_excel(results: list[dict], output_path: Path) -> None:
             )
 
     # ── 欄寬 & 凍結窗格 ───────────────────────────────────────────────────────
-    ws.freeze_panes = 'E2'  # 凍結第 1 列 + A~D 欄（ID 和三個分數）
+    ws.freeze_panes = 'G2'  # 凍結第 1 列 + A~F 欄（ID 和五個分數）
     ws.column_dimensions['A'].width = 15
-    ws.column_dimensions['B'].width = 10
-    ws.column_dimensions['C'].width = 10
-    ws.column_dimensions['D'].width = 10
-    ws.column_dimensions['E'].width = 55
-    ws.column_dimensions['F'].width = 55
+    ws.column_dimensions['B'].width = 15
+    ws.column_dimensions['C'].width = 15
+    ws.column_dimensions['D'].width = 15
+    ws.column_dimensions['E'].width = 15
+    ws.column_dimensions['F'].width = 15
     ws.column_dimensions['G'].width = 55
+    ws.column_dimensions['H'].width = 55
+    ws.column_dimensions['I'].width = 55
+    ws.column_dimensions['J'].width = 55
+    ws.column_dimensions['K'].width = 55
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     wb.save(output_path)
@@ -245,21 +270,15 @@ def main():
         try:
             result = score_one(file_id, data, article_content, agent)
             results.append(result)
-            scores = f'C={result["Claim_score"]} E={result["Evidence_score"]} R={result["Reasoning_score"]}'
+            scores = ' '.join([f'{dim}={result[f"{dim}_score"]}' for dim in DIMENSIONS])
             print(f'         → {scores}')
         except Exception as e:
             print(f'         ❌ 失敗: {str(e)}')
-            results.append(
-                {
-                    'id': file_id,
-                    'Claim_score': None,
-                    'Claim_feedback': f'錯誤: {str(e)}',
-                    'Evidence_score': None,
-                    'Evidence_feedback': '',
-                    'Reasoning_score': None,
-                    'Reasoning_feedback': '',
-                }
-            )
+            error_result: dict = {'id': file_id}
+            for dim in DIMENSIONS:
+                error_result[f'{dim}_score'] = None
+                error_result[f'{dim}_feedback'] = f'錯誤: {str(e)}' if dim == DIMENSIONS[0] else ''
+            results.append(error_result)
 
     # 輸出 Excel
     print('\n📊 產生 Excel 報告...')

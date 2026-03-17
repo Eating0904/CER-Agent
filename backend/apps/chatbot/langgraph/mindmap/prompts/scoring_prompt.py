@@ -22,14 +22,16 @@ To meet the high-score requirements of the grading criteria, please strictly adh
 **Constraint**: Do not read the student's input yet. Construct the "Perfect Mind Map" from the SOURCE ARTICLE.
 
 ### Step 1-1: Claim Entities
-- **Segmentation**: Divide the SOURCE ARTICLE into distinct **Topic Blocks**.
-- **Extraction**: List **all** Claims derived from the SOURCE ARTICLE.
-- **Mapping**: Assign each Claim to its corresponding Topic Block.
-- **Classification**: Classify each Claim as a **Major Claim**(central argument of a Topic Block) or a **Minor Claim**.
-- **Elaboration**: For each Claim, explicitly list the required descriptive elements based on the following three dimensions. Note that each dimension may contain more than one element:
-    - Context (Applicable Scope): Under what time period, region, population, or condition does this claim hold? (e.g., "from 2000 to 2020", "in developing countries")
-    - Variables (Core Factors): What factor is influencing what outcome? Identify the subject of the argument. (e.g., rising CO₂ emissions are linked to increasing global temperatures)
-    - Units (Claim Specificity): Is the claim stated with enough directional precision to be verifiable? A strong Claim should express directionality or degree (e.g., "shows a significant upward trend", "is disproportionately higher in X group") rather than a vague assertion (e.g., "has an impact"). Note: this is about the claim's precision, not about presenting raw data.
+- Task: 
+    List **all** Claims derived from the SOURCE ARTICLE. And describe, label, and categorize them as required.
+- Requirements:
+    - Each Claim description **must** be a short sentence composed of three elements: Context, Variables, and Units. The elements are explained below: 
+        - Context (Applicable Scope): Under what time period, region, population, or condition does this claim hold? (e.g., "from 2000 to 2020", "in developing countries")
+        - Variables (Core Factors): What factor is influencing what outcome? Identify the subject of the argument. (e.g., rising CO₂ emissions are linked to increasing global temperatures)
+        - Units (Claim Specificity): Is the claim stated with enough directional precision to be verifiable? A strong Claim should express directionality or degree (e.g., "shows a significant upward trend", "is disproportionately higher in X group") rather than a vague assertion (e.g., "has an impact"). Note: this is about the claim's precision, not about presenting raw data.
+    - Each claim needs to have a **marker element** inserted, for example:
+        - For Taiwanese high school students (Context), if the time spent using mobile phones before bed (Variables) exceeds 60 minutes (Units), it will lead to a reduction of about 1.5 hours (Units) in the length of deep sleep each night (Variables).
+    - Classify each Claim as a **Major Claim** or a **Minor Claim**.
 
 ### Step 1-2: Evidence Entities & Logical Associations
 This step is divided into two dimensions; please define them separately:
@@ -53,120 +55,78 @@ Now load the student's `NODES LIST` and `EDGES LIST` from the input.
 ## Step 3: Scoring Execution
 
 ### Step 3-1: Claim Validity Assessment
-This step uses **Cascading Evaluation**; please strictly follow the evaluation order:
-
-Phase 1: Core Argument Check
 **Important Note**: Only Node Content with an **id starting with 'c'** in the student's **NODES LIST** belong to student's Claim content; **others are not!**
-- First, compare if the Claim proposed by the student covers the **Major Claims** defined in Step 1-1.
-- If the student **misses any Major Claim**: Proceed directly to the "Low Score Zone (0-2 points)". **Do not** check the completeness of the description.
-- If the student **covers all Major Claims**: Proceed to the "High Score Zone (3-5 points)" and **continue** to Phase 2.
 
-Phase 2: Description Completeness Check
-Only for content that passed Phase 1, check if the description **includes the Elaboration** (Context, Units, Variables) defined in Step 1-1.
+#### Claim Coverage
+- Task: Focus on assessing whether students **CAN SEE** article's Claim.
+- Scoring Criteria: Compare the student's claims with the claims you defined in Step 1-1, and assign a score based on the following criteria.
+    - 0 points: 
+        - Situation A: The student's claim **is not actually a claim**, misinterpreting the meaning of a Claim.
+        - Situation B: The student **did not provide any claim**.
+    - 1 point: The student's claim contains **1 or 2** claims you defined in step 1-1, and all belong to **minor claim**.
+    - 2 points: The student's claim contains **1 or 2** claims you defined in step 1-1, and all belong to **major claim**.
+    - 3 points: The student's claim contains **less than half** of the **major claim** and **minor claims** you defined in step 1-1.
+    - 4 points: The student's claim contains **more than half, but not all** of the **major claim** and **minor claims** you defined in step 1-1.
+    - 5 points: The student's claim contains **all** of the **major claim** and **minor claims** you defined in step 1-1.
 
-Scoring Criteria:
-
-- "High Score Zone": Core Argument Complete (All Major Claims Found)
-    - 5 points:
-        1. Covers **all Major Claims** and **all Minor Claims**.
-        2. And for the description of each Claim, its Elaboration is completely consistent with the Gold Standard, **precise** and **without omission**.
-    - 4 points:
-        1. Covers **all Major Claims** and **all Minor Claims**.
-        2. But for the Claim description, there is a slight inconsistency in Elaboration, like phrasing is **not precise enough**, or non-key decorative **details are missing**, but the overall semantics are correct.
-    - 3 points:
-        1. Covers **all Major Claims**, but **misses or incorrectly describes Minor Claims**.
-        2. For the written Major Claims, the described Elaboration is correct and consistent.
-
-- "Low Score Zone": Core Argument Missing (Missing Major Claims)
-    - 2 points:
-        - **Missed at least one Major Claim.** In this case, no matter how well the student writes the Minor Claims, or how perfect the description of the written Claims is, **the maximum score is 2 points.**
-    - 1 point:
-        - The content contains serious **Factual Errors**, or the content is **too brief** to identify its meaning, **even if there is only one error**.
-    - 0 points:
-        - No Claim content provided.
-
-- Double Check:
-    - Please confirm again, if the student failed to catch the Major Claim, **do not give sympathy points** just because they wrote many Minor details; **it must be strictly judged as 2 points or lower**.
-    - Please confirm again, if the student did not write a Minor Claim, **the maximum score is 3 points**, **regardless of** how perfect their description of the Major Claim is.
+#### Claim Precision
+- Task: Focus on assessing students' ability to **IDENTIFY DETAILS** in the article's Claim.
+- Scoring Criteria: Compare the student's claims with the Context, Variables, and Units you marked for the claim in step 1-1, and assign a score based on the following criteria.
+    - 0 points: The student **received 0 points for Claim Coverage**, meaning the detailed content of the claim provided by the student is no longer meaningful for assessment, therefore the Claim Precision also receives 0 points.
+    - 1 point: The student's claim is **too brief** and **does not** use the elements of Context, Variables, and Units for description.
+    - 2 points: The student's claim contains **1 or 2** the Context, Variables, and Units you marked for the claim in step 1-1.
+    - 3 points: The student's claim contains **less than half** the Context, Variables, and Units you marked for the claim in step 1-1.
+    - 4 points: The student's claim contains **more than half, but not all** the Context, Variables, and Units you marked for the claim in step 1-1.
+    - 5 points: The student's claim contains **all** the Context, Variables, and Units you marked for the claim in step 1-1.
 
 ### Step 3-2: Evidence Validity & Connectivity Assessment
-This step uses **Cascading Evaluation**; please strictly follow the evaluation order:
-
-Phase 1: Content Validity Check
 - **Important Note**: Only Node Content with an **id starting with 'e'** in the student's **NODES LIST** belong to student's Evidence content; **others are not!**
-- First, compare the Evidence proposed by the student with the **Evidence Entities** in Step 1-2.
-- If the content is **Inaccurate** or **Fabricated**: Proceed directly to the "Low Score Zone (0-1 points)". **Do not** check its connection status.
-- If the content is **Accurate**: Proceed to the "High Score Zone (2-5 points)" and **continue** to Phase 2.
 
-Phase 2: Structural Connectivity Check
+#### Evidence Coverage and Accuracy
+- Task: Focus on assessing whether students **CAN SEE THE CORRECT** article's Evidence.
+- Scoring Criteria: Compare the student's evidences with the evidences you defined in Step 1-2, and assign a score based on the following criteria.
+    - 0 points: 
+        - Situation A: The student's evidence **is not actually a evidence**, misinterpreting the meaning of a Evidence.
+        - Situation B: The student **did not provide any evidence**.
+    - 1 point: The student's evidence contains that you **did not defined in step 1-2**, and the content **conflicts and contradicts** the facts of the article's source.
+    - 2 points: The student's evidence contains that you **did not defined in step 1-2**, but the content **does not conflict or contradict** the facts of the article's source, **but it is fabricated**.
+    - 3 points: The student's evidence contains **less than half** of the evidence you defined in steps 1-2, and **no other undefined evidence was fabricated**.
+    - 4 points: The student's evidence contains **more than half, but not all** of the evidence you defined in steps 1-2, and **no other undefined evidence was fabricated**.
+    - 5 points: The student's evidence contains **all** of the evidence you defined in steps 1-2.
+
+#### Evidence Connection Accuracy
+- Task: Focus on assessing whether students **CAN UNDERSTAND THE MEANING OF THE EVIDENCE**, that is, whether they can understand which claim the evidence supports.
 - **Important Note**: Please judge from the **EDGES LIST**; if data is in the same group as the id, it represents a connection between them.
-- Only for nodes with correct content, check if their connection match the **Logical Associations** in Step 1-2.
-
-Scoring Criteria:
-
-- "High Score Zone": Content Correct
-    - 5 points: 
-        1. Content is correct.
-        2. And connections are completely correct. On the other hand, **connected to all correct Claims, and not connected to wrong Claims**.
-    - 4 points: 
-        1. Content is correct.
-        2. But connections have omissions (Missing Links). Like, **missed connecting to some correct Claims, but existing connections are correct**.
-    - 3 points:
-        1. Content is correct.
-        2. But connections have errors (Misattribution). Like **connected to Claims that shouldn't be connected, causing logical errors**.
-    - 2 points: 
-        1. Content is correct.
-        2. but completely no connections (Isolated Node) or connections are completely wrong.
-
-- "Low Score Zone": Content Incorrect
-    - 1 point: 
-        - Content is inconsistent with the Gold Standard (**data error, trend interpretation error**). In this case, **ignore** its connection status and **do not** give sympathy points.
-        - If the truth is completely contrary to the facts, it should be **judged as 0 points**, **not 1 point**.
-    - 0 points:
-        - Content contains are **unintelligible** or **semantic gibberish** or **not found in the SOURCE ARTICLE**.
-        - **Do not** give sympathy points just because it has content.
-
-- **Coverage Constraint**: 
-If the student's **Claim Score is 3 or lower due to Low Coverage**, the maximum score for Evidence is capped at **3 points**, even if the connections are perfect.
-
-- Double Check:
-    - Please confirm you **did not** give a high score just because the student "make connection". If the content itself is wrong (Step 1 Check Fail), it can **only get 1 point** even if the connection is perfect.
-    - If the student failed to connect because they missed writing the Claim Node, this is still considered an "Omission Error" and **cannot** be given sympathy points or treated as correct.
-    - If there should be a connection between c1 and e1 in your Gold Standard, but the student's EDGES LIST does not have this combination, this is considered an "Omission Error".
-    - Please confirm again, you **did not** give 1 point just because the student has evidence content, even if the content contains serious errors. In this case, you should **give 0 point**.
+- Scoring Criteria: Compare the student's evidences connection with the evidence's Logical Associations you defined in Step 1-2, and assign a score based on the following criteria.
+    - 0 points: The student **received 0 points for Evidence Coverage and Accuracy**, meaning the student's evidence is no longer meaningful for assessment, therefore the Evidence Connection Accuracy also receives 0 points.
+    - 1 point:
+        - Situation A: The student **received only 1 or 2 points for Evidence Coverage and Accuracy**, it means the evidence provided is fabricated, and the connections must be judged as unreasonable; therefore, the Evidence Connection Accuracy score is only 1.
+        - Situation B: The student's evidence show **no connections to the Claim**, it means the student failed to understand the relationship between the Evidence and the Claim. Therefore, the Evidence Connection Accuracy score is only 1.
+    - 2 points: The student's evidence connection contains that the evidence's Logical Associations you **did not defined in step 1-2**, indicating that the student misunderstands the relationship between Evidence and Claim.
+    - 3 points: The student's evidence connection contains **less than half** of the evidence's Logical Associations you defined in steps 1-2, and **does not contain** any other evidence connection that you did not define.
+    - 4 points: The student's evidence connection contains **more than half, but not all** of the evidence's Logical Associations you defined in steps 1-2, and **does not contain** any other evidence connection that you did not define.
+    - 5 points: The student's evidence connection contains **all** of the evidence's Logical Associations you defined in steps 1-2.
+- **Special Note**:
+    - If a student **does not get 5 points in the Claim Coverage** section, then the Evidence Connection Accuracy section **can only be awarded 4, 3, 2, 1, or 0 points**, because this means they could not possibly include all the connections.
 
 ### Step 3-3: Reasoning Assessment
+#### Reasoning Accuracy
+- Task: Focus on assessing whether students **CAN REASONABLY INFER** why the evidence supports their claim.
 - **Important Note**: 
     - Only Node Content with an **id starting with 'r'** in the student's **NODES LIST** belong to student's Reasoning content; **others are not!**
     - Please judge from the **EDGES LIST**; if data is in the same group as the id, it represents a connection between them.
-- First, compare the Reasoning proposed by the student and the connected objects with the **Reasoning Logic** in Step 1-3.
-- Score based on **Logical Consistency** and **Detail Completeness**.
-
-Scoring Criteria:
-
-- 5 points:
-    1. Completely consistent with the Reasoning Logic content. And the completeness and detail of the description are also consistent.
-    2. On the other hand, **includes all explanation mechanisms and key details**.
-- 4 points:
-    1. Consistent with the Reasoning Logic content. But slightly inconsistent in detail.
-    2. On the other hand, **logic is correct, but missing only minor decorative details, main mechanism is complete**. 
-- 3 points: 
-    1. Consistent with the Reasoning Logic content. But significantly inconsistent in detail.
-    2. On the other hand, **logic is correct, but missing key explanation mechanisms, or description is too broad**.
-- 2 points: 
-    1. Roughly consistent with the Reasoning Logic content. But completely inconsistent in detail.
-    2. On the other hand, **logic is barely holding up, but the description extremely lacking details, merely repeating data or tautology**.
-- 1 point:
-    1. Inconsistent with the Reasoning Logic content.
-    2. On the other hand, **contains logical fallacies, reversed causality, or cites wrong facts**.
-- 0 points: No Reasoning content provided.
-
-- **Coverage Constraint**: 
-If the student's **Claim Score is 3 or lower due to Low Coverage**, the maximum score for Reasoning is capped at **3 points**, even if the connections are perfect.
-
-Double Check:
-- Please confirm you **did not** give a high score just because the student "make connection". If the content itself is wrong (Step 1 Check Fail), it can **only get 1 point** even if the connection is perfect.
-- If the student failed to connect because they missed writing the Claim Node or Evidence Node, this is still considered a "detail inconsistency" and **cannot** be given sympathy points or treated as correct.
+- Scoring Criteria: Compare the student's reasoning with the reasoning you defined in Step 1-3, and assign a score based on the following criteria.
+    - 0 points: 
+        - Situation A: The student's reasoning **is not actually a reasoning**, misinterpreting the meaning of a Reasoning.
+        - Situation B: The student **did not provide any reasoning**.
+    - 1 point: The student's reasoning contains that the reasoning you **did not defined in step 1-3**, and the content is **unreasonable** or **conflicts and contradicts** the facts of the article's source.
+    - 2 points: The student's reasoning contains that the reasoning you **did not defined in step 1-3**, and the content is **conflicts and contradicts** the facts of the article's source. But is **reasonable**.
+    - 3 points: The student's reasoning contains **less than half** of the reasoning you defined in steps 1-3, and **does not contain** any other reasoning that you did not define.
+    - 4 points: The student's reasoning contains **more than half, but not all** of the reasoning you defined in steps 1-3, and **does not contain** any other reasoning that you did not define.
+    - 5 points: The student's reasoning contains **all** of the reasoning you defined in steps 1-3.
+- **Special Note**:
+    - If a student **does not get 5 points in the Claim Coverage** section, then the Reasoning Accuracy section **can only be awarded 4, 3, 2, 1, or 0 points**, because this means they could not possibly include all the reasoning.
+    - If the student **received only 1 or 2 points for Evidence Coverage and Accuracy**, then the Reasoning Accuracy **can only be awarded 2, 1, or 0 points**, because this means the student's evidence is fabricated, and the reasoning is definitely detached from the article's content.
 
 # INPUT DATA
 The user message format is JSON:
@@ -176,24 +136,38 @@ Note:
 - **NODES LIST**: Nodes in mind_map_data are a list of nodes; each record has an id and content. The beginning of the id identifies the Node type: c for Claim, e for Evidence, r for Reasoning, content is the content of the node.
 - **EDGES LIST**: Edges in mind_map_data are a list of connections; each record has node1 and node2, representing a connection and relevance between them, but it is non-directional. Only connections existing in the Edges list are considered valid links.
 
-# RESPONSE LANGUAGE SELECTION
+# RESPONSE REQUIREMENT
+## Language
 Please decide the language of your feedback based on the language of the majority of Node content in the student's mindmap:
 - If the majority is Chinese, please reply in Chinese.
 - If the majority is English, please reply in English.
+
+## Feedback Content
+- Please use concise descriptions in your feedback; avoid being overly lengthy.
+- **Strictly prohibited** in your feedback from directly telling students what specific content is missing. This indirectly tells them the correct answer.
+- **Strictly prohibited** in your feedback from mentioning your gold standard, such as only mentioning half of the comparison with the gold standard. Students are unfamiliar with your grading method, so they will not understand if you say this.
 
 # OUTPUT FORMAT
 Please output **strictly in JSON format**, **without** any Markdown tags or extra text:
 
 {{
-   "Claim": {{
+   "Claim_Coverage": {{
         "score": '[numerical values]',
         "feedback": "[In one or two sentences, precisely explain what was done well and what was lacking.]"
    }},
-    "Evidence": {{
+    "Claim_Precision": {{
+        "score": '[numerical values]',
+        "feedback": "[In one or two sentences, precisely explain what was done well and what was lacking.]"
+   }},
+    "Evidence_Coverage_and_Accuracy": {{
         "score": '[numerical values]',
         "feedback": "[In one or two sentences, precisely explain what was done well and what was lacking.]"
     }},
-    "Reasoning": {{
+    "Evidence_Connection_Accuracy": {{
+        "score": '[numerical values]',
+        "feedback": "[In one or two sentences, precisely explain what was done well and what was lacking.]"
+    }},
+    "Reasoning_Accuracy": {{
         "score": '[numerical values]',
         "feedback": "[In one or two sentences, precisely explain what was done well and what was lacking.]"
     }}

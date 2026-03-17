@@ -65,9 +65,11 @@ class ScoringAgent(BaseAgent):
 
         期望 LLM 回傳 JSON 格式：
         {
-            "Claim": {"score": "Y分", "feedback": "..."},
-            "Evidence": {"score": "Y分", "feedback": "..."},
-            "Reasoning": {"score": "Y分", "feedback": "..."}
+            "Claim_Coverage": {"score": "Y分", "feedback": "..."},
+            "Claim_Precision": {"score": "Y分", "feedback": "..."},
+            "Evidence_Coverage_and_Accuracy": {"score": "Y分", "feedback": "..."},
+            "Evidence_Connection_Accuracy": {"score": "Y分", "feedback": "..."},
+            "Reasoning_Accuracy": {"score": "Y分", "feedback": "..."}
         }
 
         Args:
@@ -79,7 +81,13 @@ class ScoringAgent(BaseAgent):
 
         try:
             result = parse_llm_json_response(response.content)
-            required_keys = ['Claim', 'Evidence', 'Reasoning']
+            required_keys = [
+                'Claim_Coverage',
+                'Claim_Precision',
+                'Evidence_Coverage_and_Accuracy',
+                'Evidence_Connection_Accuracy',
+                'Reasoning_Accuracy',
+            ]
             for key in required_keys:
                 if key not in result:
                     logger.warning(f'Scoring result missing {key} field, using raw content')
@@ -103,19 +111,37 @@ class ScoringAgent(BaseAgent):
         """
         try:
             result = parse_llm_json_response(response.content)
-            required_keys = ['Claim', 'Evidence', 'Reasoning']
+            required_keys = [
+                'Claim_Coverage',
+                'Claim_Precision',
+                'Evidence_Coverage_and_Accuracy',
+                'Evidence_Connection_Accuracy',
+                'Reasoning_Accuracy',
+            ]
 
             for key in required_keys:
                 if key not in result:
                     return {}
 
             return {
-                'claim_score': result['Claim'].get('score', ''),
-                'claim_feedback': result['Claim'].get('feedback', ''),
-                'evidence_score': result['Evidence'].get('score', ''),
-                'evidence_feedback': result['Evidence'].get('feedback', ''),
-                'reasoning_score': result['Reasoning'].get('score', ''),
-                'reasoning_feedback': result['Reasoning'].get('feedback', ''),
+                'claim_coverage_score': result['Claim_Coverage'].get('score', ''),
+                'claim_coverage_feedback': result['Claim_Coverage'].get('feedback', ''),
+                'claim_precision_score': result['Claim_Precision'].get('score', ''),
+                'claim_precision_feedback': result['Claim_Precision'].get('feedback', ''),
+                'evidence_coverage_score': result['Evidence_Coverage_and_Accuracy'].get(
+                    'score', ''
+                ),
+                'evidence_coverage_feedback': result['Evidence_Coverage_and_Accuracy'].get(
+                    'feedback', ''
+                ),
+                'evidence_connection_score': result['Evidence_Connection_Accuracy'].get(
+                    'score', ''
+                ),
+                'evidence_connection_feedback': result['Evidence_Connection_Accuracy'].get(
+                    'feedback', ''
+                ),
+                'reasoning_score': result['Reasoning_Accuracy'].get('score', ''),
+                'reasoning_feedback': result['Reasoning_Accuracy'].get('feedback', ''),
             }
 
         except Exception as e:

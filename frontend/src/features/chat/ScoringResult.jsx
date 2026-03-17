@@ -46,9 +46,11 @@ export const ScoringResult = ({ data, chatType = 'mindmap' }) => {
     else {
         // Mindmap 評分項目配置
         const mindmapItems = [
-            { key: 'Claim', title: 'Claim' },
-            { key: 'Evidence', title: 'Evidence' },
-            { key: 'Reasoning', title: 'Reasoning' },
+            { key: 'Claim_Coverage', title: 'Claim Coverage' },
+            { key: 'Claim_Precision', title: 'Claim Precision' },
+            { key: 'Evidence_Coverage_and_Accuracy', title: 'Evidence Coverage & Accuracy' },
+            { key: 'Evidence_Connection_Accuracy', title: 'Evidence Connection Accuracy' },
+            { key: 'Reasoning_Accuracy', title: 'Reasoning Accuracy' },
         ];
 
         // 驗證 mindmap 資料結構
