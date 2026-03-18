@@ -20,6 +20,7 @@ class EssayAdmin(admin.ModelAdmin):
         'created_at',
     )
     list_filter = ('map__template', 'updated_at')
+    list_select_related = ('user', 'map', 'map__template')
     search_fields = ('user__username', 'user__email', 'map__name')
     ordering = ('-created_at',)
 

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.db.models import Count
 
 from apps.common.utils.admin_helpers import format_json_field
 from apps.lab.models import Lab
@@ -42,6 +43,9 @@ class LabInline(admin.StackedInline):
 
     formatted_log.short_description = '變更歷史'
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user')
+
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
@@ -58,6 +62,7 @@ class UserAdmin(BaseUserAdmin):
         'is_active',
     )
     list_filter = ('role', 'is_verified', LabGroupFilter)
+    list_select_related = ('lab',)
     search_fields = ('username', 'email', 'role')
     ordering = ('username',)
 
@@ -67,6 +72,12 @@ class UserAdmin(BaseUserAdmin):
         if obj is None:
             return []
         return super().get_inline_instances(request, obj)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.annotate(
+            _maps_count=Count('maps', distinct=True), _essays_count=Count('essays', distinct=True)
+        )
 
     def lab_group(self, obj):
         try:
@@ -78,14 +89,16 @@ class UserAdmin(BaseUserAdmin):
     lab_group.admin_order_field = 'lab__group'
 
     def maps_count(self, obj):
-        return obj.maps.count()
+        return getattr(obj, '_maps_count', 0)
 
     maps_count.short_description = 'Maps 數量'
+    maps_count.admin_order_field = '_maps_count'
 
     def essays_count(self, obj):
-        return obj.essays.count()
+        return getattr(obj, '_essays_count', 0)
 
     essays_count.short_description = 'Essays 數量'
+    essays_count.admin_order_field = '_essays_count'
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
