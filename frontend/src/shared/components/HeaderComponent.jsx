@@ -25,9 +25,11 @@ export const HeaderComponent = () => {
     const dispatch = useDispatch();
 
     const handleLogout = () => {
-        logout();
-        dispatch(baseApi.util.resetApiState());
         navigate('/login');
+        setTimeout(() => {
+            logout();
+            dispatch(baseApi.util.resetApiState());
+        }, 0);
     };
 
     const username = currentUser?.username || '';

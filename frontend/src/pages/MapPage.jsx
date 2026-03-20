@@ -24,6 +24,7 @@ import {
     useMapSendMessage,
 } from '../features/map/hooks';
 import { useGetMapQuery } from '../features/map/utils';
+import { getAccessToken } from '../features/user/authUtils';
 import { useGetMeQuery } from '../features/user/userApi';
 import { useUserActionTracker } from '../features/userAction/hooks';
 import { useHeaderContext } from '../shared/HeaderContext';
@@ -57,15 +58,21 @@ export const MapPage = () => {
         // 頁面離開時記錄停留時間
         const handleBeforeUnload = () => {
             const duration = Math.floor((Date.now() - startTime) / 1000);
-            // 使用 sendBeacon 確保在頁面關閉前發送
-            navigator.sendBeacon(
-                '/api/user-action/',
-                JSON.stringify({
+            // 使用 fetch + keepalive 確保在頁面關閉前發送，並可攜帶 Authorization header
+            const token = getAccessToken();
+            fetch('/api/user-action/', {
+                method: 'POST',
+                keepalive: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({
                     action_type: 'page_view_end',
                     map_id: mapId ? parseInt(mapId, 10) : null,
                     metadata: { view, duration },
                 }),
-            );
+            });
         };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
