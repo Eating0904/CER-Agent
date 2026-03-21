@@ -31,7 +31,7 @@ class FeedbackService:
         alert_title: str,
         operation_details: str,
         user_id: str,
-    ) -> str:
+    ) -> tuple[str, str | None]:
         """
         生成節點編輯的 feedback
 
@@ -43,7 +43,7 @@ class FeedbackService:
             user_id: 使用者 ID
 
         Returns:
-            str: LLM 生成的回饋文字
+            tuple[str, str | None]: (LLM 生成的回饋文字, Langfuse trace_id)
 
         Raises:
             Exception: 當 Map 不存在或 LLM 呼叫失敗時拋出
@@ -137,11 +137,11 @@ class FeedbackService:
                     logger.info(
                         f'Feedback saved: map_id={map_id}, feedback_id={NodeFeedback.objects.latest("id").id}'
                     )
-                    return feedback_response
+                    return feedback_response, trace_span.trace_id
 
         except Exception as e:
             logger.exception(f'Failed to generate feedback: map_id={map_id}')
-            return 'Sorry, I am unable to provide feedback at this time.'
+            return 'Sorry, I am unable to provide feedback at this time.', None
 
 
 # Singleton instance

@@ -90,6 +90,7 @@ export const useFeedbackQueue = (mapId, handleAutoSave) => {
                 {
                     operation_count: operationCount,
                     feedback_id: result?.id || null,
+                    langfuse_trace_id: result?.langfuse_trace_id || null,
                 },
                 mapIdFromParams ? parseInt(mapIdFromParams, 10) : null,
             );

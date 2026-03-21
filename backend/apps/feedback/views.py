@@ -54,7 +54,7 @@ def create_feedback(request):
     try:
         feedback_service = get_feedback_service()
         user_id = str(request.user.id)
-        feedback_text = feedback_service.generate_feedback(
+        feedback_text, trace_id = feedback_service.generate_feedback(
             map_id, metadata, alert_title, operation_details, user_id
         )
 
@@ -67,7 +67,11 @@ def create_feedback(request):
         return Response(
             {
                 'success': True,
-                'data': {'feedback': feedback_text, **NodeFeedbackSerializer(feedback_record).data},
+                'data': {
+                    'feedback': feedback_text,
+                    'langfuse_trace_id': trace_id,
+                    **NodeFeedbackSerializer(feedback_record).data,
+                },
             }
         )
 

@@ -32,6 +32,7 @@ export const useFeedbackRequest = (mapId, handleAutoSave) => {
             return {
                 id: response.data.id,
                 feedback: response.data.feedback,
+                langfuse_trace_id: response.data.langfuse_trace_id,
             };
         },
         [mapId, createFeedback, handleAutoSave],
