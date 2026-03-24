@@ -63,7 +63,7 @@ class UserAdmin(BaseUserAdmin):
     )
     list_filter = ('role', 'is_verified', LabGroupFilter)
     list_select_related = ('lab',)
-    search_fields = ('username', 'email', 'role')
+    search_fields = ('=id', 'username', 'email', 'role')
     ordering = ('username',)
 
     inlines = [LabInline]
@@ -126,6 +126,6 @@ class UserAdmin(BaseUserAdmin):
 class EmailVerificationAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'code', 'purpose', 'is_used', 'created_at')
     list_filter = ('purpose', 'is_used')
-    search_fields = ('user__username', 'user__email', 'code')
+    search_fields = ('=id', 'user__username', 'user__email', 'code')
     readonly_fields = ('user', 'code', 'purpose', 'created_at')
     ordering = ('-created_at',)

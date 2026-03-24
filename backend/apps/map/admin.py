@@ -1,8 +1,14 @@
 from django.contrib import admin
+from django.db.models import Func, IntegerField
 
 from apps.common.utils.admin_helpers import format_admin_link, format_json_field
 
 from .models import Map
+
+
+class JSONBArrayLength(Func):
+    function = 'JSONB_ARRAY_LENGTH'
+    output_field = IntegerField()
 
 
 @admin.register(Map)
@@ -22,21 +28,31 @@ class MapAdmin(admin.ModelAdmin):
     )
     list_filter = ('user', 'template', 'updated_at')
     list_select_related = ('user', 'template', 'essay')
-    search_fields = ('name', 'user__username', 'user__email', 'template__name')
+    search_fields = ('=id', 'name', 'user__username', 'user__email', 'template__name')
     ordering = ('-created_at',)
 
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related('user', 'template', 'essay')
+        return (
+            super()
+            .get_queryset(request)
+            .select_related('user', 'template', 'essay')
+            .annotate(
+                _nodes_count=JSONBArrayLength('nodes'),
+                _edges_count=JSONBArrayLength('edges'),
+            )
+        )
 
     def nodes_count(self, obj):
         return len(obj.nodes) if obj.nodes else 0
 
     nodes_count.short_description = '節點數量'
+    nodes_count.admin_order_field = '_nodes_count'
 
     def edges_count(self, obj):
         return len(obj.edges) if obj.edges else 0
 
     edges_count.short_description = '邊數量'
+    edges_count.admin_order_field = '_edges_count'
 
     def essay_id(self, obj):
         if obj.essay and obj.essay.id:

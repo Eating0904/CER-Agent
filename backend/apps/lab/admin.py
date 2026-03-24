@@ -9,7 +9,7 @@ from .models import Lab
 class LabAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'group', 'created_at', 'updated_at')
     list_filter = ('group', 'updated_at')
-    search_fields = ('user__username', 'user__email')
+    search_fields = ('=id', 'user__username', 'user__email')
     ordering = ('-created_at',)
 
     def formatted_log(self, obj):
@@ -32,4 +32,4 @@ class LabAdmin(admin.ModelAdmin):
         return False
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        return True

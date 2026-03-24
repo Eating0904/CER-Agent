@@ -22,7 +22,7 @@ class MindMapTemplateAdmin(admin.ModelAdmin):
         'created_at',
     )
     list_filter = ['name', 'created_at']
-    search_fields = ('name', 'created_by__username')
+    search_fields = ('=id', 'name', 'created_by__username')
     ordering = ('-created_at',)
     inlines = [TemplatePermissionInline]
 
