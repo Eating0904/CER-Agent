@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 
 import taskImage from '../../assets/images/task.png';
 import { formatDeadline } from '../../utils/templateDeadlineUtils';
-import { useCreateMapFromTemplateMutation } from '../map/utils';
+import { useCreateMapFromTemplateMutation, useGetMapsQuery } from '../map/utils';
 import { useUserActionTracker } from '../userAction/hooks';
 
 import { useGetMindMapTemplatesQuery } from './mindMapTemplateApi';
@@ -24,9 +24,10 @@ import './MindMapTemplateManagement.css';
 const { Meta } = Card;
 
 export const MindMapTemplateList = () => {
-    const { message } = App.useApp();
+    const { message, modal } = App.useApp();
     const navigate = useNavigate();
     const { data: templates = [], isLoading, error } = useGetMindMapTemplatesQuery();
+    const { data: myMaps = [] } = useGetMapsQuery();
     const [createMapFromTemplate, { isLoading: isCreating }] = useCreateMapFromTemplateMutation();
     const { trackAction } = useUserActionTracker();
 
@@ -36,12 +37,7 @@ export const MindMapTemplateList = () => {
         }
     }, [error]);
 
-    const handleClick = async (template) => {
-        if (!template.is_within_deadline) {
-            message.warning('This task is not available');
-            return;
-        }
-
+    const doCreateMap = async (template) => {
         try {
             const result = await createMapFromTemplate({
                 template_id: template.id,
@@ -67,6 +63,33 @@ export const MindMapTemplateList = () => {
             message.error(errorMsg);
             console.error('Failed to create task:', err);
         }
+    };
+
+    const handleClick = async (template) => {
+        if (!template.is_within_deadline) {
+            message.warning('This task is not available');
+            return;
+        }
+
+        const existing = myMaps.find((m) => m.template_id === template.id);
+        if (existing) {
+            modal.confirm({
+                title: 'Practice Already Exists',
+                content: (
+                    <>
+                        <p>You already have a practice created from this task.</p>
+                        <p>You can access it from the left sidebar.</p>
+                        <p>Do you still want to create a new one?</p>
+                    </>
+                ),
+                okText: 'Create It Anyway',
+                cancelText: 'Cancel',
+                onOk: () => doCreateMap(template),
+            });
+            return;
+        }
+
+        await doCreateMap(template);
     };
 
     if (isLoading || isCreating) {
