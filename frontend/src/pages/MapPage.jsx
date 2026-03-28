@@ -93,6 +93,7 @@ export const MapPage = () => {
         error: mapError,
     } = useGetMapQuery(mapId, { skip: !mapId });
     const mapContext = useMapNodes(mapData);
+    const isReadOnly = !mapData?.template || mapData.template.is_within_deadline === false;
 
     // 設定 Header 內容為 ViewSwitcher
     useEffect(() => {
@@ -204,11 +205,12 @@ export const MapPage = () => {
     // 注意：只有在同一個 map 內切換 view 才觸發
     // 若 mapId 也同時改變（例如從 id1 essay 跳到 id2 essay），
     // 此時 essayContent state 還是舊 map 的內容，auto save 會把舊內容存進新 map，須跳過
+    // 過期時（isReadOnly）不觸發 auto save
     useEffect(() => {
         const prevState = prevStateRef.current;
         const prevView = prevState.view;
         const prevMapId = prevState.mapId;
-        if (prevMapId === mapId && prevView !== view) {
+        if (prevMapId === mapId && prevView !== view && !isReadOnly) {
             if (prevView === 'mindmap') {
                 mapAutoSaveRef.current(null, 'before_switch_view');
             }
@@ -217,7 +219,7 @@ export const MapPage = () => {
             }
         }
         prevStateRef.current = { view, mapId };
-    }, [view, mapId]);
+    }, [view, mapId, isReadOnly]);
 
     const {
         isSending: isEssaySending,
@@ -280,8 +282,6 @@ export const MapPage = () => {
             />
         );
     }
-
-    const isReadOnly = !mapData?.template || mapData.template.is_within_deadline === false;
 
     // 根據 view 參數決定顯示的內容
     if (view === 'article') {
