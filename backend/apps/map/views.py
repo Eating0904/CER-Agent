@@ -138,18 +138,21 @@ class MapViewSet(viewsets.ModelViewSet):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def partial_update(self, request, *args, **kwargs):
-        """更新 map 之前檢查期限"""
+        """更新 map 之前檢查期限（僅限更新 nodes/edges 時）"""
         try:
             instance = self.get_object()
 
-            if not instance.template or not check_template_deadline(instance.template):
-                logger.warning(
-                    f'Template expired, cannot update map: map_id={instance.id}, user={request.user.id}'
-                )
-                return Response(
-                    {'error': 'This task has expired and cannot be edited'},
-                    status=status.HTTP_403_FORBIDDEN,
-                )
+            # 只有在更新 nodes 或 edges 時才做期限檢查
+            content_fields = {'nodes', 'edges'}
+            if content_fields & set(request.data.keys()):
+                if not instance.template or not check_template_deadline(instance.template):
+                    logger.warning(
+                        f'Template expired, cannot update map: map_id={instance.id}, user={request.user.id}'
+                    )
+                    return Response(
+                        {'error': 'This task has expired and cannot be edited'},
+                        status=status.HTTP_403_FORBIDDEN,
+                    )
 
             return super().partial_update(request, *args, **kwargs)
         except Exception as e:

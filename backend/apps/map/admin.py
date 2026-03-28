@@ -1,7 +1,8 @@
 from django.contrib import admin
-from django.db.models import Func, IntegerField
+from django.db.models import Func, IntegerField, OuterRef, Subquery
 
 from apps.common.utils.admin_helpers import format_admin_link, format_json_field
+from apps.essay.models import Essay
 
 from .models import Map
 
@@ -17,6 +18,7 @@ class MapAdmin(admin.ModelAdmin):
         'id',
         'user',
         'name',
+        'show',
         'template_name',
         'nodes_count',
         'edges_count',
@@ -26,19 +28,22 @@ class MapAdmin(admin.ModelAdmin):
         'created_at',
         'updated_at',
     )
-    list_filter = ('user', 'template', 'updated_at')
-    list_select_related = ('user', 'template', 'essay')
+    list_filter = ('user', 'template', 'show', 'updated_at')
+    list_editable = ('show',)
+    list_select_related = ('user', 'template')
     search_fields = ('=id', 'name', 'user__username', 'user__email', 'template__name')
     ordering = ('-created_at',)
 
     def get_queryset(self, request):
+        essay_subquery = Essay.objects.filter(map=OuterRef('pk')).values('id')[:1]
         return (
             super()
             .get_queryset(request)
-            .select_related('user', 'template', 'essay')
+            .select_related('user', 'template')
             .annotate(
                 _nodes_count=JSONBArrayLength('nodes'),
                 _edges_count=JSONBArrayLength('edges'),
+                _essay_id=Subquery(essay_subquery),
             )
         )
 
@@ -55,8 +60,10 @@ class MapAdmin(admin.ModelAdmin):
     edges_count.admin_order_field = '_edges_count'
 
     def essay_id(self, obj):
-        if obj.essay and obj.essay.id:
-            return format_admin_link('essay', 'essay', obj.essay.id, obj.essay.id)
+        if hasattr(obj, '_essay_id'):
+            if obj._essay_id:
+                return format_admin_link('essay', 'essay', obj._essay_id, obj._essay_id)
+            return '-'
         return '-'
 
     essay_id.short_description = 'Essay ID'
@@ -82,7 +89,7 @@ class MapAdmin(admin.ModelAdmin):
     formatted_edges.short_description = '邊資料'
 
     fieldsets = (
-        ('基本資訊', {'fields': ('id', 'user', 'name', 'essay_id', 'template_name')}),
+        ('基本資訊', {'fields': ('id', 'user', 'name', 'show', 'essay_id', 'template_name')}),
         ('節點和邊資料', {'fields': ('formatted_nodes', 'formatted_edges')}),
         ('評分資訊', {'fields': ('scoring_remaining', 'scoring_updated_at')}),
         ('時間資訊', {'fields': ('created_at', 'updated_at')}),
@@ -102,8 +109,8 @@ class MapAdmin(admin.ModelAdmin):
         'updated_at',
     )
 
-    def has_change_permission(self, request, obj=...):
-        return False
+    def has_change_permission(self, request, obj=None):
+        return True
 
     def has_add_permission(self, request):
         return False

@@ -16,6 +16,7 @@ class Map(models.Model):
     scoring_updated_at = models.DateTimeField(
         null=True, blank=True, help_text='上次評分次數變動時間（供未來重置機制使用）'
     )
+    show = models.BooleanField(default=True, help_text='是否顯示在清單中（False 表示已刪除）')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

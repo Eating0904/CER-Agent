@@ -71,7 +71,7 @@ export const MindMapTemplateList = () => {
             return;
         }
 
-        const existing = myMaps.find((m) => m.template_id === template.id);
+        const existing = myMaps.find((m) => m.template_id === template.id && m.show === true);
         if (existing) {
             modal.confirm({
                 title: 'Practice Already Exists',

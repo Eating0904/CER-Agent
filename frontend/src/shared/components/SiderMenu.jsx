@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import {
+    DeleteOutlined,
     EditOutlined,
     EllipsisOutlined,
     EyeOutlined,
@@ -9,15 +10,17 @@ import {
 } from '@ant-design/icons';
 import {
     Alert,
+    App,
     Button,
     Dropdown,
     List,
+    Modal,
     Spin,
 } from 'antd';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { LAYOUT_COLORS, NEUTRAL_COLORS } from '../../constants/colors';
-import { useGetMapsQuery } from '../../features/map/utils/mapApi';
+import { useGetMapsQuery, useUpdateMapMutation } from '../../features/map/utils/mapApi';
 import { useGetMeQuery } from '../../features/user/userApi';
 import { useUserActionTracker } from '../../features/userAction/hooks';
 
@@ -29,9 +32,11 @@ export const SiderMenu = () => {
     const currentMapId = searchParams.get('mapId');
     const [hoveredMapId, setHoveredMapId] = useState(null);
     const [renameModalState, setRenameModalState] = useState({ open: false, map: null });
+    const { message } = App.useApp();
 
     const { data: currentUser } = useGetMeQuery();
     const { data: maps = [], isLoading, error } = useGetMapsQuery();
+    const [updateMap] = useUpdateMapMutation();
     const { trackAction } = useUserActionTracker();
 
     useEffect(() => {
@@ -60,6 +65,29 @@ export const SiderMenu = () => {
         );
     }
 
+    const handleDelete = (map) => {
+        Modal.confirm({
+            title: 'Delete',
+            content: `Are you sure you want to delete "${map.name}"?`,
+            okText: 'Delete',
+            okButtonProps: { danger: true },
+            cancelText: 'Cancel',
+            centered: true,
+            onOk: async () => {
+                try {
+                    await updateMap({ id: map.id, show: false }).unwrap();
+                    message.success('Deleted successfully');
+                    if (currentMapId === String(map.id)) {
+                        navigate('/mind-map-template-list');
+                    }
+                }
+                catch (err) {
+                    message.error(err?.data?.error || err?.data?.message || 'Operation failed');
+                }
+            },
+        });
+    };
+
     const getMenuItems = (map) => [
         {
             key: 'rename',
@@ -68,6 +96,13 @@ export const SiderMenu = () => {
             onClick: () => {
                 setRenameModalState({ open: true, map });
             },
+        },
+        {
+            key: 'delete',
+            icon: <DeleteOutlined />,
+            label: 'Delete',
+            danger: true,
+            onClick: () => handleDelete(map),
         },
     ];
 
@@ -135,7 +170,7 @@ export const SiderMenu = () => {
             </Button>
             <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
                 <List
-                    dataSource={maps}
+                    dataSource={maps.filter((m) => m.show !== false)}
                     renderItem={(map) => {
                         const isSelected = currentMapId === String(map.id);
                         const isHovered = hoveredMapId === map.id;

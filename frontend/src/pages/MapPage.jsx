@@ -244,6 +244,17 @@ export const MapPage = () => {
         );
     }
 
+    if (mapData && mapData.show === false) {
+        return (
+            <Alert
+                message="Access Denied"
+                description="This mind map has been deleted and cannot be accessed."
+                type="warning"
+                showIcon
+            />
+        );
+    }
+
     // 根據 view 決定使用哪個 loading 和 error
     let isLoading;
     let error;
