@@ -330,6 +330,7 @@ export const MapPage = () => {
         <div style={{ height: '100%', width: '100%' }}>
             <MapPageContent
                 key={mapId}
+                articleContent={mapData?.template?.article_content || ''}
                 mapContext={mapContext}
                 alerts={isFeedbackEnabled ? alerts : []}
                 handleAskClick={isFeedbackEnabled ? handleAskClick : null}
