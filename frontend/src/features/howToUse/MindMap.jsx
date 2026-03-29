@@ -60,6 +60,7 @@ export const MindMap = () => (
                         </li>
                         <li>
                             Drag and drop a node to change its position.
+                            Hold down the "Shift" key and drag the mouse to select multiple Nodes or Edges. Then you can move them together.
                             (<StepBadge number="6" />)
                         </li>
                         <li>Note: <span style={{ color: 'red' }}>Remember to select a node before you start editing.</span></li>
