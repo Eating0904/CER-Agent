@@ -5,3 +5,4 @@ export { useMapAutoSave } from './useMapAutoSave';
 export { useMapContext } from './useMapContext';
 export { useMapNodes } from './useMapNodes';
 export { useMapSendMessage } from './useMapSendMessage';
+export { useNodeResize } from './useNodeResize';

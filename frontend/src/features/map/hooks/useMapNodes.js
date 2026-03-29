@@ -238,6 +238,66 @@ export const useMapNodes = (mapData) => {
             : node)));
     }, []);
 
+    // 拖拉中即時更新 node 尺寸與位置（純視覺，不觸發 trace）
+    // width/height: 數字(px) 或 null(保留原値)
+    // x/y: canvas 坐標數字 或 null(保留原値)
+    const updateNodeSizePreview = useCallback((nodeId, { width, height, x, y } = {}) => {
+        setNodes((nds) => nds.map((node) => {
+            if (node.id !== nodeId) return node;
+            const prevSize = node.data.customSize || {};
+            const newNode = {
+                ...node,
+                data: {
+                    ...node.data,
+                    customSize: {
+                        ...prevSize,
+                        ...(width != null ? { width: `${width}px` } : {}),
+                        ...(height != null ? { height: `${height}px` } : {}),
+                    },
+                },
+            };
+            if (x != null || y != null) {
+                newNode.position = {
+                    x: x ?? node.position.x,
+                    y: y ?? node.position.y,
+                };
+            }
+            return newNode;
+        }));
+    }, []);
+
+    // 拖拉結束後確認尺寸與位置，觸發一次 trackAction
+    // width/height: 數字(px) 或 null(保留原値)
+    // x/y: canvas 坐標數字 或 null(保留原値)
+    const updateNodeSizeCommit = useCallback((nodeId, { width, height, x, y } = {}) => {
+        setNodes((nds) => nds.map((node) => {
+            if (node.id !== nodeId) return node;
+            const prevSize = node.data.customSize || {};
+            const newNode = {
+                ...node,
+                data: {
+                    ...node.data,
+                    customSize: {
+                        ...prevSize,
+                        ...(width != null ? { width: `${width}px` } : {}),
+                        ...(height != null ? { height: `${height}px` } : {}),
+                    },
+                },
+            };
+            if (x != null || y != null) {
+                newNode.position = {
+                    x: x ?? node.position.x,
+                    y: y ?? node.position.y,
+                };
+            }
+            return newNode;
+        }));
+        trackAction('adjust_node_style', {
+            node_id: nodeId,
+            property_type: 'resize_drag',
+        }, mapId ? parseInt(mapId, 10) : null);
+    }, [trackAction, mapId]);
+
     const deleteNode = useCallback((nodeId) => {
         // 在刪除前收集資訊
         const nodeToDelete = nodes.find((node) => node.id === nodeId);
@@ -305,6 +365,8 @@ export const useMapNodes = (mapData) => {
         selectEdge,
         updateNodeContent,
         updateNodeStyle,
+        updateNodeSizePreview,
+        updateNodeSizeCommit,
         selectedNode,
         selectedEdge,
         deleteNode,
