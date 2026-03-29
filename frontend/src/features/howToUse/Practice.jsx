@@ -76,6 +76,17 @@ export const Practice = () => (
                         </ul>
                     </div>
                 </Paragraph>
+                <Title level={4}>Delete Practice</Title>
+                <Paragraph style={PARAGRAPH_STYLE}>
+                    <div style={{ marginLeft: '10px' }}>
+                        <ul>
+                            <li>
+                                Hover over the Practice, click More (...), and select "Delete" to delete your Practice.
+                                (<StepBadge number="7" />)
+                            </li>
+                        </ul>
+                    </div>
+                </Paragraph>
             </Col>
             <Col span={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <Image src={Practice2Image} alt="Practice 2" style={{ maxWidth: '100%', height: 'auto' }} />
