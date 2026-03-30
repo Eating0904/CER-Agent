@@ -1,0 +1,311 @@
+/* ============================================================
+   CSS Custom Properties — Light / Dark Theme
+   ============================================================ */
+
+:root,
+[data-theme="light"] {
+    --bg-body: #f1f5f9;
+    --bg-sidebar: #ffffff;
+    --bg-surface: #ffffff;
+    --bg-hover: #f1f5f9;
+    --bg-card-hover: #f8fafc;
+    --bg-code: #1e293b;
+    --overlay: rgba(255, 255, 255, 0.75);
+    --modal-backdrop: rgba(0, 0, 0, 0.35);
+
+    --border: #e2e8f0;
+    --border-active: #6366f1;
+
+    --text-heading: #0f172a;
+    --text-primary: #334155;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+
+    /* Tabulator */
+    --tab-header-bg: #f8fafc;
+    --tab-header-fg: #64748b;
+    --tab-row-bg: #ffffff;
+    --tab-row-alt-bg: #f8fafc;
+    --tab-row-hover: #f1f5f9;
+    --tab-cell-fg: #334155;
+    --tab-cell-border: #f1f5f9;
+    --tab-filter-bg: #ffffff;
+    --tab-filter-border: #e2e8f0;
+    --tab-footer-bg: #f8fafc;
+    --tab-page-bg: #ffffff;
+    --tab-page-border: #e2e8f0;
+    --tab-page-fg: #64748b;
+    --tab-page-active-bg: #6366f1;
+    --tab-page-active-fg: #ffffff;
+    --tab-page-active-bdr: #6366f1;
+
+    /* Sheet tab buttons */
+    --sheet-bg: #f1f5f9;
+    --sheet-fg: #64748b;
+    --sheet-border: #e2e8f0;
+    --sheet-active-bg: #6366f1;
+    --sheet-active-fg: #ffffff;
+    --sheet-active-bdr: #6366f1;
+
+    /* File card */
+    --card-bg: #ffffff;
+    --card-active-bg: #f1f5f9;
+    --card-badge-bg: rgba(99, 102, 241, 0.08);
+    --card-badge-fg: #6366f1;
+    --card-name-fg: #475569;
+    --card-size-fg: #94a3b8;
+
+    /* JSON button */
+    --json-btn-bg: rgba(99, 102, 241, 0.1);
+    --json-btn-fg: #6366f1;
+    --json-preview-fg: #94a3b8;
+}
+
+[data-theme="dark"] {
+    --bg-body: #0f172a;
+    --bg-sidebar: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-hover: #1e293b;
+    --bg-card-hover: #1e293b;
+    --bg-code: #020617;
+    --overlay: rgba(15, 23, 42, 0.8);
+    --modal-backdrop: rgba(0, 0, 0, 0.6);
+
+    --border: #1e293b;
+    --border-active: #6366f1;
+
+    --text-heading: #f1f5f9;
+    --text-primary: #cbd5e1;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+
+    --tab-header-bg: #1e293b;
+    --tab-header-fg: #94a3b8;
+    --tab-row-bg: #0f172a;
+    --tab-row-alt-bg: #0c1322;
+    --tab-row-hover: #1e293b;
+    --tab-cell-fg: #cbd5e1;
+    --tab-cell-border: #1e293b;
+    --tab-filter-bg: #0f172a;
+    --tab-filter-border: #334155;
+    --tab-footer-bg: #1e293b;
+    --tab-page-bg: #0f172a;
+    --tab-page-border: #334155;
+    --tab-page-fg: #94a3b8;
+    --tab-page-active-bg: #6366f1;
+    --tab-page-active-fg: #ffffff;
+    --tab-page-active-bdr: #6366f1;
+
+    --sheet-bg: #0f172a;
+    --sheet-fg: #94a3b8;
+    --sheet-border: #334155;
+    --sheet-active-bg: #6366f1;
+    --sheet-active-fg: #ffffff;
+    --sheet-active-bdr: #6366f1;
+
+    --card-bg: transparent;
+    --card-active-bg: #1e293b;
+    --card-badge-bg: rgba(99, 102, 241, 0.15);
+    --card-badge-fg: #818cf8;
+    --card-name-fg: #94a3b8;
+    --card-size-fg: #475569;
+
+    --json-btn-bg: rgba(99, 102, 241, 0.15);
+    --json-btn-fg: #818cf8;
+    --json-preview-fg: #475569;
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 10px;
+}
+
+/* ===== 資料表格 Scrollbar（較粗）===== */
+.tabulator-tableholder::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+}
+
+.tabulator-tableholder::-webkit-scrollbar-track {
+    background: var(--bg-hover);
+    border-radius: 6px;
+}
+
+.tabulator-tableholder::-webkit-scrollbar-thumb {
+    background-color: var(--text-muted);
+    border-radius: 6px;
+    border: 2px solid var(--bg-hover);
+}
+
+/* ===== Modal animation ===== */
+#jsonModal:not(.opacity-0) {
+    pointer-events: auto;
+}
+
+#jsonModal.opacity-0 #modalDialog {
+    transform: scale(0.95);
+}
+
+#jsonModal:not(.opacity-0) #modalDialog {
+    transform: scale(1);
+}
+
+/* ===== Tabulator overrides ===== */
+.tabulator {
+    border: none !important;
+    background: transparent !important;
+    font-size: 13px !important;
+}
+
+.tabulator .tabulator-header {
+    background: var(--tab-header-bg) !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+.tabulator .tabulator-header .tabulator-col {
+    background: var(--tab-header-bg) !important;
+    border-right: 1px solid var(--tab-header-bg) !important;
+    color: var(--tab-header-fg) !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+}
+
+.tabulator .tabulator-header .tabulator-col.tabulator-sortable:hover {
+    background: var(--bg-hover) !important;
+}
+
+.tabulator .tabulator-header .tabulator-col .tabulator-header-filter input {
+    background: var(--tab-filter-bg) !important;
+    border: 1px solid var(--tab-filter-border) !important;
+    color: var(--text-primary) !important;
+    border-radius: 4px !important;
+    padding: 3px 6px !important;
+    font-size: 12px !important;
+}
+
+.tabulator .tabulator-tableholder {
+    background: var(--tab-row-bg) !important;
+}
+
+.tabulator-row {
+    background: var(--tab-row-bg) !important;
+    border-bottom: 1px solid var(--tab-cell-border) !important;
+    min-height: 36px !important;
+}
+
+.tabulator-row:hover {
+    background: var(--tab-row-hover) !important;
+}
+
+.tabulator-row.tabulator-row-even {
+    background: var(--tab-row-alt-bg) !important;
+}
+
+.tabulator-row.tabulator-row-even:hover {
+    background: var(--tab-row-hover) !important;
+}
+
+.tabulator-row .tabulator-cell {
+    border-right: 1px solid var(--tab-cell-border) !important;
+    color: var(--tab-cell-fg) !important;
+    padding: 6px 10px !important;
+    user-select: text !important;
+    cursor: default !important;
+}
+
+/* ===== Pagination ===== */
+.tabulator .tabulator-footer {
+    background: var(--tab-footer-bg) !important;
+    border-top: 1px solid var(--border) !important;
+    padding: 6px 12px !important;
+}
+
+.tabulator .tabulator-footer .tabulator-page {
+    background: var(--tab-page-bg) !important;
+    border: 1px solid var(--tab-page-border) !important;
+    color: var(--tab-page-fg) !important;
+    border-radius: 4px !important;
+    padding: 4px 10px !important;
+    margin: 0 2px !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+}
+
+.tabulator .tabulator-footer .tabulator-page:hover {
+    background: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+}
+
+.tabulator .tabulator-footer .tabulator-page.active {
+    background: var(--tab-page-active-bg) !important;
+    border-color: var(--tab-page-active-bdr) !important;
+    color: var(--tab-page-active-fg) !important;
+}
+
+.tabulator .tabulator-footer .tabulator-page-size {
+    background: var(--tab-page-bg) !important;
+    border: 1px solid var(--tab-page-border) !important;
+    color: var(--tab-page-fg) !important;
+    border-radius: 4px !important;
+    padding: 4px 6px !important;
+    font-size: 12px !important;
+}
+
+.tabulator .tabulator-footer .tabulator-pages {
+    display: flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+}
+
+.tabulator .tabulator-footer .tabulator-paginator {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: var(--text-muted) !important;
+    font-size: 12px !important;
+}
+
+/* ===== JSON Modal code block ===== */
+#jsonModalBody pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #e2e8f0;
+}
+
+.json-key {
+    color: #38bdf8;
+    font-weight: 600;
+}
+
+.json-string {
+    color: #a78bfa;
+}
+
+.json-number {
+    color: #fbbf24;
+}
+
+.json-boolean {
+    color: #f87171;
+}
+
+.json-null {
+    color: #64748b;
+    font-style: italic;
+}

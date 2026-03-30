@@ -1,0 +1,20 @@
+[project]
+name = "export-data"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.135.2",
+    "langfuse>=4.0.1",
+    "openpyxl>=3.1.5",
+    "psycopg2-binary>=2.9.11",
+    "pydantic>=2.12.5",
+    "python-dotenv>=1.2.2",
+    "uvicorn>=0.42.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.8",
+]

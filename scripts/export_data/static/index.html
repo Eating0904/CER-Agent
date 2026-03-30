@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CER-Agent Excel Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator_simple.min.css" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-screen flex overflow-hidden font-sans" style="background:var(--bg-body); color:var(--text-primary);">
+
+    <!-- Sidebar -->
+    <aside class="w-72 shrink-0 flex flex-col z-20" style="background:var(--bg-sidebar); border-right:1px solid var(--border);">
+        <div class="px-5 py-4" style="border-bottom:1px solid var(--border);">
+            <div class="flex items-center justify-between">
+                <h1 class="text-lg font-bold tracking-tight flex items-center gap-2" style="color:var(--text-heading);">
+                    <span class="inline-block w-1.5 h-6 bg-indigo-500 rounded-full"></span>
+                    CER-Agent
+                </h1>
+                <!-- Theme Toggle -->
+                <button id="themeToggleBtn" title="切換主題"
+                    class="p-1.5 rounded-lg transition-colors" style="color:var(--text-muted); background:var(--bg-hover);">
+                    <svg id="iconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <svg id="iconMoon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+            </div>
+            <p class="text-[11px] mt-0.5 uppercase tracking-widest font-medium ml-3.5" style="color:var(--text-muted);">Excel Viewer</p>
+            <button id="refreshDataBtn"
+                class="mt-4 w-full text-sm py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center"
+                style="background:var(--bg-hover); color:var(--text-secondary); border:1px solid var(--border);">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                    </path>
+                </svg>
+                重新掃描檔案
+            </button>
+        </div>
+        <div class="px-4 py-2 shrink-0" style="border-bottom:1px solid var(--border);">
+            <input id="fileSearchInput" type="text" placeholder="搜尋檔案..."
+                class="w-full text-sm px-3 py-1.5 rounded-lg outline-none transition-colors"
+                style="background:var(--bg-hover); color:var(--text-primary); border:1px solid var(--border);"
+                onfocus="this.style.borderColor='var(--border-active)'" onblur="this.style.borderColor='var(--border)'" />
+        </div>
+        <div class="flex-1 overflow-y-auto py-1" id="fileListContainer">
+            <div class="p-6 text-center text-sm" style="color:var(--text-muted);">載入中...</div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 relative">
+        <!-- Top bar -->
+        <header class="h-12 flex items-center px-6 shrink-0" style="background:var(--bg-surface); border-bottom:1px solid var(--border);">
+            <h2 class="text-sm font-semibold truncate" id="currentFileTitle" style="color:var(--text-secondary);">請選擇左側檔案</h2>
+        </header>
+
+        <!-- Sheet Tabs -->
+        <div class="shrink-0 overflow-x-auto" id="sheetTabsWrapper" style="display:none; background:var(--bg-surface); border-bottom:1px solid var(--border);">
+            <div class="flex items-center gap-1 px-4 py-1.5 min-w-max" id="sheetTabsContainer"></div>
+        </div>
+
+        <!-- Table -->
+        <div class="flex-1 overflow-hidden relative" style="background:var(--bg-body);">
+            <div id="loadingOverlay"
+                class="absolute inset-0 z-10 flex flex-col justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300"
+                style="background:var(--overlay);">
+                <div class="animate-spin rounded-full h-10 w-10 border-[3px] mb-3" style="border-color:var(--border); border-top-color:#6366f1;"></div>
+                <p class="text-indigo-500 font-medium text-sm">載入資料中...</p>
+            </div>
+            <div id="data-table" class="w-full h-full"></div>
+        </div>
+    </main>
+
+    <!-- JSON Modal -->
+    <div id="jsonModal"
+        class="fixed inset-0 z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="absolute inset-0" id="modalBackdrop" style="background:var(--modal-backdrop);"></div>
+        <div class="relative rounded-xl shadow-2xl w-[90vw] max-w-4xl max-h-[85vh] flex flex-col transform scale-95 transition-transform duration-200"
+            id="modalDialog" style="background:var(--bg-surface); border:1px solid var(--border);">
+            <div class="flex items-center justify-between px-5 py-3" style="border-bottom:1px solid var(--border);">
+                <h3 class="text-sm font-bold flex items-center gap-2" id="jsonModalTitle" style="color:var(--text-heading);">
+                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                    <span>JSON 詳細內容</span>
+                </h3>
+                <button type="button" class="p-1 rounded transition-colors" id="closeModalBtn"
+                    style="color:var(--text-muted);">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-1 overflow-auto p-5" id="jsonModalBody" style="background:var(--bg-code);"></div>
+            <div class="px-5 py-3 flex justify-end" style="border-top:1px solid var(--border);">
+                <button type="button"
+                    class="px-5 py-1.5 text-sm font-medium rounded-lg transition-colors"
+                    id="closeModalBtnFooter"
+                    style="background:var(--bg-hover); color:var(--text-secondary); border:1px solid var(--border);">
+                    關閉
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
