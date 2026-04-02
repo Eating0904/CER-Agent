@@ -1,3 +1,4 @@
+import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import { Button, Table, Typography } from 'antd';
 
 const { Text } = Typography;
@@ -21,9 +22,24 @@ export const MapViewTable = ({ maps = [], isLoading, onView }) => {
             sorter: (a, b) => (a.user?.username ?? '').localeCompare(b.user?.username ?? ''),
         },
         {
+            title: 'Show',
+            dataIndex: 'show',
+            key: 'show',
+            width: 80,
+            align: 'center',
+            sorter: (a, b) => {
+                if (a.show === b.show) return 0;
+                return a.show ? -1 : 1;
+            },
+            render: (show) => {
+                if (show) return <CheckCircleTwoTone twoToneColor="#52c41a" style={{ fontSize: 18 }} />;
+                return <CloseCircleTwoTone twoToneColor="#ff4d4f" style={{ fontSize: 18 }} />;
+            },
+        },
+        {
             title: 'Practice',
             key: 'practice',
-            width: 400,
+            width: 300,
             sorter: (a, b) => a.id - b.id,
             render: (_, record) => (
                 <span>
@@ -35,7 +51,7 @@ export const MapViewTable = ({ maps = [], isLoading, onView }) => {
         {
             title: 'Task',
             key: 'task',
-            width: 400,
+            width: 300,
             sorter: (a, b) => (a.template?.id ?? 0) - (b.template?.id ?? 0),
             render: (_, record) => (record.template ? (
                 <span>
@@ -76,7 +92,7 @@ export const MapViewTable = ({ maps = [], isLoading, onView }) => {
             rowHoverable
             components={{}}
             style={{
-                width: '80%',
+                width: '85%',
             }}
             className="map-view-table"
         />

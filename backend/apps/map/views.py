@@ -162,7 +162,7 @@ class MapViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='view')
     def view_list(self, request):
         """查看所有使用者的 maps（僅限特定 role）"""
-        VIEW_ALLOWED_ROLES = ['admin']
+        VIEW_ALLOWED_ROLES = ['admin', 'assistant', 'teacher']
         if request.user.role not in VIEW_ALLOWED_ROLES:
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -194,7 +194,7 @@ class MapViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], url_path='view')
     def view_detail(self, request, pk=None):
         """查看任意使用者的單筆完整 map（含 nodes/edges），僅限特定 role"""
-        VIEW_ALLOWED_ROLES = ['admin']
+        VIEW_ALLOWED_ROLES = ['admin', 'assistant', 'teacher']
         if request.user.role not in VIEW_ALLOWED_ROLES:
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
 

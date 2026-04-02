@@ -71,5 +71,5 @@ class MapViewListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Map
-        fields = ['id', 'name', 'user', 'template', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'user', 'template', 'show', 'created_at', 'updated_at']
         read_only_fields = ['id', 'name', 'created_at', 'updated_at']

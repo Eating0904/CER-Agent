@@ -107,6 +107,7 @@ export const SiderMenu = () => {
     ];
 
     const canManage = currentUser?.role && ['admin', 'teacher', 'assistant'].includes(currentUser.role);
+    const canView = currentUser?.role && ['admin', 'teacher', 'assistant'].includes(currentUser.role);
 
     const handleAddNewClick = () => {
         trackAction('click_add_new_button');
@@ -140,7 +141,7 @@ export const SiderMenu = () => {
                     Manage
                 </Button>
             )}
-            {currentUser?.role === 'admin' && (
+            {canView && (
                 <Button
                     onClick={() => navigate('/view')}
                     style={{

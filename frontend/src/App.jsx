@@ -92,7 +92,7 @@ const App = () => {
                     <Route
                         path="/view"
                         element={(
-                            <RoleProtectedRoute allowedRoles={['admin']}>
+                            <RoleProtectedRoute allowedRoles={['admin', 'assistant', 'teacher']}>
                                 <ViewPage />
                             </RoleProtectedRoute>
                         )}
