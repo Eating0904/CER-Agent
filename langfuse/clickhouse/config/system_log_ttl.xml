@@ -1,0 +1,26 @@
+<clickhouse>
+    <query_log>
+        <ttl>toDate(event_time) + INTERVAL 7 DAY DELETE</ttl>
+    </query_log>
+    <query_thread_log>
+        <ttl>toDate(event_time) + INTERVAL 7 DAY DELETE</ttl>
+    </query_thread_log>
+    <trace_log>
+        <ttl>toDate(event_time) + INTERVAL 7 DAY DELETE</ttl>
+    </trace_log>
+    <text_log>
+        <ttl>toDate(event_time) + INTERVAL 7 DAY DELETE</ttl>
+    </text_log>
+    <metric_log>
+        <ttl>toDate(event_date) + INTERVAL 7 DAY DELETE</ttl>
+    </metric_log>
+    <asynchronous_metric_log>
+        <ttl>toDate(event_date) + INTERVAL 7 DAY DELETE</ttl>
+    </asynchronous_metric_log>
+    <part_log>
+        <ttl>toDate(event_time) + INTERVAL 7 DAY DELETE</ttl>
+    </part_log>
+    <session_log>
+        <ttl>toDate(event_time) + INTERVAL 7 DAY DELETE</ttl>
+    </session_log>
+</clickhouse>
