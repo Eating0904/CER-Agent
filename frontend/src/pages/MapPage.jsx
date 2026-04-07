@@ -184,13 +184,13 @@ export const MapPage = () => {
         setEssayContent('');
     }, [mapId]);
 
-    // 當 essayData 更新時，同步內容（包括空字串）
+    // 當 essayData 更新或切回 essay 視圖時，同步內容
     useEffect(() => {
         if (essayData?.essay) {
             setEssayContent(essayData.essay.content || '');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [essayData?.essay?.id]);
+    }, [essayData?.essay?.id, view]);
 
     // 處理內容改變
     const onEssayChange = useCallback((newContent) => {
