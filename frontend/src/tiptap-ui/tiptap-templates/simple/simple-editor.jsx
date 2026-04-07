@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
 
 // --- Tiptap Core Extensions ---
@@ -199,8 +199,8 @@ export function SimpleEditor({ content, onChange, editorRef, onFocus, onBlur, on
     }
   }, [editor, editorRef])
 
-  useEffect(() => {
-    if (editor && content && editor.getHTML() !== content) {
+  useLayoutEffect(() => {
+    if (editor && content != null && editor.getHTML() !== content) {
        editor.commands.setContent(content)
     }
   }, [content, editor])
