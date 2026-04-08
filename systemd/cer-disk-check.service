@@ -1,0 +1,8 @@
+[Unit]
+Description=CER Disk Usage Check & Report
+
+[Service]
+Type=oneshot
+ExecStart=/home/ccliu/CER-Agent/scripts/check_disk.sh
+User=ccliu
+WorkingDirectory=/home/ccliu/CER-Agent

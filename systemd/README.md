@@ -1,6 +1,7 @@
 # CER systemd
 
-## 安裝
+## Backup
+### 安裝
 
 ```bash
 # 建立 symlink
@@ -12,7 +13,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now cer-backup.timer
 ```
 
-## 移除
+### 移除
 
 ```bash
 # 停用並移除
@@ -22,7 +23,7 @@ sudo rm /etc/systemd/system/cer-backup.timer
 sudo systemctl daemon-reload
 ```
 
-## Debug
+### Debug
 
 ```bash
 # 查看 timer 狀態與下次執行時間
@@ -42,7 +43,7 @@ sudo systemctl start cer-backup.service
 systemctl status cer-backup.service
 ```
 
-## 修改備份頻率
+### 修改備份頻率
 
 編輯 `cer-backup.timer` 中的 `OnCalendar`，然後重新載入：
 
@@ -55,3 +56,23 @@ sudo systemctl restart cer-backup.timer
 - 每 4 小時：`OnCalendar=*-*-* 00,04,08,12,16,20:00:00`
 - 每 2 小時：`OnCalendar=*-*-* 00/2:00:00`
 - 每天凌晨：`OnCalendar=*-*-* 00:00:00`
+
+
+## Disk Check
+### 安裝
+
+1. 記得先去設置 `.env` 的欄位
+    - `DF_REPORT_API_URL`
+    - `DF_REPORT_API_KEY`
+2. 連結並載入
+```bash
+# 建立 symlink
+sudo ln -s /home/ccliu/CER-Agent/systemd/cer-disk-check.service /etc/systemd/system/
+sudo ln -s /home/ccliu/CER-Agent/systemd/cer-disk-check.timer /etc/systemd/system/
+
+# 載入並啟用
+sudo systemctl daemon-reload
+sudo systemctl enable --now cer-disk-check.timer
+```
+
+(其餘移除、debug、修改等方式同上，不再贅述)
