@@ -138,7 +138,7 @@ class MapViewSet(viewsets.ModelViewSet):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def partial_update(self, request, *args, **kwargs):
-        """更新 map 之前檢查期限（僅限更新 nodes/edges 時）"""
+        """更新 map 之前檢查期限（僅限更新 nodes/edges 時），並建立快照"""
         try:
             instance = self.get_object()
 
@@ -152,6 +152,21 @@ class MapViewSet(viewsets.ModelViewSet):
                     return Response(
                         {'error': 'This task has expired and cannot be edited'},
                         status=status.HTTP_403_FORBIDDEN,
+                    )
+
+                # 建立快照（在更新前比較舊資料與新資料）
+                try:
+                    from .snapshot_service import create_snapshot
+
+                    create_snapshot(
+                        instance,
+                        request.data.get('nodes', instance.nodes),
+                        request.data.get('edges', instance.edges),
+                    )
+                except Exception as e:
+                    logger.error(
+                        f'Failed to create snapshot: map_id={instance.id}, error={e}',
+                        exc_info=True,
                     )
 
             return super().partial_update(request, *args, **kwargs)

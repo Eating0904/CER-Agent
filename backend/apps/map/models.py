@@ -26,3 +26,6 @@ class Map(models.Model):
 
     def __str__(self):
         return self.name
+
+from .snapshot_models import MapSnapshot  # noqa: E402, F401
+
