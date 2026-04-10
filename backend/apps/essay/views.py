@@ -59,6 +59,17 @@ def essay_detail(request, map_id):
                 map=map_instance, defaults={'user': request.user}
             )
 
+            # 建立快照（在更新前記錄，快照失敗不阻擋正常儲存）
+            try:
+                from .snapshot_service import create_essay_snapshot
+
+                create_essay_snapshot(essay, request.data.get('content', ''))
+            except Exception as e:
+                logger.error(
+                    f'Failed to create essay snapshot: essay_id={essay.id}, error={e}',
+                    exc_info=True,
+                )
+
             serializer = EssayContentSerializer(essay, data=request.data, partial=True)
             if not serializer.is_valid():
                 return Response(

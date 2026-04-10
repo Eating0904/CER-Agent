@@ -25,3 +25,5 @@ class Essay(models.Model):
 
     def __str__(self):
         return f'Essay for Map {self.map.name}'
+
+from .snapshot_models import EssaySnapshot  # noqa: E402, F401

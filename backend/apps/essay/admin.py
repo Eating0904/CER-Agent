@@ -62,7 +62,7 @@ class EssayAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('基本資訊', {'fields': ('user', 'map', 'template_name')}),
-        ('內容資訊', {'fields': ('word_count', 'formatted_content')}),
+        ('內容資訊', {'fields': ('word_count', 'content')}),
         ('評分資訊', {'fields': ('scoring_remaining', 'scoring_updated_at')}),
         ('時間資訊', {'fields': ('created_at', 'updated_at')}),
     )
@@ -72,15 +72,43 @@ class EssayAdmin(admin.ModelAdmin):
         'map',
         'template_name',
         'word_count',
-        'formatted_content',
         'scoring_remaining',
         'scoring_updated_at',
         'created_at',
         'updated_at',
     )
 
+    def save_model(self, request, obj, form, change):
+        """儲存前無條件建立快照"""
+        if change:
+            try:
+                from .snapshot_models import EssaySnapshot
+
+                last_snapshot = (
+                    EssaySnapshot.objects.filter(essay=obj)
+                    .order_by('-sequence')
+                    .only('sequence')
+                    .first()
+                )
+                next_sequence = (last_snapshot.sequence + 1) if last_snapshot else 1
+
+                EssaySnapshot.objects.create(
+                    essay=obj,
+                    content=obj.content,
+                    sequence=next_sequence,
+                )
+            except Exception as e:
+                import logging
+
+                logger = logging.getLogger(__name__)
+                logger.error(
+                    f'Failed to create essay snapshot from admin: essay_id={obj.id}, error={e}',
+                    exc_info=True,
+                )
+        super().save_model(request, obj, form, change)
+
     def has_change_permission(self, request, obj=...):
-        return False
+        return True
 
     def has_add_permission(self, request):
         return False
