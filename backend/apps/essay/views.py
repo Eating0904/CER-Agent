@@ -87,7 +87,7 @@ def essay_detail(request, map_id):
             )
 
 
-VIEW_ALLOWED_ROLES = ['admin']
+VIEW_ALLOWED_ROLES = ['admin', 'assistant', 'teacher']
 
 
 @api_view(['GET'])
